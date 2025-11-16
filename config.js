@@ -1,16 +1,11 @@
-// Firebase Configuration
-// IMPORTANT: Replace these values with your own Firebase project credentials
-// Get your config from: Firebase Console > Project Settings > Your apps > Firebase SDK snippet
-
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY_HERE",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyCV4Zx7vfR0Et4uDWlYsmPxUptQnRMPCes",
+  authDomain: "evenements-nat.firebaseapp.com",
+  databaseURL: "https://evenements-nat-default-rtdb.firebaseio.com",
+  projectId: "evenements-nat",
+  storageBucket: "evenements-nat.appspot.com",
+  messagingSenderId: "283381369320",
+  appId: "1:283381369320:web:c106273508efef48503c5d"
 };
 
-// Export the config for use in the main app
-export default firebaseConfig;
+const ADMIN_PASSWORD = "admin123";
