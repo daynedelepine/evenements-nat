@@ -382,29 +382,31 @@
             projectId: "evenements-nat",
             storageBucket: "evenements-nat.firebasestorage.app",
             messagingSenderId: "283381369320",
-            appId: "1:283381369320:web:c106273508efef48503c5d"
+            appId: "1:283381369320:web:c106273508efef48503c5d",
+                        databaseURL: "https://evenements-nat-default-rtdb.europe-west1.firebasedatabase.app"
         };
 
         let db = null;
 
-        // Initialiser Firebase
-        try {
-            const script = document.createElement('script');
-            script.src = "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-            script.async = true;
-            script.onload = () => {
-                const script2 = document.createElement('script');
-                script2.src = "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-                script2.async = true;
-                script2.onload = () => {
+        // Charger Firebase
+        const script1 = document.createElement('script');
+        script1.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+        document.head.appendChild(script1);
+        
+        script1.onload = function() {
+            const script2 = document.createElement('script');
+            script2.src = 'https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js';
+            document.head.appendChild(script2);
+            
+            script2.onload = function() {
+                try {
                     firebase.initializeApp(firebaseConfig);
                     db = firebase.database();
-                };
-                document.head.appendChild(script2);
+                    console.log('Firebase initialisé avec succès');
+                } catch (error) {
+                    console.error('Erreur Firebase:', error);
+                }
             };
-            document.head.appendChild(script);
-        } catch (e) {
-            console.log("Firebase loading...");
         }
 
         const ADMIN_PASSWORD = "admin123";
