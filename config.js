@@ -2,12 +2,12 @@
 // Obtenez ces valeurs depuis https://console.firebase.google.com
 
 const firebaseConfig = {
-    apiKey: "REPLACE_WITH_YOUR_API_KEY",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project-id",
-    storageBucket: "your-project.appspot.com",
-    messagingSenderId: "your-messaging-sender-id",
-    appId: "your-app-id"
+    apiKey: "AIzaSyCV4Zx7vfR0Et4uDWlYsmPxUptQnRMPCes",
+    authDomain: "evenements-nat.firebaseapp.com",
+    projectId: "evenements-nat",
+    storageBucket: "evenements-nat.firebasestorage.app",
+    messagingSenderId: "283381369320",
+    appId: "1:283381369320:web:c106273508efef48503c5d"
 };
 
 // Admin Password
