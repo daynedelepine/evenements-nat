@@ -356,7 +356,7 @@
     <script type="module">
         // Import Firebase modules
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+        import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
         // Firebase config - REPLACE WITH YOUR VALUES
         const firebaseConfig = {
@@ -380,6 +380,52 @@
         const ADMIN_PASSWORD = "admin123";
         let adminLoggedIn = false;
 
+
+                // Initialize sample events if database is empty
+        async function initializeSampleEvents() {
+            const eventsRef = ref(window.firebaseDb, 'events');
+            const snapshot = await get(eventsRef);
+            
+            if (!snapshot.exists()) {
+                const sampleEvents = {
+                    event1: {
+                        id: "event1",
+                        name: "Café Nat - Novembre",
+                        category: "Cafés Nat",
+                        date: "23 novembre",
+                        time: "15:00",
+                        location: "Créteil",
+                        desc: "Rendez-vous amical autour d'un café pour échanger sur la naturalité et créer du lien",
+                        maxSeats: 12
+                    },
+                    event2: {
+                        id: "event2",
+                        name: "Table d'hôtes - Décembre",
+                        category: "Tables d'hôtes",
+                        date: "15 décembre",
+                        time: "19:30",
+                        location: "Paris 12ème",
+                        desc: "Partage d'un repas convivial fait maison dans une ambiance chaleureuse",
+                        maxSeats: 8
+                    },
+                    event3: {
+                        id: "event3",
+                        name: "ApéroNu - Janvier",
+                        category: "ApéroNus",
+                        date: "20 janvier",
+                        time: "18:00",
+                        location: "Vincennes",
+                        desc: "Apéritif décontracté pour se retrouver entre amis dans la bonne humeur",
+                        maxSeats: 15
+                    }
+                };
+                
+                await set(eventsRef, sampleEvents);
+                console.log("Sample events initialized successfully!");
+            }
+        }
+        
+        initializeSampleEvents();
         // Sample events
         function loadEvents() {
             if (!window.firebaseDb) return;
