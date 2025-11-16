@@ -6,7 +6,7 @@ import { getDatabase, ref, push, set, get, remove, onValue } from 'https://www.g
 const firebaseConfig = {
   apiKey: "AIzaSyCV4Zx7vfR0Et4uDWlYsmPxUptQnRMPCes",
   authDomain: "evenements-nat.firebaseapp.com",
-  databaseURL: "https://evenements-nat-default-rtdb.firebaseio.com",
+  databaseURL: "https://evenements-nat-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "evenements-nat",
   storageBucket: "evenements-nat.firebasestorage.app",
   messagingSenderId: "283381369320",
