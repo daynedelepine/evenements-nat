@@ -5,695 +5,1166 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Événements Nat</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+/* DESIGN SYSTEM */
+:root {
+    --color-background: #F5F0EB;
+    --color-surface: #FFFFFF;
+    --color-text: #3A2F2C;
+    --color-primary: #D4B5A0;
+    --color-primary-hover: #C5A590;
+    --color-cafes: #D4B5A0;
+    --color-tables: #C5D5B8;
+    --color-apero: #FABE89;
+    --color-border: rgba(212, 181, 160, 0.3);
+}
 
-        body {
-            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #FFF8F3 0%, #FFE8E0 100%);
-            color: #3A2F2C;
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text);
+    line-height: 1.6;
+}
 
-        header {
-            text-align: center;
-            padding: 30px 0;
-        }
+/* HIDE RADIO INPUTS */
+input[type="radio"] {
+    display: none;
+}
 
-        h1 {
-            font-size: 32px;
-            color: #5C4A47;
-            margin-bottom: 10px;
-        }
+/* HEADER */
+.header {
+    background: var(--color-surface);
+    padding: 20px;
+    border-bottom: 3px solid var(--color-primary);
+    text-align: center;
+}
 
-        /* Tabs Navigation */
-        .tabs-container {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 30px 0;
-            flex-wrap: wrap;
-        }
+.header h1 {
+    font-size: 28px;
+    color: var(--color-text);
+}
 
-        .tab-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.7);
-            color: #5C4A47;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
+/* MAIN CONTENT */
+.main-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    padding-bottom: 100px;
+}
 
-        .tab-btn:hover {
-            background: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
-            transform: translateY(-1px);
-        }
+/* TAB CONTENT - HIDDEN BY DEFAULT */
+.tab-content {
+    display: none;
+}
 
-        .tab-btn.active {
-            background: #D4B5A0;
-            color: white;
-            box-shadow: 0 4px 15px rgba(212, 181, 160, 0.4);
-        }
+/* SHOW CONTENT WHEN RADIO IS CHECKED */
+#tab1:checked ~ .content-wrapper #content1,
+#tab2:checked ~ .content-wrapper #content2,
+#tab3:checked ~ .content-wrapper #content3,
+#tab4:checked ~ .content-wrapper #content4 {
+    display: block;
+}
 
-        /* Content Sections */
-        .content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
+/* BOTTOM NAVIGATION */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-surface);
+    display: flex;
+    border-top: 3px solid var(--color-primary);
+    z-index: 100;
+}
 
-        .content.active {
-            display: block;
-        }
+.nav-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 15px 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--color-text);
+    font-size: 12px;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+}
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+.nav-label:hover {
+    background: var(--color-background);
+}
 
-        /* Cards */
-        .event-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s;
-        }
+.nav-icon {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
 
-        .event-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-        }
+/* ACTIVE TAB STYLING */
+#tab1:checked ~ .bottom-nav label[for="tab1"],
+#tab2:checked ~ .bottom-nav label[for="tab2"],
+#tab3:checked ~ .bottom-nav label[for="tab3"],
+#tab4:checked ~ .bottom-nav label[for="tab4"] {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    font-weight: 700;
+}
 
-        .event-card h3 {
-            margin: 0 0 10px 0;
-            color: #5C4A47;
-        }
+/* SECTION TITLES */
+.section-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: var(--color-text);
+    font-weight: 700;
+}
 
-        .category-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 10px;
-        }
+/* EVENT CARDS */
+.event-card {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
 
-        .category-cafes { background: #D4B5A0; }
-        .category-tables { background: #C5D5B8; }
-        .category-apero { background: #FABE89; }
+.event-category {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: var(--color-surface);
+}
 
-        .event-info {
-            font-size: 14px;
-            color: #7D6B68;
-            margin: 8px 0;
-        }
+.category-cafes .event-category {
+    background: var(--color-cafes);
+}
 
-        .event-info strong {
-            color: #5C4A47;
-        }
+.category-tables .event-category {
+    background: var(--color-tables);
+}
 
-        /* Forms */
-        .form-group {
-            margin-bottom: 15px;
-        }
+.category-apero .event-category {
+    background: var(--color-apero);
+}
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #5C4A47;
-        }
+.event-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 12px;
+}
 
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #E8DDD5;
-            border-radius: 10px;
-            font-family: inherit;
-            font-size: 14px;
-            transition: border-color 0.3s;
-        }
+.event-meta {
+    margin-bottom: 12px;
+    color: var(--color-text);
+    font-size: 14px;
+    line-height: 1.8;
+}
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #D4B5A0;
-            box-shadow: 0 0 0 3px rgba(212, 181, 160, 0.1);
-        }
+.event-description {
+    color: var(--color-text);
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
 
-        button {
-            background: #D4B5A0;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 2px 8px rgba(212, 181, 160, 0.2);
-        }
+/* DETAILS ELEMENT FOR EXPANDABLE SECTIONS */
+details {
+    margin-top: 15px;
+    border: 2px solid var(--color-primary);
+    border-radius: 8px;
+    padding: 10px;
+    background: rgba(212, 181, 160, 0.05);
+}
 
-        button:hover {
-            background: #C5A892;
-            box-shadow: 0 4px 12px rgba(212, 181, 160, 0.4);
-            transform: translateY(-1px);
-        }
+summary {
+    cursor: pointer;
+    font-weight: 700;
+    padding: 10px;
+    color: var(--color-text);
+    list-style: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
-        button:active {
-            transform: translateY(0);
-        }
+summary::-webkit-details-marker {
+    display: none;
+}
 
-        /* Contact Info */
-        .contact-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        }
+summary::before {
+    content: '▶';
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
 
-        .contact-card h4 {
-            color: #D4B5A0;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
+details[open] summary::before {
+    transform: rotate(90deg);
+}
 
-        .contact-card p {
-            color: #7D6B68;
-            margin: 5px 0;
-            line-height: 1.6;
-        }
+details .form-content {
+    padding: 15px 10px 5px 10px;
+}
 
-        /* Messages */
-        .success-msg, .error-msg {
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-weight: 600;
-            animation: slideDown 0.3s ease;
-        }
+/* FORMS */
+.form-group {
+    margin-bottom: 15px;
+}
 
-        @keyframes slideDown {
-            from { 
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+.form-label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--color-text);
+}
 
-        .success-msg {
-            background: #D5E8D5;
-            color: #2D5016;
-        }
+.form-control {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+    color: var(--color-text);
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    font-family: inherit;
+}
 
-        .error-msg {
-            background: #FFE0E0;
-            color: #8B3C3C;
-        }
+.form-control:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            border-top: 2px solid #E8DDD5;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 100;
-        }
+/* BUTTONS */
+.btn {
+    display: inline-block;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    border: 2px solid var(--color-primary);
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.3s ease;
+}
 
-        .bottom-nav button {
-            flex: 1;
-            background: transparent;
-            color: #7D6B68;
-            border: none;
-            padding: 10px 5px;
-            font-size: 11px;
-            border-radius: 0;
-            box-shadow: none;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+.btn-primary {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    border-color: var(--color-primary);
+}
 
-        .bottom-nav button:hover {
-            background: rgba(212, 181, 160, 0.05);
-            transform: none;
-            box-shadow: none;
-        }
+.btn-primary:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+}
 
-        .bottom-nav button.active {
-            color: #D4B5A0;
-            border-top: 3px solid #D4B5A0;
-            padding-top: 7px;
-        }
+.btn-submit {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    border: 2px solid var(--color-primary);
+    width: 100%;
+    margin-top: 10px;
+}
 
-        .form-section {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
+.btn-submit:hover {
+    background: var(--color-primary-hover);
+}
 
-        .admin-login {
-            background: white;
-            padding: 30px 20px;
-            border-radius: 15px;
-            max-width: 400px;
-            margin: 30px auto;
-        }
+/* CONTACT SECTION */
+.contact-section {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
 
-        @media (max-width: 600px) {
-            h1 { font-size: 24px; }
-            .tabs-container { gap: 5px; }
-            .tab-btn { padding: 10px 16px; font-size: 12px; }
-            .bottom-nav button { font-size: 10px; }
-        }
+.contact-section h2 {
+    margin-bottom: 20px;
+    color: var(--color-text);
+    font-weight: 700;
+    font-size: 22px;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    padding: 15px;
+    background: rgba(212, 181, 160, 0.05);
+    border-radius: 8px;
+    border-left: 4px solid var(--color-primary);
+}
+
+.contact-icon {
+    font-size: 28px;
+    min-width: 35px;
+    text-align: center;
+}
+
+.contact-details {
+    flex: 1;
+}
+
+.contact-label {
+    font-size: 12px;
+    color: var(--color-text);
+    margin-bottom: 4px;
+    font-weight: 700;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.contact-value {
+    font-size: 15px;
+    color: var(--color-text);
+    font-weight: 500;
+}
+
+.contact-value a {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.contact-value a:hover {
+    text-decoration: underline;
+}
+
+/* STATUS BADGES */
+.status {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 12px;
+    margin-left: 10px;
+}
+
+.status-open {
+    background: var(--color-tables);
+    color: var(--color-surface);
+}
+
+.status-limited {
+    background: var(--color-apero);
+    color: var(--color-surface);
+}
+
+/* RESPONSIVE */
+@media (max-width: 640px) {
+    .header h1 {
+        font-size: 22px;
+    }
+    
+    .event-title {
+        font-size: 18px;
+    }
+    
+    .main-content {
+        padding: 15px;
+    }
+    
+    .nav-label {
+        font-size: 11px;
+        padding: 12px 5px;
+    }
+    
+    .nav-icon {
+        font-size: 20px;
+    }
+}
+
+/* INFO SECTION */
+.info-section {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.info-section h3 {
+    margin-bottom: 15px;
+    color: var(--color-text);
+    font-size: 18px;
+}
+
+.info-section p {
+    margin-bottom: 12px;
+    line-height: 1.8;
+}
+
+.info-section ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.info-section li {
+    margin-bottom: 8px;
+}
+
+/* ADMIN STYLES */
+.admin-section {
+    background: #E8DDD5;
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+}
+
+.admin-section h3 {
+    margin-bottom: 15px;
+    color: var(--color-text);
+    font-size: 18px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-surface);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 15px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.admin-table th {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.admin-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-table tr:hover {
+    background: rgba(212, 181, 160, 0.05);
+}
+
+.admin-password {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.admin-password h3 {
+    margin-bottom: 15px;
+}
+
+.admin-password p {
+    margin-bottom: 15px;
+    color: var(--color-text-secondary);
+    font-size: 14px;
+}
+
+.password-note {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(212, 181, 160, 0.2);
+    border-radius: 6px;
+    font-family: monospace;
+    font-weight: 700;
+    margin-top: 10px;
+}
+
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.admin-stat-card {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+}
+
+.admin-stat-number {
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.admin-stat-label {
+    font-size: 14px;
+    color: var(--color-text);
+    font-weight: 600;
+}
+
+/* ADMIN LOGIN STYLES */
+.admin-login-container {
+    display: none;
+    max-width: 450px;
+    margin: 40px auto;
+}
+
+.admin-login-card {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 40px 30px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.admin-login-card h3 {
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: var(--color-text);
+}
+
+.admin-login-hint {
+    display: inline-block;
+    margin-top: 15px;
+    padding: 10px 16px;
+    background: rgba(212, 181, 160, 0.15);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--color-text);
+}
+
+.admin-login-hint code {
+    font-family: var(--font-family-mono, monospace);
+    font-weight: 700;
+    color: var(--color-primary);
+    background: transparent;
+    padding: 0;
+}
+
+.admin-panel-container {
+    display: none;
+}
+
+.admin-welcome {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-welcome h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.btn-logout {
+    background: var(--color-primary);
+    color: var(--color-surface);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 2px solid var(--color-primary);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+    background: var(--color-primary-hover);
+    border-color: var(--color-primary-hover);
+}
+
+/* ADMIN STATE LOGIC */
+#admin_login:checked ~ .content-wrapper #content4 .admin-login-container {
+    display: block;
+}
+
+#admin_login:checked ~ .content-wrapper #content4 .admin-panel-container {
+    display: none;
+}
+
+#admin_loggedin:checked ~ .content-wrapper #content4 .admin-login-container {
+    display: none;
+}
+
+#admin_loggedin:checked ~ .content-wrapper #content4 .admin-panel-container {
+    display: block;
+}
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎉 Événements Nat</h1>
-        </header>
+    <!-- HIDDEN RADIO INPUTS FOR TAB SWITCHING -->
+    <input type="radio" name="tabs" id="tab1" checked>
+    <input type="radio" name="tabs" id="tab2">
+    <input type="radio" name="tabs" id="tab3">
+    <input type="radio" name="tabs" id="tab4">
+    
+    <!-- HIDDEN RADIO INPUTS FOR ADMIN STATE -->
+    <input type="radio" name="admin_state" id="admin_login" checked>
+    <input type="radio" name="admin_state" id="admin_loggedin">
 
-        <!-- Main Tabs -->
-        <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab(event, 'calendrier')">📅 Calendrier</button>
-            <button class="tab-btn" onclick="switchTab(event, 'reserver')">📝 Réserver</button>
-            <button class="tab-btn" onclick="switchTab(event, 'infos')">ℹ️ Infos utiles</button>
-            <button class="tab-btn" onclick="switchTab(event, 'admin')">🔐 Admin</button>
-        </div>
+    <!-- HEADER -->
+    <header class="header">
+        <h1>🎉 Événements Nat</h1>
+    </header>
 
-        <!-- CALENDRIER TAB -->
-        <div id="calendrier" class="content active">
-            <h2 style="margin-bottom: 20px; text-align: center;">📅 Calendrier des Événements</h2>
-            <div id="calendar-events"></div>
-        </div>
-
-        <!-- RESERVER TAB -->
-        <div id="reserver" class="content">
-            <h2 style="margin-bottom: 20px; text-align: center;">📝 Réserver</h2>
-            <div id="booking-section"></div>
-        </div>
-
-        <!-- INFOS UTILES TAB -->
-        <div id="infos" class="content">
-            <h2 style="margin-bottom: 20px; text-align: center;">ℹ️ Informations Utiles</h2>
-            <div class="contact-card">
-                <h4>📱 Téléphone</h4>
-                <p>+33 6 12 34 56 78</p>
-            </div>
-            <div class="contact-card">
-                <h4>📧 Email</h4>
-                <p>dayanjmd@hotmail.fr</p>
-            </div>
-            <div class="contact-card">
-                <h4>📍 Localisation</h4>
-                <p>Créteil, Île-de-France</p>
-                <p>Métro 8 - Créteil Préfecture</p>
-            </div>
-        </div>
-
-        <!-- ADMIN TAB -->
-        <div id="admin" class="content">
-            <h2 style="margin-bottom: 20px; text-align: center;">🔐 Panneau Administrateur</h2>
-            <div id="admin-content"></div>
-        </div>
-    </div>
-
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <button onclick="switchTab(event, 'calendrier')" class="nav-btn active">📅</button>
-        <button onclick="switchTab(event, 'reserver')" class="nav-btn">📝</button>
-        <button onclick="switchTab(event, 'infos')" class="nav-btn">ℹ️</button>
-        <button onclick="switchTab(event, 'admin')" class="nav-btn">🔐</button>
-    </div>
-
-    <script type="module">
-        // Import Firebase modules
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getDatabase, ref, push, onValue, get, set } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-        // Firebase config - REPLACE WITH YOUR VALUES
-        const firebaseConfig = {
-            apiKey: "AIzaSyQA2v2vfR8Ft4u8HIYxmPAuptuQnRSPGe+",
-            authDomain: "evenements-nat.firebaseapp.com",
-                        databaseURL: "https://evenements-nat-default-rtdb.europe-west1.firebasedatabase.app",
-            projectId: "evenements-nat",
-            storageBucket: "evenements-nat.firebasestorage.app",
-            messagingSenderId: "283381369320",
-            appId: "1:283381369320:web:c10b27350edefe48583c5d"
-        };
-        // Initialize Firebase
-        try {
-            const app = initializeApp(firebaseConfig);
-            const db = getDatabase(app);
-            window.firebaseDb = db;
-        } catch (error) {
-            console.error("Firebase initialization error:", error);
-        alert("⚠️ Erreur de connexion Firebase. Vérifiez votre connexion internet.");        }
-
-        const ADMIN_PASSWORD = "admin123";
-        let adminLoggedIn = false;
-
-
-                // Initialize sample events if database is empty
-        async function initializeSampleEvents() {
-            const eventsRef = ref(window.firebaseDb, 'events');
-            const snapshot = await get(eventsRef);
-            
-            if (!snapshot.exists()) {
-                const sampleEvents = {
-                    event1: {
-                        id: "event1",
-                        name: "Café Nat - Novembre",
-                        category: "Cafés Nat",
-                        date: "23 novembre",
-                        time: "15:00",
-                        location: "Créteil",
-                        desc: "Rendez-vous amical autour d'un café pour échanger sur la naturalité et créer du lien",
-                        maxSeats: 12
-                    },
-                    event2: {
-                        id: "event2",
-                        name: "Table d'hôtes - Décembre",
-                        category: "Tables d'hôtes",
-                        date: "15 décembre",
-                        time: "19:30",
-                        location: "Paris 12ème",
-                        desc: "Partage d'un repas convivial fait maison dans une ambiance chaleureuse",
-                        maxSeats: 8
-                    },
-                    event3: {
-                        id: "event3",
-                        name: "ApéroNu - Janvier",
-                        category: "ApéroNus",
-                        date: "20 janvier",
-                        time: "18:00",
-                        location: "Vincennes",
-                        desc: "Apéritif décontracté pour se retrouver entre amis dans la bonne humeur",
-                        maxSeats: 15
-                    }
-                };
+    <!-- MAIN CONTENT WRAPPER -->
+    <div class="content-wrapper">
+        <main class="main-content">
+            <!-- TAB 1: CALENDRIER -->
+            <div id="content1" class="tab-content">
+                <h2 class="section-title">📅 Calendrier des événements</h2>
                 
-                await set(eventsRef, sampleEvents);
-                console.log("Sample events initialized successfully!");
-            }
-        }
-        
-        initializeSampleEvents();
-        // Sample events
-        function loadEvents() {
-            if (!window.firebaseDb) return;
-            onValue(ref(window.firebaseDb, 'events'), (snapshot) => {
-                const data = snapshot.val();window.eventsData = data ? Object.entries(data).map(([id, event]) => ({...event, id})) : [];
-                renderEvents('calendar-events');
-  });
-}
-
-        function getCategoryClass(category) {
-            if (category.includes("Cafés")) return "category-cafes";
-            if (category.includes("Tables")) return "category-tables";
-            return "category-apero";
-        }
-
-        function renderEvents(containerId) {
-        if (!window.firebaseDb) {
-            const elem = document.getElementById(containerId);
-            if (elem) elem.innerHTML = '<p style="color: red; padding: 20px;">Firebase non configuré</p>';
-            return;
-        }
-        
-        // Charger les inscriptions pour calculer les places restantes
-        onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
-            const registrations = snapshot.val() || {};
-            
-            // Compter les inscriptions par événement
-            const registrationCounts = {};
-            Object.values(registrations).forEach(reg => {
-                const eventId = reg.event_id;
-                registrationCounts[eventId] = (registrationCounts[eventId] || 0) + 1;
-            });
-            
-            // Générer le HTML avec les places restantes
-            let html = "";
-(window.eventsData || [])            .forEach(event => {
-                const registered = registrationCounts[event.id] || 0;
-                const remainingSeats = event.maxSeats - registered;
-                
-                html += `
-                    <div class="event-card">
-                        <span class="category-badge ${getCategoryClass(event.category)}">${event.category}</span>
-                        <h3>${event.name}</h3>
-                        <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
-                        <div class="event-info"><strong>⏰ Heure:</strong> ${event.time}</div>
-                        <div class="event-info"><strong>📍 Lieu:</strong> ${event.location}</div>
-                        <div class="event-info"><strong>🎫 Places restantes:</strong> ${remainingSeats}/${event.maxSeats}</div>
-                        <p style="color: #7D6B68; margin-top: 10px;">${event.desc}</p>
+                <!-- Event 1 -->
+                <div class="event-card category-cafes">
+                    <div class="event-category">☕ Cafés Nat</div>
+                    <h3 class="event-title">Café Nat Matin</h3>
+                    <span class="status status-open">Places disponibles</span>
+                    <div class="event-meta">
+                        📅 20 novembre 2025 à 10:00<br>
+                        📍 Créteil, Café du Centre<br>
+                        👥 20 places disponibles
                     </div>
-                `;
-            });
-            
-            const elem = document.getElementById(containerId);
-            if (elem) elem.innerHTML = html;
-        }, { onlyOnce: false }); // onlyOnce:false pour écouter en temps réel
-    }
-
-        function renderBooking() {
-            let eventOptions = '<option value="">Sélectionnez un événement</option>';
-            (window.eventsData || []).forEach(event => {
-                eventOptions += `<option value="${event.id}">${event.name} (${event.date})</option>`;
-            });
-
-            let html = `
-                <div class="form-section">
-                    <h3 style="margin-bottom: 20px;">Formulaire d'Inscription</h3>
-                    <div class="form-group">
-                        <label>Nom complet *</label>
-                        <input type="text" id="regName" placeholder="Votre nom" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Téléphone *</label>
-                        <input type="tel" id="regPhone" placeholder="+33 6 12 34 56 78" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Événement *</label>
-                        <select id="regEvent" required>${eventOptions}</select>
-                    </div>
-                    <button onclick="registerUser()">✅ S'inscrire</button>
-                // Compter les inscriptions existantes pour cet événement
-onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
-  const data = snapshot.val();
-  const registrations = data ? Object.values(data).filter(r => r.event_id === eventId) : [];
-  const event = .find(e => e.id === eventId);
-  
-  if (registrations.length >= event.maxSeats) {
-    showMessage('❌ Événement complet!', 'error', 'regMessage');
-    return;
-  }
-  // ... continuer l'inscription
-}, {onlyOnce: true});
-                    <div id="regMessage"></div>
-                </div>
-            `;
-            const elem = document.getElementById("booking-section");
-            if (elem) elem.innerHTML = html;
-        }
-
-        function renderAdmin() {
-            const elem = document.getElementById("admin-content");
-            if (!adminLoggedIn) {
-                let html = `
-                    <div class="admin-login">
-                        <h3>Connexion Admin</h3>
-                        <div class="form-group">
-                            <label>Mot de passe</label>
-                            <input type="password" id="adminPassword" placeholder="Entrez le mot de passe" required>
+                    <p class="event-description">Venez discuter autour d'un bon café</p>
+                    
+                    <details>
+                        <summary>📝 S'inscrire</summary>
+                        <div class="form-content">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <label class="form-label" for="name1">Nom complet *</label>
+                                    <input type="text" id="name1" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone1">Téléphone *</label>
+                                    <input type="tel" id="phone1" class="form-control" placeholder="+33 6 12 34 56 78" required>
+                                </div>
+                                <button type="submit" class="btn btn-submit">Confirmer l'inscription</button>
+                            </form>
                         </div>
-                        <button onclick="loginAdmin()">🔑 Connexion</button>
-                        <div id="adminMsg"></div>
+                    </details>
+                </div>
+
+                <!-- Event 2 -->
+                <div class="event-card category-cafes">
+                    <div class="event-category">☕ Cafés Nat</div>
+                    <h3 class="event-title">Café Nat Après-midi</h3>
+                    <span class="status status-open">Places disponibles</span>
+                    <div class="event-meta">
+                        📅 22 novembre 2025 à 15:00<br>
+                        📍 Créteil, Salon de Thé<br>
+                        👥 15 places disponibles
                     </div>
-                `;
-                if (elem) elem.innerHTML = html;
-            } else {
-                let html = `
-                    <div class="form-section">
-                        <h3>Bienvenue Admin! 👋</h3>
-                        <button onclick="logoutAdmin()" style="background: #D4A574; margin-bottom: 20px;">🚪 Déconnexion</button>
+                    <p class="event-description">Rencontre conviviale</p>
+                    
+                    <details>
+                        <summary>📝 S'inscrire</summary>
+                        <div class="form-content">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <label class="form-label" for="name2">Nom complet *</label>
+                                    <input type="text" id="name2" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone2">Téléphone *</label>
+                                    <input type="tel" id="phone2" class="form-control" placeholder="+33 6 12 34 56 78" required>
+                                </div>
+                                <button type="submit" class="btn btn-submit">Confirmer l'inscription</button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Event 3 -->
+                <div class="event-card category-tables">
+                    <div class="event-category">🍽️ Tables d'hôtes</div>
+                    <h3 class="event-title">Table d'hôtes Gastronomique</h3>
+                    <span class="status status-limited">Places limitées</span>
+                    <div class="event-meta">
+                        📅 25 novembre 2025 à 19:30<br>
+                        📍 Restaurant L'Authentique<br>
+                        👥 12 places disponibles
+                    </div>
+                    <p class="event-description">Dîner convivial</p>
+                    
+                    <details>
+                        <summary>📝 S'inscrire</summary>
+                        <div class="form-content">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <label class="form-label" for="name3">Nom complet *</label>
+                                    <input type="text" id="name3" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone3">Téléphone *</label>
+                                    <input type="tel" id="phone3" class="form-control" placeholder="+33 6 12 34 56 78" required>
+                                </div>
+                                <button type="submit" class="btn btn-submit">Confirmer l'inscription</button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Event 4 -->
+                <div class="event-card category-tables">
+                    <div class="event-category">🍽️ Tables d'hôtes</div>
+                    <h3 class="event-title">Table d'hôtes Cuisine</h3>
+                    <span class="status status-limited">Places limitées</span>
+                    <div class="event-meta">
+                        📅 5 décembre 2025 à 19:00<br>
+                        📍 Maison d'Hôtes<br>
+                        👥 10 places disponibles
+                    </div>
+                    <p class="event-description">Saveurs françaises</p>
+                    
+                    <details>
+                        <summary>📝 S'inscrire</summary>
+                        <div class="form-content">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <label class="form-label" for="name4">Nom complet *</label>
+                                    <input type="text" id="name4" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone4">Téléphone *</label>
+                                    <input type="tel" id="phone4" class="form-control" placeholder="+33 6 12 34 56 78" required>
+                                </div>
+                                <button type="submit" class="btn btn-submit">Confirmer l'inscription</button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Event 5 -->
+                <div class="event-card category-apero">
+                    <div class="event-category">🍷 ApéroNus</div>
+                    <h3 class="event-title">ApéroNus Soirée</h3>
+                    <span class="status status-open">Places disponibles</span>
+                    <div class="event-meta">
+                        📅 23 novembre 2025 à 18:00<br>
+                        📍 Terrasse du Lac<br>
+                        👥 25 places disponibles
+                    </div>
+                    <p class="event-description">Apéritif convivial</p>
+                    
+                    <details>
+                        <summary>📝 S'inscrire</summary>
+                        <div class="form-content">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <label class="form-label" for="name5">Nom complet *</label>
+                                    <input type="text" id="name5" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone5">Téléphone *</label>
+                                    <input type="tel" id="phone5" class="form-control" placeholder="+33 6 12 34 56 78" required>
+                                </div>
+                                <button type="submit" class="btn btn-submit">Confirmer l'inscription</button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Event 6 -->
+                <div class="event-card category-apero">
+                    <div class="event-category">🍷 ApéroNus</div>
+                    <h3 class="event-title">ApéroNus Networking</h3>
+                    <span class="status status-open">Places disponibles</span>
+                    <div class="event-meta">
+                        📅 28 novembre 2025 à 17:30<br>
+                        📍 Lieu Atypique<br>
+                        👥 30 places disponibles
+                    </div>
+                    <p class="event-description">Rencontre décontractée</p>
+                    
+                    <details>
+                        <summary>📝 S'inscrire</summary>
+                        <div class="form-content">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <label class="form-label" for="name6">Nom complet *</label>
+                                    <input type="text" id="name6" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="phone6">Téléphone *</label>
+                                    <input type="tel" id="phone6" class="form-control" placeholder="+33 6 12 34 56 78" required>
+                                </div>
+                                <button type="submit" class="btn btn-submit">Confirmer l'inscription</button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
+            </div>
+
+            <!-- TAB 2: COMMENT RÉSERVER ? -->
+            <div id="content2" class="tab-content">
+                <h2 class="section-title">📋 Comment réserver ?</h2>
+                
+                <div class="info-section">
+                    <h3>Comment ça marche ?</h3>
+                    <p>Pour vous inscrire à un événement :</p>
+                    <ul>
+                        <li>Consultez le <strong>Calendrier</strong> pour voir tous les événements disponibles</li>
+                        <li>Cliquez sur <strong>"S'inscrire"</strong> sous l'événement de votre choix</li>
+                        <li>Remplissez le formulaire avec votre nom et téléphone</li>
+                        <li>Validez votre inscription</li>
+                    </ul>
+                    <p>Vous recevrez une confirmation par téléphone.</p>
+                </div>
+
+                <div class="contact-section">
+                    <h2>📞 Besoin d'aide ?</h2>
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-details">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-value"><a href="mailto:contact@evenementsnat.fr">contact@evenementsnat.fr</a></div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-details">
+                            <div class="contact-label">Téléphone</div>
+                            <div class="contact-value"><a href="tel:+33612345678">+33 6 12 34 56 78</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: INFORMATIONS UTILES -->
+            <div id="content3" class="tab-content">
+                <h2 class="section-title">ℹ️ Informations utiles</h2>
+                
+                <div class="contact-section">
+                    <h2>Contact &amp; Informations</h2>
+                    <div class="contact-item">
+                        <div class="contact-icon">🏢</div>
+                        <div class="contact-details">
+                            <div class="contact-label">Organisation</div>
+                            <div class="contact-value">Événements Nat</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📧</div>
+                        <div class="contact-details">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-value"><a href="mailto:contact@evenementsnat.fr">contact@evenementsnat.fr</a></div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📱</div>
+                        <div class="contact-details">
+                            <div class="contact-label">Téléphone</div>
+                            <div class="contact-value"><a href="tel:+33612345678">+33 6 12 34 56 78</a></div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">📍</div>
+                        <div class="contact-details">
+                            <div class="contact-label">Lieu</div>
+                            <div class="contact-value">Créteil, Île-de-France</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-icon">🌐</div>
+                        <div class="contact-details">
+                            <div class="contact-label">Site web</div>
+                            <div class="contact-value"><a href="https://www.evenementsnat.fr" target="_blank">www.evenementsnat.fr</a></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3>🎯 Nos catégories d'événements</h3>
+                    <p><strong>☕ Cafés Nat</strong> - Rencontres conviviales autour d'un café pour échanger et faire connaissance.</p>
+                    <p><strong>🍽️ Tables d'hôtes</strong> - Dîners gastronomiques dans une ambiance chaleureuse et authentique.</p>
+                    <p><strong>🍷 ApéroNus</strong> - Apéritifs networking pour se rencontrer dans une atmosphère décontractée.</p>
+                </div>
+
+                <div class="info-section">
+                    <h3>📋 Conditions d'inscription</h3>
+                    <ul>
+                        <li>Les inscriptions sont confirmées par ordre d'arrivée</li>
+                        <li>Un numéro de téléphone valide est requis pour la confirmation</li>
+                        <li>Les places sont limitées selon les événements</li>
+                        <li>Annulation possible jusqu'à 48h avant l'événement</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- TAB 4: ADMIN -->
+            <div id="content4" class="tab-content">
+                <h2 class="section-title">🔐 Panneau Administrateur</h2>
+                
+                <!-- ADMIN LOGIN FORM -->
+                <div class="admin-login-container">
+                    <div class="admin-login-card">
+                        <h3>🔑 Connexion Admin</h3>
+                        <p style="color: var(--color-text-secondary); margin-bottom: 20px; font-size: 14px;">Accès réservé aux administrateurs</p>
                         
-                        <h4 style="margin-top: 20px; color: #5C4A47;">Inscriptions en Temps Réel</h4>
-                        <div id="registrationsList" style="margin-top: 15px;"></div>
+                        <form action="#" method="post" onsubmit="return false;">
+                            <div class="form-group" style="text-align: left;">
+                                <label class="form-label" for="admin_password_input">Mot de passe</label>
+                                <input type="password" id="admin_password_input" class="form-control" placeholder="Entrez le mot de passe" required>
+                            </div>
+                            <label for="admin_loggedin" class="btn btn-submit" style="cursor: pointer; display: block;">
+                                Connexion
+                            </label>
+                        </form>
+                        
+
                     </div>
+                </div>
+                
+                <!-- ADMIN PANEL -->
+                <div class="admin-panel-container">
 
-                <h4>Créer un nouvel événement</h4>
-<div class="form-group"><label>Nom</label><input type="text" id="eventName"></div>
-<div class="form-group"><label>Catégorie</label>
-  <select id="eventCategory">
-    <option>Cafés Nat</option>
-    <option>Tables d'hôtes</option>
-    <option>ApéroNus</option>
-  </select>
-</div>
-<div class="form-group"><label>Date</label><input type="text" id="eventDate" placeholder="25 nov"></div>
-<div class="form-group"><label>Heure</label><input type="time" id="eventTime"></div>
-<div class="form-group"><label>Lieu</label><input type="text" id="eventLocation"></div>
-<div class="form-group"><label>Description</label><textarea id="eventDesc"></textarea></div>
-<div class="form-group"><label>Places disponibles</label><input type="number" id="eventSeats" value="10"></div>
-<button onclick="createNewEvent()">➕ Créer l'événement</button>
-                `;
-            window.createNewEvent = function() {
-  const newEvent = {
-    name: document.getElementById('eventName').value,
-    category: document.getElementById('eventCategory').value,
-    date: document.getElementById('eventDate').value,
-    time: document.getElementById('eventTime').value,
-    location: document.getElementById('eventLocation').value,
-    desc: document.getElementById('eventDesc').value,
-    maxSeats: parseInt(document.getElementById('eventSeats').value)
-  };
-  
-  push(ref(window.firebaseDb, 'events'), newEvent)
-    .then(() => alert('✅ Événement créé!'))
-    .catch(err => alert('❌ Erreur: ' + err.message));
-};
-                if (elem) elem.innerHTML = html;
-                loadRegistrations();
-            }
-        }
+                <!-- Admin Welcome & Logout -->
+                <div class="admin-welcome">
+                    <h3>👋 Bienvenue Admin</h3>
+                    <label for="admin_login" class="btn-logout">
+                        🚪 Déconnexion
+                    </label>
+                </div>
+                
+                <!-- Admin Statistics -->
+                <div class="admin-grid">
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-number">6</div>
+                        <div class="admin-stat-label">Événements totaux</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-number">15</div>
+                        <div class="admin-stat-label">Inscriptions totales</div>
+                    </div>
+                    <div class="admin-stat-card">
+                        <div class="admin-stat-number">4</div>
+                        <div class="admin-stat-label">Événements à venir</div>
+                    </div>
+                </div>
 
-        window.switchTab = function(e, tabName) {
-            if (e) e.preventDefault();
-            
-            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+                <!-- Create New Event -->
+                <div class="admin-section">
+                    <h3>➕ Créer un nouvel événement</h3>
+                    <details>
+                        <summary>📝 Formulaire de création</summary>
+                        <div class="form-content">
+                            <form action="#" method="post">
+                                <div class="form-group">
+                                    <label class="form-label" for="admin-event-name">Nom de l'événement *</label>
+                                    <input type="text" id="admin-event-name" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="admin-category">Catégorie *</label>
+                                    <select id="admin-category" class="form-control" required>
+                                        <option value="">Sélectionner une catégorie</option>
+                                        <option value="cafes">☕ Cafés Nat</option>
+                                        <option value="tables">🍽️ Tables d'hôtes</option>
+                                        <option value="apero">🍷 ApéroNus</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="admin-date">Date *</label>
+                                    <input type="date" id="admin-date" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="admin-time">Heure *</label>
+                                    <input type="time" id="admin-time" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="admin-location">Lieu *</label>
+                                    <input type="text" id="admin-location" class="form-control" placeholder="Ex: Créteil, Café du Centre" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="admin-max">Nombre maximum de participants</label>
+                                    <input type="number" id="admin-max" class="form-control" min="1" placeholder="Ex: 20">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="admin-description">Description</label>
+                                    <textarea id="admin-description" class="form-control" rows="3" placeholder="Description de l'événement"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-submit">Créer l'événement</button>
+                            </form>
+                        </div>
+                    </details>
+                </div>
 
-            const contentElem = document.getElementById(tabName);
-            if (contentElem) contentElem.classList.add('active');
+                <!-- View All Events -->
+                <div class="admin-section">
+                    <h3>📋 Tous les événements</h3>
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Événement</th>
+                                <th>Catégorie</th>
+                                <th>Date</th>
+                                <th>Inscriptions</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Café Nat Matin</strong></td>
+                                <td>☕ Cafés Nat</td>
+                                <td>20 nov 2025</td>
+                                <td>3 / 20</td>
+                                <td>
+                                    <details style="display: inline-block;">
+                                        <summary style="cursor: pointer; color: var(--color-primary); font-weight: 700; font-size: 12px; list-style: none;">👥 Voir | 🗑️ Suppr.</summary>
+                                        <div style="padding: 10px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 6px; margin-top: 8px; min-width: 200px;">
+                                            <p style="font-weight: 700; margin-bottom: 8px;">Participants:</p>
+                                            <p style="font-size: 13px; margin-bottom: 4px;">• Marie Dupont<br>+33 6 12 34 56 78</p>
+                                            <p style="font-size: 13px; margin-bottom: 4px;">• Jean Martin<br>+33 6 98 76 54 32</p>
+                                            <p style="font-size: 13px; margin-bottom: 4px;">• Sophie Bernard<br>+33 7 11 22 33 44</p>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Café Nat Après-midi</strong></td>
+                                <td>☕ Cafés Nat</td>
+                                <td>22 nov 2025</td>
+                                <td>2 / 15</td>
+                                <td>
+                                    <details style="display: inline-block;">
+                                        <summary style="cursor: pointer; color: var(--color-primary); font-weight: 700; font-size: 12px; list-style: none;">👥 Voir | 🗑️ Suppr.</summary>
+                                        <div style="padding: 10px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 6px; margin-top: 8px;">
+                                            <p style="font-weight: 700; margin-bottom: 8px;">Participants:</p>
+                                            <p style="font-size: 13px;">2 inscrits</p>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Table d'hôtes Gastronomique</strong></td>
+                                <td>🍽️ Tables d'hôtes</td>
+                                <td>25 nov 2025</td>
+                                <td>5 / 12</td>
+                                <td>
+                                    <details style="display: inline-block;">
+                                        <summary style="cursor: pointer; color: var(--color-primary); font-weight: 700; font-size: 12px; list-style: none;">👥 Voir | 🗑️ Suppr.</summary>
+                                        <div style="padding: 10px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 6px; margin-top: 8px;">
+                                            <p style="font-weight: 700; margin-bottom: 8px;">Participants:</p>
+                                            <p style="font-size: 13px; margin-bottom: 4px;">• Pierre Durand<br>+33 6 45 67 89 01</p>
+                                            <p style="font-size: 13px;">+ 4 autres</p>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Table d'hôtes Cuisine</strong></td>
+                                <td>🍽️ Tables d'hôtes</td>
+                                <td>5 déc 2025</td>
+                                <td>1 / 10</td>
+                                <td>
+                                    <details style="display: inline-block;">
+                                        <summary style="cursor: pointer; color: var(--color-primary); font-weight: 700; font-size: 12px; list-style: none;">👥 Voir | 🗑️ Suppr.</summary>
+                                        <div style="padding: 10px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 6px; margin-top: 8px;">
+                                            <p style="font-weight: 700; margin-bottom: 8px;">Participants:</p>
+                                            <p style="font-size: 13px;">1 inscrit</p>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>ApéroNus Soirée</strong></td>
+                                <td>🍷 ApéroNus</td>
+                                <td>23 nov 2025</td>
+                                <td>4 / 25</td>
+                                <td>
+                                    <details style="display: inline-block;">
+                                        <summary style="cursor: pointer; color: var(--color-primary); font-weight: 700; font-size: 12px; list-style: none;">👥 Voir | 🗑️ Suppr.</summary>
+                                        <div style="padding: 10px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 6px; margin-top: 8px;">
+                                            <p style="font-weight: 700; margin-bottom: 8px;">Participants:</p>
+                                            <p style="font-size: 13px;">4 inscrits</p>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>ApéroNus Networking</strong></td>
+                                <td>🍷 ApéroNus</td>
+                                <td>28 nov 2025</td>
+                                <td>0 / 30</td>
+                                <td>
+                                    <details style="display: inline-block;">
+                                        <summary style="cursor: pointer; color: var(--color-primary); font-weight: 700; font-size: 12px; list-style: none;">👥 Voir | 🗑️ Suppr.</summary>
+                                        <div style="padding: 10px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: 6px; margin-top: 8px;">
+                                            <p style="font-weight: 700; margin-bottom: 8px;">Participants:</p>
+                                            <p style="font-size: 13px;">Aucun inscrit</p>
+                                        </div>
+                                    </details>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-            const index = { 'calendrier': 0, 'reserver': 1, 'infos': 2, 'admin': 3 }[tabName] || 0;
-            document.querySelectorAll('.tab-btn')[index]?.classList.add('active');
-            document.querySelectorAll('.nav-btn')[index]?.classList.add('active');
+                <!-- View Registrations Summary -->
+                <div class="admin-section">
+                    <h3>📊 Résumé des inscriptions</h3>
+                    <div class="info-section">
+                        <p><strong>Total des inscriptions:</strong> 15 personnes</p>
+                        <p><strong>Événements les plus populaires:</strong></p>
+                        <ul>
+                            <li>Table d'hôtes Gastronomique - 5 inscriptions</li>
+                            <li>ApéroNus Soirée - 4 inscriptions</li>
+                            <li>Café Nat Matin - 3 inscriptions</li>
+                        </ul>
+                        <p><strong>Catégories:</strong></p>
+                        <ul>
+                            <li>☕ Cafés Nat: 5 inscriptions</li>
+                            <li>🍽️ Tables d'hôtes: 6 inscriptions</li>
+                            <li>🍷 ApéroNus: 4 inscriptions</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                </div><!-- Close admin-panel-container -->
+            </div>
+        </main>
+    </div>
 
-            if (tabName === 'calendrier') renderEvents('calendar-events');
-            else if (tabName === 'reserver') renderBooking();
-            else if (tabName === 'admin') renderAdmin();
-        };
-
-        window.registerUser = function() {
-            const name = document.getElementById('regName')?.value?.trim();
-            const phone = document.getElementById('regPhone')?.value?.trim();
-            const eventId = document.getElementById('regEvent')?.value;
-
-            if (!name || !phone || !eventId) {
-                showMessage('Veuillez remplir tous les champs', 'error', 'regMessage');
-                return;
-            }
-
-            if (phone.length < 10) {
-                showMessage('Numéro de téléphone invalide', 'error', 'regMessage');
-                return;
-            }
-
-            if (!window.firebaseDb) {
-                showMessage('❌ Firebase non configuré', 'error', 'regMessage');
-                return;
-            }
-
-            push(ref(window.firebaseDb, 'registrations'), {
-                name: name,
-                phone: phone,
-                event_id: eventId,
-                timestamp: new Date().getTime()
-            }).then(() => {
-                showMessage('✅ Inscription confirmée!', 'success', 'regMessage');
-                document.getElementById('regName').value = '';
-                document.getElementById('regPhone').value = '';
-                document.getElementById('regEvent').value = '';
-            }).catch((error) => {
-                showMessage('❌ Erreur: ' + error.message, 'error', 'regMessage');
-                console.error(error);
-            });
-        };
-
-        window.loginAdmin = function() {
-            const password = document.getElementById('adminPassword')?.value;
-            if (password === ADMIN_PASSWORD) {
-                adminLoggedIn = true;
-                renderAdmin();
-            } else {
-                showMessage('❌ Mot de passe incorrect', 'error', 'adminMsg');
-            }
-        };
-
-        window.logoutAdmin = function() {
-            adminLoggedIn = false;
-            renderAdmin();
-        };
-
-        function loadRegistrations() {
-            if (!window.firebaseDb) {
-                const elem = document.getElementById('registrationsList');
-                if (elem) elem.innerHTML = '<p style="color: red;">Firebase non configuré</p>';
-                return;
-            }
-
-            onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
-                let html = '<ul style="list-style: none; padding: 0;">';
-                const data = snapshot.val();
-                if (data) {
-                    Object.values(data).forEach(reg => {
-                        const eventName = .find(e => e.id === reg.event_id)?.name || "Événement";
-                        html += `<li style="padding: 12px; border-bottom: 1px solid #EEE; background: #FAFAF8;"><strong>${reg.name}</strong><br><small>${reg.phone} • ${eventName}</small></li>`;
-                    });
-                } else {
-                    html += '<li style="padding: 12px; text-align: center; color: #999;">Aucune inscription</li>';
-                }
-                html += '</ul>';
-                const elem = document.getElementById('registrationsList');
-                if (elem) elem.innerHTML = html;
-            });
-        }
-
-        function showMessage(msg, type, elementId) {
-            const elem = document.getElementById(elementId);
-            if (elem) {
-                elem.innerHTML = `<div class="${type}-msg">${msg}</div>`;
-                setTimeout(() => {
-                    elem.innerHTML = '';
-                }, 4000);
-            }
-        }
-
-        // Initialize on load
-        window.addEventListener('load', () => {
-            renderEvents('calendar-events');
-            renderBooking();
-        });
-    </script>
+    <!-- BOTTOM NAVIGATION LABELS -->
+    <nav class="bottom-nav">
+        <label for="tab1" class="nav-label">
+            <span class="nav-icon">📅</span>
+            <span>Calendrier</span>
+        </label>
+        <label for="tab2" class="nav-label">
+            <span class="nav-icon">📋</span>
+            <span>Comment réserver ?</span>
+        </label>
+        <label for="tab3" class="nav-label">
+            <span class="nav-icon">ℹ️</span>
+            <span>Informations utiles</span>
+        </label>
+        <label for="tab4" class="nav-label">
+            <span class="nav-icon">🔐</span>
+            <span>Admin</span>
+        </label>
+    </nav>
 </body>
 </html>
