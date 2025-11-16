@@ -397,8 +397,29 @@
         }
 
         function renderEvents(containerId) {
+        if (!window.firebaseDb) {
+            const elem = document.getElementById(containerId);
+            if (elem) elem.innerHTML = '<p style="color: red; padding: 20px;">Firebase non configuré</p>';
+            return;
+        }
+        
+        // Charger les inscriptions pour calculer les places restantes
+        onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
+            const registrations = snapshot.val() || {};
+            
+            // Compter les inscriptions par événement
+            const registrationCounts = {};
+            Object.values(registrations).forEach(reg => {
+                const eventId = reg.event_id;
+                registrationCounts[eventId] = (registrationCounts[eventId] || 0) + 1;
+            });
+            
+            // Générer le HTML avec les places restantes
             let html = "";
             sampleEvents.forEach(event => {
+                const registered = registrationCounts[event.id] || 0;
+                const remainingSeats = event.maxSeats - registered;
+                
                 html += `
                     <div class="event-card">
                         <span class="category-badge ${getCategoryClass(event.category)}">${event.category}</span>
@@ -406,14 +427,16 @@
                         <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
                         <div class="event-info"><strong>⏰ Heure:</strong> ${event.time}</div>
                         <div class="event-info"><strong>📍 Lieu:</strong> ${event.location}</div>
-                                        <div class="event-info"><strong>🎫 Places restantes:</strong> ${remainingSeats}/${event.maxSeats}</div>
+                        <div class="event-info"><strong>🎫 Places restantes:</strong> ${remainingSeats}/${event.maxSeats}</div>
                         <p style="color: #7D6B68; margin-top: 10px;">${event.desc}</p>
                     </div>
                 `;
             });
+            
             const elem = document.getElementById(containerId);
             if (elem) elem.innerHTML = html;
-        }
+        }, { onlyOnce: false }); // onlyOnce:false pour écouter en temps réel
+    }
 
         function renderBooking() {
             let eventOptions = '<option value="">Sélectionnez un événement</option>';
@@ -441,7 +464,7 @@
 onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
   const data = snapshot.val();
   const registrations = data ? Object.values(data).filter(r => r.event_id === eventId) : [];
-  const event = window.eventsData.find(e => e.id === eventId);
+  const event = sampleEvents.find(e => e.id === eventId);
   
   if (registrations.length >= event.maxSeats) {
     showMessage('❌ Événement complet!', 'error', 'regMessage');
