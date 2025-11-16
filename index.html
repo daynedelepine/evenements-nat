@@ -461,7 +461,7 @@
             
             // Générer le HTML avec les places restantes
             let html = "";
-            .forEach(event => {
+(window.eventsData || [])            .forEach(event => {
                 const registered = registrationCounts[event.id] || 0;
                 const remainingSeats = event.maxSeats - registered;
                 
