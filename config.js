@@ -9,5 +9,4 @@ const firebaseConfig = {
   appId: "1:283381369320:web:c106273508efef48503c5d"
 };
 
-// Admin Password (à hacher en production)
 const ADMIN_PASSWORD = "admin123";
