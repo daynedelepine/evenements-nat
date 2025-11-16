@@ -493,14 +493,19 @@
 
         // ===== FIREBASE CONFIGURATION =====
         const firebaseConfig = {
-            apiKey: "REPLACE_WITH_YOUR_API_KEY",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "your-id",
-            appId: "your-app-id"
+            apiKey: "AIzaSyCV4Zx7vfR0Et4uDWlYsmPxUptQnRMPCes",
+            authDomain: "evenements-nat.firebaseapp.com",
+            projectId: "evenements-nat",
+            storageBucket: "evenements-nat.firebasestorage.app",
+            messagingSenderId: "283381369320",
+            appId: "1:283381369320:web:c106273508efef48503c5d"
+            measurementId: "G-K8V46GMK0L"
         };
 
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        
         let db = null;
         try {
             const app = initializeApp(firebaseConfig);
