@@ -383,13 +383,12 @@
 
         // Sample events
         const sampleEvents = [
-            { id: "1", name: "Café Nat Matin", category: "Cafés Nat", date: "20 nov", time: "10:00", location: "Créteil, Café du Centre", desc: "Venez discuter autour d'un bon café" },
-            { id: "2", name: "Café Nat Après-midi", category: "Cafés Nat", date: "22 nov", time: "15:00", location: "Créteil, Salon de Thé", desc: "Rencontre conviviale" },
-            { id: "3", name: "Table d'hôtes Gastronomique", category: "Tables d'hôtes", date: "25 nov", time: "19:30", location: "Restaurant L'Authentique", desc: "Dîner convivial" },
-            { id: "4", name: "Table d'hôtes Cuisine", category: "Tables d'hôtes", date: "5 déc", time: "19:00", location: "Maison d'Hôtes", desc: "Saveurs françaises" },
-            { id: "5", name: "ApéroNus Soirée", category: "ApéroNus", date: "23 nov", time: "18:00", location: "Terrasse du Lac", desc: "Apéritif convivial" },
-            { id: "6", name: "ApéroNus Networking", category: "ApéroNus", date: "28 nov", time: "17:30", location: "Lieu Atypique", desc: "Rencontre décontractée" }
-        ];
+        { id: "1", name: "Café Nat Matin", category: "Cafés Nat", date: "20 nov", time: "10:00", location: "Créteil, Café du Centre", desc: "Venez discuter autour d'un bon café", maxSeats: 8 },
+        { id: "2", name: "Café Nat Après-midi", category: "Cafés Nat", date: "22 nov", time: "15:00", location: "Créteil, Salon de Thé", desc: "Rencontre conviviale", maxSeats: 10 },
+        { id: "3", name: "Table d'hôtes Gastronomique", category: "Tables d'hôtes", date: "25 nov", time: "19:30", location: "Restaurant L'Authentique", desc: "Dîner convivial", maxSeats: 12 },
+        { id: "4", name: "Table d'hôtes Cuisine", category: "Tables d'hôtes", date: "5 déc", time: "19:00", location: "Maison d'Hôtes", desc: "Saveurs françaises", maxSeats: 8 },
+        { id: "5", name: "ApéroNus Soirée", category: "ApéroNus", date: "23 nov", time: "18:00", location: "Terrasse du Lac", desc: "Apéritif convivial", maxSeats: 15 },
+        { id: "6", name: "ApéroNus Networking", category: "ApéroNus", date: "28 nov", time: "17:30", location: "Lieu Atypique", desc: "Rencontre décontractée", maxSeats: 20 }        ];
 
         function getCategoryClass(category) {
             if (category.includes("Cafés")) return "category-cafes";
@@ -407,6 +406,7 @@
                         <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
                         <div class="event-info"><strong>⏰ Heure:</strong> ${event.time}</div>
                         <div class="event-info"><strong>📍 Lieu:</strong> ${event.location}</div>
+                                        <div class="event-info"><strong>🎫 Places:</strong> ${event.maxSeats}</div>
                         <p style="color: #7D6B68; margin-top: 10px;">${event.desc}</p>
                     </div>
                 `;
