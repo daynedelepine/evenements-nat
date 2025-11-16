@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evénements Nat</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <h1>Evénements Nat</h1>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="calendrier">
+        <span class="tab-icon">📅</span>
+        <span>Calendrier</span>
+      </button>
+      <button class="tab-btn" data-tab="reserver">
+        <span class="tab-icon">✓</span>
+        <span>Réserver</span>
+      </button>
+      <button class="tab-btn" data-tab="infos">
+        <span class="tab-icon">ℹ️</span>
+        <span>Infos</span>
+      </button>
+      <button class="tab-btn" data-tab="admin">
+        <span class="tab-icon">⚙️</span>
+        <span>Admin</span>
+      </button>
+    </nav>
+
+    <!-- Tab Content -->
+    <main class="tab-content">
+      <!-- Calendrier Tab -->
+      <section id="calendrier-tab" class="tab-pane active">
+        <div class="container">
+          <h2>Événements à venir</h2>
+          <div id="events-list" class="events-list">
+            <div class="loading">Chargement des événements...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Réserver Tab -->
+      <section id="reserver-tab" class="tab-pane">
+        <div class="container">
+          <h2>Réserver un événement</h2>
+          <div id="booking-events-list" class="booking-events-list">
+            <div class="loading">Chargement des événements...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Informations utiles Tab -->
+      <section id="infos-tab" class="tab-pane">
+        <div class="container">
+          <h2>Informations utiles</h2>
+          <div class="info-card">
+            <h3>Contact</h3>
+            <div class="contact-item">
+              <span class="contact-icon">📱</span>
+              <span>Téléphone : <a href="tel:+33600000000">06 00 00 00 00</a></span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">💬</span>
+              <span>WhatsApp : <a href="https://wa.me/33600000000" target="_blank">Contacter sur WhatsApp</a></span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-icon">✈️</span>
+              <span>Telegram : <a href="https://t.me/evenementsnat" target="_blank">@evenementsnat</a></span>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <h3>Consignes</h3>
+            <ul>
+              <li>Les événements sont organisés 3 fois par mois</li>
+              <li>Merci de confirmer votre présence après inscription</li>
+              <li>En cas d'empêchement, pensez à vous désinscrire</li>
+              <li>Le respect et la discrétion sont de mise</li>
+            </ul>
+          </div>
+
+          <div class="info-card">
+            <h3>Confidentialité</h3>
+            <p>Vos données personnelles (nom et numéro de téléphone) ne sont utilisées que pour la gestion des inscriptions et ne sont jamais partagées avec des tiers.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Admin Tab -->
+      <section id="admin-tab" class="tab-pane">
+        <div class="container">
+          <!-- Login Form -->
+          <div id="admin-login" class="admin-login">
+            <h2>Administration</h2>
+            <form id="admin-login-form" class="form-card">
+              <div class="form-group">
+                <label class="form-label" for="admin-password">Mot de passe</label>
+                <input type="password" id="admin-password" class="form-control" required>
+              </div>
+              <button type="submit" class="btn btn--primary btn--full-width">Se connecter</button>
+              <div id="admin-error" class="error-message" style="display: none;"></div>
+            </form>
+          </div>
+
+          <!-- Admin Panel -->
+          <div id="admin-panel" class="admin-panel" style="display: none;">
+            <div class="admin-header">
+              <h2>Panneau d'administration</h2>
+              <button id="admin-logout" class="btn btn--secondary btn--sm">Déconnexion</button>
+            </div>
+
+            <!-- Create Event Form -->
+            <div class="admin-section">
+              <h3>Créer un événement</h3>
+              <form id="create-event-form" class="form-card">
+                <div class="form-group">
+                  <label class="form-label" for="event-name">Nom de l'événement</label>
+                  <input type="text" id="event-name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="event-category">Catégorie</label>
+                  <select id="event-category" class="form-control" required>
+                    <option value="">Sélectionner une catégorie</option>
+                    <option value="Cafés Nat">Cafés Nat</option>
+                    <option value="Tables d'hôtes">Tables d'hôtes</option>
+                    <option value="ApéroNus">ApéroNus</option>
+                  </select>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="event-date">Date</label>
+                    <input type="date" id="event-date" class="form-control" required>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="event-time">Heure</label>
+                    <input type="time" id="event-time" class="form-control" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="event-location">Lieu</label>
+                  <input type="text" id="event-location" class="form-control" required>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="event-description">Description</label>
+                  <textarea id="event-description" class="form-control" rows="3"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="event-max-participants">Nombre maximum de participants</label>
+                  <input type="number" id="event-max-participants" class="form-control" min="1" required>
+                </div>
+                <button type="submit" class="btn btn--primary btn--full-width">Créer l'événement</button>
+              </form>
+            </div>
+
+            <!-- Events Management -->
+            <div class="admin-section">
+              <h3>Tous les événements</h3>
+              <div id="admin-events-list" class="admin-events-list">
+                <div class="loading">Chargement...</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Booking Modal -->
+  <div id="booking-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-event-title">Réserver</h3>
+        <button class="modal-close" id="close-booking-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="modal-event-details"></div>
+        <form id="booking-form" class="booking-form">
+          <div class="form-group">
+            <label class="form-label" for="booking-name">Votre nom</label>
+            <input type="text" id="booking-name" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="booking-phone">Numéro de téléphone</label>
+            <input type="tel" id="booking-phone" class="form-control" placeholder="06 12 34 56 78" required>
+          </div>
+          <div id="booking-error" class="error-message" style="display: none;"></div>
+          <div id="booking-success" class="success-message" style="display: none;"></div>
+          <button type="submit" class="btn btn--primary btn--full-width">Confirmer l'inscription</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Details Modal -->
+  <div id="event-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="event-modal-title">Détails de l'événement</h3>
+        <button class="modal-close" id="close-event-modal">&times;</button>
+      </div>
+      <div class="modal-body" id="event-modal-body">
+        <!-- Event details will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Participants Modal -->
+  <div id="participants-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="participants-modal-title">Participants inscrits</h3>
+        <button class="modal-close" id="close-participants-modal">&times;</button>
+      </div>
+      <div class="modal-body" id="participants-modal-body">
+        <!-- Participants list will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
