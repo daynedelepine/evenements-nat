@@ -360,14 +360,13 @@
 
         // Firebase config - REPLACE WITH YOUR VALUES
         const firebaseConfig = {
-            apiKey: "REPLACE_WITH_YOUR_API_KEY",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "your-messaging-sender-id",
-            appId: "your-app-id"
+            apiKey: "AIzaSyQA2v2vfR8Ft4u8HIYxmPAuptuQnRSPGe+",
+            authDomain: "evenements-nat.firebaseapp.com",
+            projectId: "evenements-nat",
+            storageBucket: "evenements-nat.firebasestorage.app",
+            messagingSenderId: "283381369320",
+            appId: "1:283381369320:web:c10b27350edefe48583c5d"
         };
-
         // Initialize Firebase
         try {
             const app = initializeApp(firebaseConfig);
@@ -375,8 +374,7 @@
             window.firebaseDb = db;
         } catch (error) {
             console.error("Firebase initialization error:", error);
-            alert("⚠️ Erreur Firebase. Vérifiez votre config.js");
-        }
+        alert("⚠️ Erreur de connexion Firebase. Vérifiez votre connexion internet.");        }
 
         const ADMIN_PASSWORD = "admin123";
         let adminLoggedIn = false;
