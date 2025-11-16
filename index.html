@@ -362,6 +362,7 @@
         const firebaseConfig = {
             apiKey: "AIzaSyQA2v2vfR8Ft4u8HIYxmPAuptuQnRSPGe+",
             authDomain: "evenements-nat.firebaseapp.com",
+                        databaseURL: "https://evenements-nat-default-rtdb.europe-west1.firebasedatabase.app",
             projectId: "evenements-nat",
             storageBucket: "evenements-nat.firebasestorage.app",
             messagingSenderId: "283381369320",
@@ -414,7 +415,7 @@
             
             // Générer le HTML avec les places restantes
             let html = "";
-            sampleEvents.forEach(event => {
+            .forEach(event => {
                 const registered = registrationCounts[event.id] || 0;
                 const remainingSeats = event.maxSeats - registered;
                 
@@ -438,7 +439,7 @@
 
         function renderBooking() {
             let eventOptions = '<option value="">Sélectionnez un événement</option>';
-            sampleEvents.forEach(event => {
+            (window.eventsData || []).forEach(event => {
                 eventOptions += `<option value="${event.id}">${event.name} (${event.date})</option>`;
             });
 
@@ -462,7 +463,7 @@
 onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
   const data = snapshot.val();
   const registrations = data ? Object.values(data).filter(r => r.event_id === eventId) : [];
-  const event = sampleEvents.find(e => e.id === eventId);
+  const event = .find(e => e.id === eventId);
   
   if (registrations.length >= event.maxSeats) {
     showMessage('❌ Événement complet!', 'error', 'regMessage');
@@ -516,9 +517,9 @@ onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
 <div class="form-group"><label>Lieu</label><input type="text" id="eventLocation"></div>
 <div class="form-group"><label>Description</label><textarea id="eventDesc"></textarea></div>
 <div class="form-group"><label>Places disponibles</label><input type="number" id="eventSeats" value="10"></div>
-<button onclick="createEvent()">➕ Créer l'événement</button>
+<button onclick="createNewEvent()">➕ Créer l'événement</button>
                 `;
-            window.createEvent = function() {
+            window.createNewEvent = function() {
   const newEvent = {
     name: document.getElementById('eventName').value,
     category: document.getElementById('eventCategory').value,
@@ -620,7 +621,7 @@ onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
                 const data = snapshot.val();
                 if (data) {
                     Object.values(data).forEach(reg => {
-                        const eventName = sampleEvents.find(e => e.id === reg.event_id)?.name || "Événement";
+                        const eventName = .find(e => e.id === reg.event_id)?.name || "Événement";
                         html += `<li style="padding: 12px; border-bottom: 1px solid #EEE; background: #FAFAF8;"><strong>${reg.name}</strong><br><small>${reg.phone} • ${eventName}</small></li>`;
                     });
                 } else {
