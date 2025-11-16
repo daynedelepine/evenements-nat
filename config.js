@@ -1,3 +1,4 @@
+// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyCV4Zx7vfR0Et4uDWlYsmPxUptQnRMPCes",
   authDomain: "evenements-nat.firebaseapp.com",
@@ -8,4 +9,5 @@ const firebaseConfig = {
   appId: "1:283381369320:web:c106273508efef48503c5d"
 };
 
+// Admin Password (à hacher en production)
 const ADMIN_PASSWORD = "admin123";
