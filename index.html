@@ -20,7 +20,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -36,13 +36,13 @@
             margin-bottom: 10px;
         }
 
-        /* Tab Navigation */
-        .tab-nav {
+        /* Tabs Navigation */
+        .tabs-container {
             display: flex;
             justify-content: center;
             gap: 10px;
-            flex-wrap: wrap;
             margin: 30px 0;
+            flex-wrap: wrap;
         }
 
         .tab-btn {
@@ -52,16 +52,16 @@
             background: rgba(255, 255, 255, 0.7);
             color: #5C4A47;
             cursor: pointer;
-            font-weight: 600;
             font-size: 14px;
+            font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .tab-btn:hover {
             background: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
-            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
         }
 
         .tab-btn.active {
@@ -70,96 +70,91 @@
             box-shadow: 0 4px 15px rgba(212, 181, 160, 0.4);
         }
 
-        /* Tab Content */
-        .tab-content {
+        /* Content Sections */
+        .content {
             display: none;
-        }
-
-        .tab-content.active {
-            display: block;
             animation: fadeIn 0.3s ease;
         }
 
+        .content.active {
+            display: block;
+        }
+
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* Cards */
-        .card {
+        .event-card {
             background: white;
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s;
         }
 
-        .card:hover {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+        .event-card:hover {
             transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
         }
 
-        .card h3 {
+        .event-card h3 {
+            margin: 0 0 10px 0;
             color: #5C4A47;
-            margin-bottom: 10px;
         }
 
-        .badge {
+        .category-badge {
             display: inline-block;
             padding: 5px 12px;
             border-radius: 20px;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: 600;
             color: white;
             margin-bottom: 10px;
         }
 
-        .badge.cafes { background: #D4B5A0; }
-        .badge.tables { background: #C5D5B8; }
-        .badge.apero { background: #FABE89; }
+        .category-cafes { background: #D4B5A0; }
+        .category-tables { background: #C5D5B8; }
+        .category-apero { background: #FABE89; }
 
-        .info-text {
-            font-size: 13px;
+        .event-info {
+            font-size: 14px;
             color: #7D6B68;
-            margin: 6px 0;
+            margin: 8px 0;
+        }
+
+        .event-info strong {
+            color: #5C4A47;
         }
 
         /* Forms */
-        .form-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            max-width: 450px;
-            margin: 20px auto;
-        }
-
         .form-group {
             margin-bottom: 15px;
         }
 
         label {
             display: block;
+            margin-bottom: 5px;
             font-weight: 600;
             color: #5C4A47;
-            margin-bottom: 5px;
-            font-size: 14px;
         }
 
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #E8DDD5;
-            border-radius: 8px;
+            border-radius: 10px;
             font-family: inherit;
             font-size: 14px;
             transition: border-color 0.3s;
         }
 
-        input:focus, select:focus {
+        input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #D4B5A0;
-            background: white;
+            box-shadow: 0 0 0 3px rgba(212, 181, 160, 0.1);
         }
 
         button {
@@ -167,16 +162,17 @@
             color: white;
             padding: 12px 24px;
             border: none;
-            border-radius: 8px;
-            font-weight: 600;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            width: 100%;
+            box-shadow: 0 2px 8px rgba(212, 181, 160, 0.2);
         }
 
         button:hover {
             background: #C5A892;
+            box-shadow: 0 4px 12px rgba(212, 181, 160, 0.4);
             transform: translateY(-1px);
         }
 
@@ -184,97 +180,58 @@
             transform: translateY(0);
         }
 
-        /* Contact */
-        .contact-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
+        /* Contact Info */
         .contact-card {
             background: white;
             border-radius: 15px;
             padding: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
         }
 
         .contact-card h4 {
             color: #D4B5A0;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
+            font-size: 16px;
         }
 
         .contact-card p {
             color: #7D6B68;
-            font-size: 14px;
             margin: 5px 0;
+            line-height: 1.6;
         }
 
         /* Messages */
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 12px;
+        .success-msg, .error-msg {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
             font-weight: 600;
-            font-size: 13px;
-            animation: slideIn 0.3s ease;
+            animation: slideDown 0.3s ease;
         }
 
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes slideDown {
+            from { 
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .msg-success {
+        .success-msg {
             background: #D5E8D5;
             color: #2D5016;
         }
 
-        .msg-error {
+        .error-msg {
             background: #FFE0E0;
             color: #8B3C3C;
         }
 
-        /* Admin */
-        .admin-login {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            max-width: 350px;
-            margin: 30px auto;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .admin-panel {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-        }
-
-        .registrations-list {
-            list-style: none;
-            padding: 0;
-            margin-top: 15px;
-        }
-
-        .registrations-list li {
-            padding: 12px;
-            border-bottom: 1px solid #E8DDD5;
-            background: #FAFAF8;
-            font-size: 13px;
-        }
-
-        .registrations-list li strong {
-            display: block;
-            color: #5C4A47;
-        }
-
-        .registrations-list li small {
-            color: #7D6B68;
-        }
-
-        /* Bottom Nav */
+        /* Bottom Navigation */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -284,7 +241,7 @@
             border-top: 2px solid #E8DDD5;
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
+            padding: 8px 0;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
             z-index: 100;
         }
@@ -294,26 +251,46 @@
             background: transparent;
             color: #7D6B68;
             border: none;
-            padding: 10px;
+            padding: 10px 5px;
             font-size: 11px;
-            width: auto;
             border-radius: 0;
+            box-shadow: none;
             cursor: pointer;
+            transition: all 0.2s;
         }
 
         .bottom-nav button:hover {
             background: rgba(212, 181, 160, 0.05);
+            transform: none;
+            box-shadow: none;
         }
 
         .bottom-nav button.active {
             color: #D4B5A0;
             border-top: 3px solid #D4B5A0;
+            padding-top: 7px;
+        }
+
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .admin-login {
+            background: white;
+            padding: 30px 20px;
+            border-radius: 15px;
+            max-width: 400px;
+            margin: 30px auto;
         }
 
         @media (max-width: 600px) {
             h1 { font-size: 24px; }
-            .tab-nav { gap: 5px; }
+            .tabs-container { gap: 5px; }
             .tab-btn { padding: 10px 16px; font-size: 12px; }
+            .bottom-nav button { font-size: 10px; }
         }
     </style>
 </head>
@@ -323,253 +300,289 @@
             <h1>🎉 Événements Nat</h1>
         </header>
 
-        <!-- Navigation -->
-        <div class="tab-nav">
-            <button class="tab-btn active" onclick="showTab('calendrier')">📅 Calendrier</button>
-            <button class="tab-btn" onclick="showTab('reserver')">📝 Réserver</button>
-            <button class="tab-btn" onclick="showTab('infos')">ℹ️ Infos utiles</button>
-            <button class="tab-btn" onclick="showTab('admin')">🔐 Admin</button>
+        <!-- Main Tabs -->
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab(event, 'calendrier')">📅 Calendrier</button>
+            <button class="tab-btn" onclick="switchTab(event, 'reserver')">📝 Réserver</button>
+            <button class="tab-btn" onclick="switchTab(event, 'infos')">ℹ️ Infos utiles</button>
+            <button class="tab-btn" onclick="switchTab(event, 'admin')">🔐 Admin</button>
         </div>
 
-        <!-- Calendrier -->
-        <div id="calendrier" class="tab-content active">
-            <h2 style="text-align: center; margin-bottom: 20px; color: #5C4A47;">📅 Calendrier</h2>
-            <div id="calendar-list"></div>
+        <!-- CALENDRIER TAB -->
+        <div id="calendrier" class="content active">
+            <h2 style="margin-bottom: 20px; text-align: center;">📅 Calendrier des Événements</h2>
+            <div id="calendar-events"></div>
         </div>
 
-        <!-- Réserver -->
-        <div id="reserver" class="tab-content">
-            <h2 style="text-align: center; margin-bottom: 20px; color: #5C4A47;">📝 Réserver</h2>
-            <div id="events-list"></div>
-            <div class="form-card">
-                <h3>Formulaire d'Inscription</h3>
-                <div class="form-group">
-                    <label>Nom complet *</label>
-                    <input type="text" id="regName" placeholder="Votre nom">
-                </div>
-                <div class="form-group">
-                    <label>Téléphone *</label>
-                    <input type="tel" id="regPhone" placeholder="+33 6 12 34 56 78">
-                </div>
-                <div class="form-group">
-                    <label>Événement *</label>
-                    <select id="regEvent"></select>
-                </div>
-                <button onclick="registerUser()">✅ S'inscrire</button>
-                <div id="regMsg"></div>
+        <!-- RESERVER TAB -->
+        <div id="reserver" class="content">
+            <h2 style="margin-bottom: 20px; text-align: center;">📝 Réserver</h2>
+            <div id="booking-section"></div>
+        </div>
+
+        <!-- INFOS UTILES TAB -->
+        <div id="infos" class="content">
+            <h2 style="margin-bottom: 20px; text-align: center;">ℹ️ Informations Utiles</h2>
+            <div class="contact-card">
+                <h4>📱 Téléphone</h4>
+                <p>+33 6 12 34 56 78</p>
+            </div>
+            <div class="contact-card">
+                <h4>📧 Email</h4>
+                <p>dayanjmd@hotmail.fr</p>
+            </div>
+            <div class="contact-card">
+                <h4>📍 Localisation</h4>
+                <p>Créteil, Île-de-France</p>
+                <p>Métro 8 - Créteil Préfecture</p>
             </div>
         </div>
 
-        <!-- Infos -->
-        <div id="infos" class="tab-content">
-            <h2 style="text-align: center; margin-bottom: 20px; color: #5C4A47;">ℹ️ Infos utiles</h2>
-            <div class="contact-grid">
-                <div class="contact-card">
-                    <h4>📱 Téléphone</h4>
-                    <p>+33 6 12 34 56 78</p>
-                </div>
-                <div class="contact-card">
-                    <h4>📧 Email</h4>
-                    <p>dayanjmd@hotmail.fr</p>
-                </div>
-                <div class="contact-card">
-                    <h4>📍 Localisation</h4>
-                    <p>Créteil, Île-de-France<br>Métro 8 - Créteil Préfecture</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Admin -->
-        <div id="admin" class="tab-content">
-            <h2 style="text-align: center; margin-bottom: 20px; color: #5C4A47;">🔐 Admin</h2>
+        <!-- ADMIN TAB -->
+        <div id="admin" class="content">
+            <h2 style="margin-bottom: 20px; text-align: center;">🔐 Panneau Administrateur</h2>
             <div id="admin-content"></div>
         </div>
     </div>
 
-    <!-- Bottom Nav -->
+    <!-- Bottom Navigation -->
     <div class="bottom-nav">
-        <button class="active" onclick="showTab('calendrier')">📅</button>
-        <button onclick="showTab('reserver')">📝</button>
-        <button onclick="showTab('infos')">ℹ️</button>
-        <button onclick="showTab('admin')">🔐</button>
+        <button onclick="switchTab(event, 'calendrier')" class="nav-btn active">📅</button>
+        <button onclick="switchTab(event, 'reserver')" class="nav-btn">📝</button>
+        <button onclick="switchTab(event, 'infos')" class="nav-btn">ℹ️</button>
+        <button onclick="switchTab(event, 'admin')" class="nav-btn">🔐</button>
     </div>
 
-    <script>
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // Firebase config - REPLACE WITH YOUR VALUES
+        const firebaseConfig = {
+            apiKey: "REPLACE_WITH_YOUR_API_KEY",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "your-messaging-sender-id",
+            appId: "your-app-id"
+        };
+
+        // Initialize Firebase
+        try {
+            const app = initializeApp(firebaseConfig);
+            const db = getDatabase(app);
+            window.firebaseDb = db;
+        } catch (error) {
+            console.error("Firebase initialization error:", error);
+            alert("⚠️ Erreur Firebase. Vérifiez votre config.js");
+        }
+
         const ADMIN_PASSWORD = "admin123";
         let adminLoggedIn = false;
 
-        const events = [
-            { id: "1", name: "Café Nat Matin", cat: "Cafés Nat", date: "20 nov", time: "10:00", loc: "Créteil, Café du Centre", desc: "Venez discuter autour d'un bon café" },
-            { id: "2", name: "Café Nat Après-midi", cat: "Cafés Nat", date: "22 nov", time: "15:00", loc: "Créteil, Salon de Thé", desc: "Rencontre conviviale" },
-            { id: "3", name: "Table d'hôtes Gastronomique", cat: "Tables d'hôtes", date: "25 nov", time: "19:30", loc: "Restaurant L'Authentique", desc: "Dîner convivial" },
-            { id: "4", name: "Table d'hôtes Cuisine", cat: "Tables d'hôtes", date: "5 déc", time: "19:00", loc: "Maison d'Hôtes", desc: "Saveurs françaises" },
-            { id: "5", name: "ApéroNus Soirée", cat: "ApéroNus", date: "23 nov", time: "18:00", loc: "Terrasse du Lac", desc: "Apéritif convivial" },
-            { id: "6", name: "ApéroNus Networking", cat: "ApéroNus", date: "28 nov", time: "17:30", loc: "Lieu Atypique", desc: "Rencontre décontractée" }
+        // Sample events
+        const sampleEvents = [
+            { id: "1", name: "Café Nat Matin", category: "Cafés Nat", date: "20 nov", time: "10:00", location: "Créteil, Café du Centre", desc: "Venez discuter autour d'un bon café" },
+            { id: "2", name: "Café Nat Après-midi", category: "Cafés Nat", date: "22 nov", time: "15:00", location: "Créteil, Salon de Thé", desc: "Rencontre conviviale" },
+            { id: "3", name: "Table d'hôtes Gastronomique", category: "Tables d'hôtes", date: "25 nov", time: "19:30", location: "Restaurant L'Authentique", desc: "Dîner convivial" },
+            { id: "4", name: "Table d'hôtes Cuisine", category: "Tables d'hôtes", date: "5 déc", time: "19:00", location: "Maison d'Hôtes", desc: "Saveurs françaises" },
+            { id: "5", name: "ApéroNus Soirée", category: "ApéroNus", date: "23 nov", time: "18:00", location: "Terrasse du Lac", desc: "Apéritif convivial" },
+            { id: "6", name: "ApéroNus Networking", category: "ApéroNus", date: "28 nov", time: "17:30", location: "Lieu Atypique", desc: "Rencontre décontractée" }
         ];
 
-        function getCatBadge(cat) {
-            if (cat.includes("Cafés")) return "cafes";
-            if (cat.includes("Tables")) return "tables";
-            return "apero";
+        function getCategoryClass(category) {
+            if (category.includes("Cafés")) return "category-cafes";
+            if (category.includes("Tables")) return "category-tables";
+            return "category-apero";
         }
 
-        function showTab(name) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.bottom-nav button').forEach(el => el.classList.remove('active'));
-
-            const elem = document.getElementById(name);
-            if (elem) elem.classList.add('active');
-            
-            const tabs = ['calendrier', 'reserver', 'infos', 'admin'];
-            const idx = tabs.indexOf(name);
-            document.querySelectorAll('.tab-btn')[idx].classList.add('active');
-            document.querySelectorAll('.bottom-nav button')[idx].classList.add('active');
-
-            if (name === 'calendrier') renderCalendar();
-            else if (name === 'reserver') renderReserver();
-            else if (name === 'admin') renderAdmin();
-        }
-
-        function renderCalendar() {
-            let html = '';
-            events.forEach(e => {
+        function renderEvents(containerId) {
+            let html = "";
+            sampleEvents.forEach(event => {
                 html += `
-                    <div class="card">
-                        <span class="badge ${getCatBadge(e.cat)}">${e.cat}</span>
-                        <h3>${e.name}</h3>
-                        <div class="info-text"><strong>📅</strong> ${e.date} à ${e.time}</div>
-                        <div class="info-text"><strong>📍</strong> ${e.loc}</div>
-                        <p style="color: #7D6B68; margin-top: 10px;">${e.desc}</p>
+                    <div class="event-card">
+                        <span class="category-badge ${getCategoryClass(event.category)}">${event.category}</span>
+                        <h3>${event.name}</h3>
+                        <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
+                        <div class="event-info"><strong>⏰ Heure:</strong> ${event.time}</div>
+                        <div class="event-info"><strong>📍 Lieu:</strong> ${event.location}</div>
+                        <p style="color: #7D6B68; margin-top: 10px;">${event.desc}</p>
                     </div>
                 `;
             });
-            document.getElementById('calendar-list').innerHTML = html;
+            const elem = document.getElementById(containerId);
+            if (elem) elem.innerHTML = html;
         }
 
-        function renderReserver() {
-            let html = '';
-            events.forEach(e => {
-                html += `
-                    <div class="card">
-                        <span class="badge ${getCatBadge(e.cat)}">${e.cat}</span>
-                        <h3>${e.name}</h3>
-                        <div class="info-text"><strong>📅</strong> ${e.date} à ${e.time}</div>
-                        <div class="info-text"><strong>📍</strong> ${e.loc}</div>
-                        <p style="color: #7D6B68; margin-top: 10px;">${e.desc}</p>
+        function renderBooking() {
+            let eventOptions = '<option value="">Sélectionnez un événement</option>';
+            sampleEvents.forEach(event => {
+                eventOptions += `<option value="${event.id}">${event.name} (${event.date})</option>`;
+            });
+
+            let html = `
+                <div class="form-section">
+                    <h3 style="margin-bottom: 20px;">Formulaire d'Inscription</h3>
+                    <div class="form-group">
+                        <label>Nom complet *</label>
+                        <input type="text" id="regName" placeholder="Votre nom" required>
                     </div>
-                `;
-            });
-            document.getElementById('events-list').innerHTML = html;
-
-            let opts = '<option value="">-- Sélectionnez --</option>';
-            events.forEach(e => {
-                opts += `<option value="${e.id}">${e.name} (${e.date})</option>`;
-            });
-            document.getElementById('regEvent').innerHTML = opts;
-        }
-
-        function registerUser() {
-            const name = document.getElementById('regName').value.trim();
-            const phone = document.getElementById('regPhone').value.trim();
-            const eventId = document.getElementById('regEvent').value;
-
-            if (!name || !phone || !eventId) {
-                showMsg('Remplissez tous les champs', 'error', 'regMsg');
-                return;
-            }
-
-            if (phone.length < 10) {
-                showMsg('Téléphone invalide', 'error', 'regMsg');
-                return;
-            }
-
-            // Save to localStorage
-            const registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
-            registrations.push({
-                name: name,
-                phone: phone,
-                event_id: eventId,
-                timestamp: new Date().getTime()
-            });
-            localStorage.setItem('registrations', JSON.stringify(registrations));
-
-            showMsg('✅ Inscription confirmée!', 'success', 'regMsg');
-            document.getElementById('regName').value = '';
-            document.getElementById('regPhone').value = '';
-            document.getElementById('regEvent').value = '';
+                    <div class="form-group">
+                        <label>Téléphone *</label>
+                        <input type="tel" id="regPhone" placeholder="+33 6 12 34 56 78" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Événement *</label>
+                        <select id="regEvent" required>${eventOptions}</select>
+                    </div>
+                    <button onclick="registerUser()">✅ S'inscrire</button>
+                    <div id="regMessage"></div>
+                </div>
+            `;
+            const elem = document.getElementById("booking-section");
+            if (elem) elem.innerHTML = html;
         }
 
         function renderAdmin() {
-            const elem = document.getElementById('admin-content');
+            const elem = document.getElementById("admin-content");
             if (!adminLoggedIn) {
-                elem.innerHTML = `
+                let html = `
                     <div class="admin-login">
                         <h3>Connexion Admin</h3>
                         <div class="form-group">
                             <label>Mot de passe</label>
-                            <input type="password" id="adminPass" placeholder="...">
+                            <input type="password" id="adminPassword" placeholder="Entrez le mot de passe" required>
                         </div>
                         <button onclick="loginAdmin()">🔑 Connexion</button>
                         <div id="adminMsg"></div>
                     </div>
                 `;
+                if (elem) elem.innerHTML = html;
             } else {
-                elem.innerHTML = `
-                    <div class="admin-panel">
-                        <button onclick="logoutAdmin()" style="margin-bottom: 20px;">🚪 Déconnexion</button>
-                        <h4 style="margin-top: 20px;">📋 Inscriptions</h4>
-                        <ul class="registrations-list" id="regsList"></ul>
+                let html = `
+                    <div class="form-section">
+                        <h3>Bienvenue Admin! 👋</h3>
+                        <button onclick="logoutAdmin()" style="background: #D4A574; margin-bottom: 20px;">🚪 Déconnexion</button>
+                        
+                        <h4 style="margin-top: 20px; color: #5C4A47;">Inscriptions en Temps Réel</h4>
+                        <div id="registrationsList" style="margin-top: 15px;"></div>
                     </div>
                 `;
+                if (elem) elem.innerHTML = html;
                 loadRegistrations();
             }
         }
 
-        function loginAdmin() {
-            const pass = document.getElementById('adminPass').value;
-            if (pass === ADMIN_PASSWORD) {
+        window.switchTab = function(e, tabName) {
+            if (e) e.preventDefault();
+            
+            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+            const contentElem = document.getElementById(tabName);
+            if (contentElem) contentElem.classList.add('active');
+
+            const index = { 'calendrier': 0, 'reserver': 1, 'infos': 2, 'admin': 3 }[tabName] || 0;
+            document.querySelectorAll('.tab-btn')[index]?.classList.add('active');
+            document.querySelectorAll('.nav-btn')[index]?.classList.add('active');
+
+            if (tabName === 'calendrier') renderEvents('calendar-events');
+            else if (tabName === 'reserver') renderBooking();
+            else if (tabName === 'admin') renderAdmin();
+        };
+
+        window.registerUser = function() {
+            const name = document.getElementById('regName')?.value?.trim();
+            const phone = document.getElementById('regPhone')?.value?.trim();
+            const eventId = document.getElementById('regEvent')?.value;
+
+            if (!name || !phone || !eventId) {
+                showMessage('Veuillez remplir tous les champs', 'error', 'regMessage');
+                return;
+            }
+
+            if (phone.length < 10) {
+                showMessage('Numéro de téléphone invalide', 'error', 'regMessage');
+                return;
+            }
+
+            if (!window.firebaseDb) {
+                showMessage('❌ Firebase non configuré', 'error', 'regMessage');
+                return;
+            }
+
+            push(ref(window.firebaseDb, 'registrations'), {
+                name: name,
+                phone: phone,
+                event_id: eventId,
+                timestamp: new Date().getTime()
+            }).then(() => {
+                showMessage('✅ Inscription confirmée!', 'success', 'regMessage');
+                document.getElementById('regName').value = '';
+                document.getElementById('regPhone').value = '';
+                document.getElementById('regEvent').value = '';
+            }).catch((error) => {
+                showMessage('❌ Erreur: ' + error.message, 'error', 'regMessage');
+                console.error(error);
+            });
+        };
+
+        window.loginAdmin = function() {
+            const password = document.getElementById('adminPassword')?.value;
+            if (password === ADMIN_PASSWORD) {
                 adminLoggedIn = true;
                 renderAdmin();
             } else {
-                showMsg('❌ Incorrect', 'error', 'adminMsg');
+                showMessage('❌ Mot de passe incorrect', 'error', 'adminMsg');
             }
-        }
+        };
 
-        function logoutAdmin() {
+        window.logoutAdmin = function() {
             adminLoggedIn = false;
             renderAdmin();
-        }
+        };
 
         function loadRegistrations() {
-            const registrations = JSON.parse(localStorage.getItem('registrations') || '[]');
-            let html = '';
-            
-            if (registrations.length > 0) {
-                registrations.forEach(reg => {
-                    const eventName = events.find(e => e.id === reg.event_id)?.name || "Event";
-                    html += `<li><strong>${reg.name}</strong><br><small>${reg.phone} • ${eventName}</small></li>`;
-                });
-            } else {
-                html = '<li style="text-align: center; color: #999;">Aucune inscription</li>';
+            if (!window.firebaseDb) {
+                const elem = document.getElementById('registrationsList');
+                if (elem) elem.innerHTML = '<p style="color: red;">Firebase non configuré</p>';
+                return;
             }
-            
-            const elem = document.getElementById('regsList');
-            if (elem) elem.innerHTML = html;
+
+            onValue(ref(window.firebaseDb, 'registrations'), (snapshot) => {
+                let html = '<ul style="list-style: none; padding: 0;">';
+                const data = snapshot.val();
+                if (data) {
+                    Object.values(data).forEach(reg => {
+                        const eventName = sampleEvents.find(e => e.id === reg.event_id)?.name || "Événement";
+                        html += `<li style="padding: 12px; border-bottom: 1px solid #EEE; background: #FAFAF8;"><strong>${reg.name}</strong><br><small>${reg.phone} • ${eventName}</small></li>`;
+                    });
+                } else {
+                    html += '<li style="padding: 12px; text-align: center; color: #999;">Aucune inscription</li>';
+                }
+                html += '</ul>';
+                const elem = document.getElementById('registrationsList');
+                if (elem) elem.innerHTML = html;
+            });
         }
 
-        function showMsg(msg, type, id) {
-            const elem = document.getElementById(id);
+        function showMessage(msg, type, elementId) {
+            const elem = document.getElementById(elementId);
             if (elem) {
-                elem.innerHTML = `<div class="message msg-${type}">${msg}</div>`;
-                setTimeout(() => { 
-                    if (elem.innerHTML.includes(msg)) elem.innerHTML = ''; 
-                }, 3500);
+                elem.innerHTML = `<div class="${type}-msg">${msg}</div>`;
+                setTimeout(() => {
+                    elem.innerHTML = '';
+                }, 4000);
             }
         }
 
-        // Init
-        renderCalendar();
+        // Initialize on load
+        window.addEventListener('load', () => {
+            renderEvents('calendar-events');
+            renderBooking();
+        });
     </script>
 </body>
 </html>
