@@ -11,214 +11,352 @@
             box-sizing: border-box;
         }
 
-        body {
-            font-family: 'Poppins', sans-serif;
+        html, body {
+            width: 100%;
+            height: 100%;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #FFF8F3 0%, #FFE8E0 100%);
+            background-attachment: fixed;
             color: #3A2F2C;
+        }
+
+        body {
+            padding-bottom: 80px;
+        }
+
+        .app-wrapper {
+            width: 100%;
             min-height: 100vh;
-            padding-bottom: 70px;
+            display: flex;
+            flex-direction: column;
         }
 
         .container {
+            flex: 1;
             max-width: 1000px;
+            width: 100%;
             margin: 0 auto;
             padding: 20px;
+            overflow-y: auto;
         }
 
         header {
             text-align: center;
-            padding: 30px 0;
+            padding: 30px 0 20px;
         }
 
         h1 {
             font-size: 32px;
             color: #5C4A47;
-            margin-bottom: 10px;
+            margin: 0;
+            font-weight: 700;
         }
 
-        /* Tabs Navigation */
-        .tabs-container {
+        /* Navigation Tabs */
+        .nav-tabs {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin: 30px 0;
+            gap: 8px;
             flex-wrap: wrap;
+            margin: 25px 0 30px;
+            padding: 0 10px;
         }
 
-        .tab-btn {
-            padding: 12px 24px;
+        .nav-tab {
+            padding: 10px 20px;
             border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.6);
             color: #5C4A47;
             cursor: pointer;
-            font-size: 14px;
+            border-radius: 25px;
             font-weight: 600;
+            font-size: 13px;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
-        .tab-btn:hover {
+        .nav-tab:hover {
             background: white;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
+            transform: translateY(-1px);
         }
 
-        .tab-btn.active {
+        .nav-tab.active {
             background: #D4B5A0;
             color: white;
-            box-shadow: 0 4px 15px rgba(212, 181, 160, 0.4);
+            box-shadow: 0 4px 12px rgba(212, 181, 160, 0.3);
         }
 
-        /* Content Sections */
-        .content {
+        /* Content Tabs */
+        .tab-content {
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.4s ease;
         }
 
-        .content.active {
+        .tab-content.active {
             display: block;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        /* Cards */
+        /* Events Grid */
+        .events-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
         .event-card {
             background: white;
-            border-radius: 15px;
+            border-radius: 16px;
             padding: 20px;
-            margin-bottom: 15px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
         }
 
         .event-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
         }
 
         .event-card h3 {
-            margin: 0 0 10px 0;
+            font-size: 18px;
             color: #5C4A47;
+            margin: 0 0 12px 0;
+            font-weight: 700;
         }
 
-        .category-badge {
+        .event-category {
             display: inline-block;
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 11px;
+            font-weight: 700;
             color: white;
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .category-cafes { background: #D4B5A0; }
-        .category-tables { background: #C5D5B8; }
-        .category-apero { background: #FABE89; }
+        .cat-cafes { background: #D4B5A0; }
+        .cat-tables { background: #C5D5B8; }
+        .cat-apero { background: #FABE89; }
 
-        .event-info {
-            font-size: 14px;
+        .event-detail {
+            font-size: 13px;
             color: #7D6B68;
             margin: 8px 0;
+            line-height: 1.5;
         }
 
-        .event-info strong {
+        .event-detail strong {
             color: #5C4A47;
         }
 
         /* Forms */
-        .form-group {
-            margin-bottom: 15px;
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            max-width: 500px;
+            margin: 20px auto;
         }
 
-        label {
+        .form-title {
+            font-size: 22px;
+            color: #5C4A47;
+            margin: 0 0 25px 0;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
             display: block;
-            margin-bottom: 5px;
             font-weight: 600;
             color: #5C4A47;
+            margin-bottom: 6px;
+            font-size: 14px;
         }
 
-        input, select, textarea {
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 12px;
             border: 2px solid #E8DDD5;
-            border-radius: 10px;
+            border-radius: 8px;
             font-family: inherit;
             font-size: 14px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: #D4B5A0;
-        }
-
-        button {
-            background: #D4B5A0;
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
+            color: #3A2F2C;
             transition: all 0.3s;
         }
 
-        button:hover {
-            background: #C5A892;
-            box-shadow: 0 4px 12px rgba(212, 181, 160, 0.4);
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #D4B5A0;
+            box-shadow: 0 0 0 3px rgba(212, 181, 160, 0.1);
         }
 
-        /* Contact Info */
+        .btn-submit {
+            width: 100%;
+            padding: 14px;
+            background: #D4B5A0;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(212, 181, 160, 0.2);
+        }
+
+        .btn-submit:hover {
+            background: #C5A892;
+            box-shadow: 0 4px 12px rgba(212, 181, 160, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        /* Contact Cards */
+        .contact-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+
         .contact-card {
             background: white;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 15px;
+            border-radius: 16px;
+            padding: 25px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
         }
 
         .contact-card h4 {
+            font-size: 16px;
             color: #D4B5A0;
-            margin-bottom: 8px;
+            margin: 0 0 12px 0;
+            font-weight: 700;
         }
 
         .contact-card p {
             color: #7D6B68;
-            margin: 5px 0;
+            margin: 0;
+            line-height: 1.6;
+            font-size: 14px;
         }
 
-        /* Admin Section */
-        .admin-section {
-            background: rgba(232, 221, 213, 0.3);
-            padding: 20px;
-            border-radius: 15px;
-        }
-
-        .loading {
-            text-align: center;
-            color: #D4B5A0;
+        /* Messages */
+        .message {
+            padding: 14px;
+            border-radius: 8px;
+            margin-top: 15px;
             font-weight: 600;
+            animation: slideDown 0.3s ease;
         }
 
-        .success-msg, .error-msg {
-            padding: 12px 15px;
-            border-radius: 10px;
-            margin-bottom: 15px;
-            font-weight: 600;
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        .success-msg {
+        .msg-success {
             background: #D5E8D5;
             color: #2D5016;
         }
 
-        .error-msg {
+        .msg-error {
             background: #FFE0E0;
             color: #8B3C3C;
+        }
+
+        /* Admin */
+        .admin-login {
+            background: white;
+            border-radius: 16px;
+            padding: 40px 30px;
+            max-width: 400px;
+            margin: 40px auto;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .admin-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .admin-title {
+            font-size: 24px;
+            color: #5C4A47;
+            margin: 0 0 25px 0;
+            font-weight: 700;
+        }
+
+        .btn-logout {
+            background: #C5A892;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 25px;
+        }
+
+        .btn-logout:hover {
+            background: #B59A87;
+        }
+
+        .registrations-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .registrations-list li {
+            padding: 15px;
+            border-bottom: 1px solid #E8DDD5;
+            background: #FAFAF8;
+            font-size: 14px;
+            color: #3A2F2C;
+        }
+
+        .registrations-list li strong {
+            color: #5C4A47;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .registrations-list li small {
+            color: #7D6B68;
         }
 
         /* Bottom Navigation */
@@ -231,284 +369,279 @@
             border-top: 2px solid #E8DDD5;
             display: flex;
             justify-content: space-around;
-            padding: 10px 0;
+            align-items: stretch;
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-            z-index: 100;
+            z-index: 1000;
         }
 
         .bottom-nav button {
             flex: 1;
             background: transparent;
-            color: #7D6B68;
             border: none;
-            padding: 10px;
-            font-size: 12px;
-            border-radius: 0;
+            color: #7D6B68;
+            padding: 12px 8px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .bottom-nav button:hover {
+            background: rgba(212, 181, 160, 0.05);
         }
 
         .bottom-nav button.active {
             color: #D4B5A0;
             border-top: 3px solid #D4B5A0;
+            padding-top: 9px;
         }
 
         @media (max-width: 600px) {
-            h1 { font-size: 24px; }
-            .tabs-container { gap: 5px; }
-            .tab-btn { padding: 10px 16px; font-size: 12px; }
+            h1 { font-size: 26px; }
+            .nav-tabs { gap: 6px; margin: 20px 0 25px; }
+            .nav-tab { padding: 9px 16px; font-size: 12px; }
+            .form-card { padding: 20px; }
+            .admin-login { padding: 25px 20px; }
+            .events-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🎉 Événements Nat</h1>
-        </header>
+    <div class="app-wrapper">
+        <div class="container">
+            <header>
+                <h1>🎉 Événements Nat</h1>
+            </header>
 
-        <!-- Main Tabs -->
-        <div class="tabs-container">
-            <button class="tab-btn active" onclick="switchTab('calendrier')">📅 Calendrier</button>
-            <button class="tab-btn" onclick="switchTab('reserver')">📝 Réserver</button>
-            <button class="tab-btn" onclick="switchTab('infos')">ℹ️ Infos utiles</button>
-            <button class="tab-btn" onclick="switchTab('admin')">🔐 Admin</button>
-        </div>
+            <!-- Navigation -->
+            <nav class="nav-tabs">
+                <button class="nav-tab active" onclick="switchTab(event, 'calendrier')">📅 Calendrier</button>
+                <button class="nav-tab" onclick="switchTab(event, 'reserver')">📝 Réserver</button>
+                <button class="nav-tab" onclick="switchTab(event, 'infos')">ℹ️ Infos utiles</button>
+                <button class="nav-tab" onclick="switchTab(event, 'admin')">🔐 Admin</button>
+            </nav>
 
-        <!-- CALENDRIER TAB -->
-        <div id="calendrier" class="content active">
-            <h2 style="margin-bottom: 20px; text-align: center;">Calendrier des Événements</h2>
-            <div id="calendar-events"></div>
-        </div>
-
-        <!-- RESERVER TAB -->
-        <div id="reserver" class="content">
-            <h2 style="margin-bottom: 20px; text-align: center;">Réserver</h2>
-            <div id="booking-section"></div>
-        </div>
-
-        <!-- INFOS UTILES TAB -->
-        <div id="infos" class="content">
-            <h2 style="margin-bottom: 20px; text-align: center;">Informations Utiles</h2>
-            <div class="contact-card">
-                <h4>📱 Téléphone</h4>
-                <p>+33 6 12 34 56 78</p>
+            <!-- Calendrier Tab -->
+            <div id="calendrier" class="tab-content active">
+                <h2 style="text-align: center; font-size: 20px; color: #5C4A47; margin-bottom: 20px;">📅 Tous les Événements</h2>
+                <div class="events-grid" id="eventsCalendar"></div>
             </div>
-            <div class="contact-card">
-                <h4>📧 Email</h4>
-                <p>dayanjmd@hotmail.fr</p>
-            </div>
-            <div class="contact-card">
-                <h4>📍 Localisation</h4>
-                <p>Créteil, Île-de-France</p>
-                <p>Métro 8 - Créteil Préfecture</p>
-            </div>
-        </div>
 
-        <!-- ADMIN TAB -->
-        <div id="admin" class="content">
-            <h2 style="margin-bottom: 20px; text-align: center;">Panneau Administrateur</h2>
-            <div id="admin-content"></div>
-        </div>
-    </div>
-
-    <!-- Bottom Navigation (for mobile) -->
-    <div class="bottom-nav">
-        <button onclick="switchTab('calendrier')" class="nav-btn active">📅 Calendrier</button>
-        <button onclick="switchTab('reserver')" class="nav-btn">📝 Réserver</button>
-        <button onclick="switchTab('infos')" class="nav-btn">ℹ️ Infos</button>
-        <button onclick="switchTab('admin')" class="nav-btn">🔐 Admin</button>
-    </div>
-
-    <!-- Firebase Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-        import { getDatabase, ref, push, remove, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
-
-        // REPLACE WITH YOUR FIREBASE CONFIG
-        const firebaseConfig = {
-            apiKey: "AIzaSyD_YOUR_KEY_HERE",
-            authDomain: "your-project.firebaseapp.com",
-            projectId: "your-project-id",
-            storageBucket: "your-project.appspot.com",
-            messagingSenderId: "123456789",
-            appId: "1:123456789:web:abc123"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const ADMIN_PASSWORD = "admin123";
-        let adminLoggedIn = false;
-
-        // Sample events - will be stored in Firebase
-        const sampleEvents = [
-            { id: "1", name: "Café Nat Matin", category: "Cafés Nat", date: "20 nov", time: "10:00", location: "Créteil, Café du Centre", desc: "Venez discuter autour d'un bon café" },
-            { id: "2", name: "Café Nat Après-midi", category: "Cafés Nat", date: "22 nov", time: "15:00", location: "Créteil, Salon de Thé", desc: "Rencontre conviviale" },
-            { id: "3", name: "Table d'hôtes Gastronomique", category: "Tables d'hôtes", date: "25 nov", time: "19:30", location: "Restaurant L'Authentique", desc: "Dîner convivial" },
-            { id: "4", name: "Table d'hôtes Cuisine", category: "Tables d'hôtes", date: "5 déc", time: "19:00", location: "Maison d'Hôtes", desc: "Saveurs françaises" },
-            { id: "5", name: "ApéroNus Soirée", category: "ApéroNus", date: "23 nov", time: "18:00", location: "Terrasse du Lac", desc: "Apéritif convivial" },
-            { id: "6", name: "ApéroNus Networking", category: "ApéroNus", date: "28 nov", time: "17:30", location: "Lieu Atypique", desc: "Rencontre décontractée" }
-        ];
-
-        function getCategoryClass(category) {
-            if (category.includes("Cafés")) return "category-cafes";
-            if (category.includes("Tables")) return "category-tables";
-            return "category-apero";
-        }
-
-        function renderEvents(containerId) {
-            let html = "";
-            sampleEvents.forEach(event => {
-                html += `
-                    <div class="event-card">
-                        <span class="category-badge ${getCategoryClass(event.category)}">${event.category}</span>
-                        <h3>${event.name}</h3>
-                        <div class="event-info"><strong>📅 Date:</strong> ${event.date}</div>
-                        <div class="event-info"><strong>⏰ Heure:</strong> ${event.time}</div>
-                        <div class="event-info"><strong>📍 Lieu:</strong> ${event.location}</div>
-                        <div class="event-info">${event.desc}</div>
-                    </div>
-                `;
-            });
-            document.getElementById(containerId).innerHTML = html;
-        }
-
-        function renderBooking() {
-            let eventOptions = '<option value="">Sélectionnez un événement</option>';
-            sampleEvents.forEach(event => {
-                eventOptions += `<option value="${event.id}">${event.name} (${event.date})</option>`;
-            });
-
-            let html = `
-                <div style="background: white; padding: 20px; border-radius: 15px;">
-                    <h3 style="margin-bottom: 20px;">Formulaire d'Inscription</h3>
+            <!-- Réserver Tab -->
+            <div id="reserver" class="tab-content">
+                <h2 style="text-align: center; font-size: 20px; color: #5C4A47; margin-bottom: 30px;">📝 Réserver votre place</h2>
+                <div class="events-grid" id="eventsReserver"></div>
+                <div class="form-card">
+                    <h3 class="form-title">Formulaire d'Inscription</h3>
                     <div class="form-group">
                         <label>Nom complet *</label>
-                        <input type="text" id="regName" placeholder="Votre nom">
+                        <input type="text" id="inputName" placeholder="Votre nom" required>
                     </div>
                     <div class="form-group">
                         <label>Téléphone *</label>
-                        <input type="tel" id="regPhone" placeholder="+33 6 12 34 56 78">
+                        <input type="tel" id="inputPhone" placeholder="+33 6 12 34 56 78" required>
                     </div>
                     <div class="form-group">
-                        <label>Événement *</label>
-                        <select id="regEvent">${eventOptions}</select>
+                        <label>Sélectionnez un événement *</label>
+                        <select id="inputEvent" required>
+                            <option value="">-- Choisir un événement --</option>
+                        </select>
                     </div>
-                    <button onclick="registerUser()">S'inscrire</button>
-                    <div id="regMessage"></div>
+                    <button class="btn-submit" onclick="submitRegistration()">✅ S'inscrire</button>
+                    <div id="registrationMsg"></div>
                 </div>
-            `;
-            document.getElementById("booking-section").innerHTML = html;
-        }
+            </div>
 
-        function renderAdmin() {
-            if (!adminLoggedIn) {
-                let html = `
-                    <div style="background: white; padding: 20px; border-radius: 15px; max-width: 400px; margin: 0 auto;">
-                        <h3>Connexion Admin</h3>
-                        <div class="form-group">
-                            <label>Mot de passe</label>
-                            <input type="password" id="adminPassword" placeholder="Entrez le mot de passe">
-                        </div>
-                        <button onclick="loginAdmin()">Connexion</button>
-                        <div id="adminMsg"></div>
+            <!-- Infos Tab -->
+            <div id="infos" class="tab-content">
+                <h2 style="text-align: center; font-size: 20px; color: #5C4A47; margin-bottom: 30px;">ℹ️ Nous Contacter</h2>
+                <div class="contact-cards">
+                    <div class="contact-card">
+                        <h4>📱 Téléphone</h4>
+                        <p>+33 6 12 34 56 78</p>
                     </div>
-                `;
-                document.getElementById("admin-content").innerHTML = html;
-            } else {
-                let html = `
-                    <div style="background: white; padding: 20px; border-radius: 15px;">
-                        <h3>Bienvenue Admin! 👋</h3>
-                        <button onclick="logoutAdmin()" style="background: #D4A574; margin-bottom: 20px;">Déconnexion</button>
-                        
-                        <h4 style="margin-top: 20px;">Créer un Événement</h4>
-                        <div class="form-group">
-                            <label>Nom</label>
-                            <input type="text" id="newEventName" placeholder="Nom de l'événement">
-                        </div>
-                        <div class="form-group">
-                            <label>Catégorie</label>
-                            <select id="newEventCategory">
-                                <option>Cafés Nat</option>
-                                <option>Tables d'hôtes</option>
-                                <option>ApéroNus</option>
-                            </select>
-                        </div>
-                        <button onclick="createEvent()">Créer l'Événement</button>
-                        
-                        <h4 style="margin-top: 30px;">Inscriptions</h4>
-                        <div id="registrationsList"></div>
+                    <div class="contact-card">
+                        <h4>📧 Email</h4>
+                        <p>dayanjmd@hotmail.fr</p>
                     </div>
-                `;
-                document.getElementById("admin-content").innerHTML = html;
-                loadRegistrations();
-            }
-        }
+                    <div class="contact-card">
+                        <h4>📍 Localisation</h4>
+                        <p>Créteil, Île-de-France<br>Métro 8 - Créteil Préfecture</p>
+                    </div>
+                </div>
+            </div>
 
-        window.switchTab = function(tabName) {
-            // Hide all content
-            document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            <!-- Admin Tab -->
+            <div id="admin" class="tab-content">
+                <h2 style="text-align: center; font-size: 20px; color: #5C4A47; margin-bottom: 30px;">🔐 Panneau Admin</h2>
+                <div id="adminContent"></div>
+            </div>
+        </div>
 
-            // Show selected content
-            document.getElementById(tabName).classList.add('active');
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <button class="active" onclick="switchTab(event, 'calendrier')">📅</button>
+            <button onclick="switchTab(event, 'reserver')">📝</button>
+            <button onclick="switchTab(event, 'infos')">ℹ️</button>
+            <button onclick="switchTab(event, 'admin')">🔐</button>
+        </nav>
+    </div>
 
-            // Render appropriate content
-            if (tabName === 'calendrier') {
-                renderEvents('calendar-events');
-                document.querySelectorAll('.tab-btn')[0].classList.add('active');
-                document.querySelectorAll('.nav-btn')[0].classList.add('active');
-            } else if (tabName === 'reserver') {
-                renderBooking();
-                document.querySelectorAll('.tab-btn')[1].classList.add('active');
-                document.querySelectorAll('.nav-btn')[1].classList.add('active');
-            } else if (tabName === 'infos') {
-                document.querySelectorAll('.tab-btn')[2].classList.add('active');
-                document.querySelectorAll('.nav-btn')[2].classList.add('active');
-            } else if (tabName === 'admin') {
-                renderAdmin();
-                document.querySelectorAll('.tab-btn')[3].classList.add('active');
-                document.querySelectorAll('.nav-btn')[3].classList.add('active');
-            }
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+        import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+
+        // ===== FIREBASE CONFIGURATION =====
+        const firebaseConfig = {
+            apiKey: "REPLACE_WITH_YOUR_API_KEY",
+            authDomain: "your-project.firebaseapp.com",
+            projectId: "your-project-id",
+            storageBucket: "your-project.appspot.com",
+            messagingSenderId: "your-id",
+            appId: "your-app-id"
         };
 
-        window.registerUser = function() {
-            const name = document.getElementById('regName').value.trim();
-            const phone = document.getElementById('regPhone').value.trim();
-            const eventId = document.getElementById('regEvent').value;
+        let db = null;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getDatabase(app);
+        } catch (error) {
+            console.error("Firebase Error:", error);
+        }
+
+        const ADMIN_PASSWORD = "admin123";
+        let adminLoggedIn = false;
+
+        // ===== EVENTS DATA =====
+        const events = [
+            { id: "1", name: "Café Nat Matin", cat: "Cafés Nat", date: "20 nov", time: "10:00", loc: "Créteil, Café du Centre", desc: "Venez discuter autour d'un bon café" },
+            { id: "2", name: "Café Nat Après-midi", cat: "Cafés Nat", date: "22 nov", time: "15:00", loc: "Créteil, Salon de Thé", desc: "Rencontre conviviale" },
+            { id: "3", name: "Table d'hôtes Gastronomique", cat: "Tables d'hôtes", date: "25 nov", time: "19:30", loc: "Restaurant L'Authentique", desc: "Dîner convivial" },
+            { id: "4", name: "Table d'hôtes Cuisine", cat: "Tables d'hôtes", date: "5 déc", time: "19:00", loc: "Maison d'Hôtes", desc: "Saveurs françaises" },
+            { id: "5", name: "ApéroNus Soirée", cat: "ApéroNus", date: "23 nov", time: "18:00", loc: "Terrasse du Lac", desc: "Apéritif convivial" },
+            { id: "6", name: "ApéroNus Networking", cat: "ApéroNus", date: "28 nov", time: "17:30", loc: "Lieu Atypique", desc: "Rencontre décontractée" }
+        ];
+
+        // ===== UTILITY FUNCTIONS =====
+        function getCatClass(cat) {
+            if (cat.includes("Cafés")) return "cat-cafes";
+            if (cat.includes("Tables")) return "cat-tables";
+            return "cat-apero";
+        }
+
+        function renderEventCard(event) {
+            return `
+                <div class="event-card">
+                    <span class="event-category ${getCatClass(event.cat)}">${event.cat}</span>
+                    <h3>${event.name}</h3>
+                    <div class="event-detail"><strong>📅</strong> ${event.date} à ${event.time}</div>
+                    <div class="event-detail"><strong>📍</strong> ${event.loc}</div>
+                    <p style="color: #7D6B68; font-size: 13px; margin-top: 10px;">${event.desc}</p>
+                </div>
+            `;
+        }
+
+        function switchTab(e, tabName) {
+            if (e) e.preventDefault();
+            
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav button').forEach(el => el.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            
+            const tabs = ['calendrier', 'reserver', 'infos', 'admin'];
+            const idx = tabs.indexOf(tabName);
+            document.querySelectorAll('.nav-tab')[idx]?.classList.add('active');
+            document.querySelectorAll('.bottom-nav button')[idx]?.classList.add('active');
+
+            if (tabName === 'calendrier') renderCalendar();
+            else if (tabName === 'reserver') renderReserver();
+            else if (tabName === 'admin') renderAdmin();
+        }
+
+        function renderCalendar() {
+            let html = events.map(e => renderEventCard(e)).join('');
+            document.getElementById('eventsCalendar').innerHTML = html;
+        }
+
+        function renderReserver() {
+            let html = events.map(e => renderEventCard(e)).join('');
+            document.getElementById('eventsReserver').innerHTML = html;
+            
+            let selectHtml = '<option value="">-- Choisir un événement --</option>';
+            events.forEach(e => {
+                selectHtml += `<option value="${e.id}">${e.name} (${e.date})</option>`;
+            });
+            document.getElementById('inputEvent').innerHTML = selectHtml;
+        }
+
+        window.submitRegistration = function() {
+            const name = document.getElementById('inputName').value.trim();
+            const phone = document.getElementById('inputPhone').value.trim();
+            const eventId = document.getElementById('inputEvent').value;
 
             if (!name || !phone || !eventId) {
-                showMessage('Veuillez remplir tous les champs', 'error', 'regMessage');
+                showMsg('Veuillez remplir tous les champs', 'error', 'registrationMsg');
                 return;
             }
 
             if (phone.length < 10) {
-                showMessage('Numéro de téléphone invalide', 'error', 'regMessage');
+                showMsg('Téléphone invalide', 'error', 'registrationMsg');
                 return;
             }
 
-            // Push to Firebase
+            if (!db) {
+                showMsg('Firebase non configuré', 'error', 'registrationMsg');
+                return;
+            }
+
             push(ref(db, 'registrations'), {
-                name: name,
-                phone: phone,
-                event_id: eventId,
+                name, phone, event_id: eventId,
                 timestamp: new Date().getTime()
             }).then(() => {
-                showMessage('✅ Inscription confirmée!', 'success', 'regMessage');
-                document.getElementById('regName').value = '';
-                document.getElementById('regPhone').value = '';
-                document.getElementById('regEvent').value = '';
-            }).catch((error) => {
-                showMessage('❌ Erreur: ' + error.message, 'error', 'regMessage');
-                console.error(error);
+                showMsg('✅ Inscription confirmée!', 'success', 'registrationMsg');
+                document.getElementById('inputName').value = '';
+                document.getElementById('inputPhone').value = '';
+                document.getElementById('inputEvent').value = '';
+            }).catch(err => {
+                showMsg('❌ Erreur: ' + err.message, 'error', 'registrationMsg');
             });
         };
 
+        function renderAdmin() {
+            const elem = document.getElementById('adminContent');
+            if (!adminLoggedIn) {
+                elem.innerHTML = `
+                    <div class="admin-login">
+                        <h3 class="form-title">Connexion</h3>
+                        <div class="form-group">
+                            <label>Mot de passe</label>
+                            <input type="password" id="adminPass" placeholder="Entrez le mot de passe" required>
+                        </div>
+                        <button class="btn-submit" onclick="loginAdmin()">🔑 Connexion</button>
+                        <div id="adminMsg"></div>
+                    </div>
+                `;
+            } else {
+                elem.innerHTML = `
+                    <div class="admin-panel">
+                        <button class="btn-logout" onclick="logoutAdmin()">🚪 Déconnexion</button>
+                        <h3 style="margin-top: 25px; color: #5C4A47; font-weight: 700;">📋 Inscriptions</h3>
+                        <ul class="registrations-list" id="registrationsList"></ul>
+                    </div>
+                `;
+                loadRegistrations();
+            }
+        }
+
         window.loginAdmin = function() {
-            const password = document.getElementById('adminPassword').value;
-            if (password === ADMIN_PASSWORD) {
+            const pass = document.getElementById('adminPass').value;
+            if (pass === ADMIN_PASSWORD) {
                 adminLoggedIn = true;
                 renderAdmin();
             } else {
-                showMessage('❌ Mot de passe incorrect', 'error', 'adminMsg');
+                showMsg('❌ Mot de passe incorrect', 'error', 'adminMsg');
             }
         };
 
@@ -517,42 +650,37 @@
             renderAdmin();
         };
 
-        window.createEvent = function() {
-            showMessage('✅ Événement créé (demo)', 'success', 'admin-content');
-        };
-
         function loadRegistrations() {
+            if (!db) return;
             onValue(ref(db, 'registrations'), (snapshot) => {
-                let html = '<ul style="list-style: none;">';
+                let html = '';
                 const data = snapshot.val();
                 if (data) {
                     Object.values(data).forEach(reg => {
-                        const eventName = sampleEvents.find(e => e.id === reg.event_id)?.name || "Événement";
-                        html += `<li style="padding: 10px; border-bottom: 1px solid #EEE;"><strong>${reg.name}</strong> - ${reg.phone} (${eventName})</li>`;
+                        const eventName = events.find(e => e.id === reg.event_id)?.name || "Event";
+                        html += `<li><strong>${reg.name}</strong><small>${reg.phone} • ${eventName}</small></li>`;
                     });
                 } else {
-                    html += '<li>Aucune inscription</li>';
+                    html = '<li style="text-align: center; color: #999;">Aucune inscription</li>';
                 }
-                html += '</ul>';
                 const elem = document.getElementById('registrationsList');
                 if (elem) elem.innerHTML = html;
             });
         }
 
-        function showMessage(msg, type, elementId) {
-            const elem = document.getElementById(elementId);
+        function showMsg(msg, type, elemId) {
+            const elem = document.getElementById(elemId);
             if (elem) {
-                elem.innerHTML = `<div class="${type}-msg">${msg}</div>`;
-                setTimeout(() => {
-                    elem.innerHTML = '';
-                }, 3000);
+                elem.innerHTML = `<div class="message msg-${type}">${msg}</div>`;
+                setTimeout(() => { elem.innerHTML = ''; }, 4000);
             }
         }
 
-        // Initialize on load
-        window.addEventListener('load', () => {
-            renderEvents('calendar-events');
-            renderBooking();
+        window.switchTab = switchTab;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCalendar();
         });
     </script>
 </body>
