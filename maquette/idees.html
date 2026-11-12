@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex"><title>Maquette jalon 6 : mur d'idées</title>
+<link rel="stylesheet" href="../src/styles/fonts.css"><link rel="stylesheet" href="../src/styles/main.css">
+<style>
+body{padding:24px 0 40px}
+.wrap{width:min(1100px,100% - 32px);margin:auto;display:grid;gap:32px;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));align-items:start}
+.phone{background:var(--bg);border:1px solid var(--line);border-radius:26px;padding:16px;display:grid;gap:14px}
+.lbl{font:700 .8rem var(--font);text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 8px}
+.idea{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.idea p{flex:1;min-width:0}.idea small{color:var(--muted);display:block;margin-top:2px}
+.like{min-width:56px;min-height:56px;border-radius:16px;border:1px solid var(--line);background:var(--bg2);display:grid;place-items:center;font-weight:700;line-height:1.1;text-align:center}
+.like[aria-pressed=true]{background:var(--primary);color:var(--on-primary);border-color:var(--primary)}
+.like span{font-size:1.1rem}
+.mine{border-style:dashed}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.cnt{font-size:.8rem;color:var(--muted);text-align:right}
+input,select,textarea{font:inherit;width:100%;min-height:44px;border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--surface);color:var(--text)}
+.note{background:var(--bg2);border-radius:12px;padding:10px 14px;font-size:.9rem;color:var(--muted)}
+</style></head><body>
+<div class="wrap">
+
+<section class="phone" aria-label="Site visiteur : onglet Idées">
+ <p class="lbl">Site visiteur · onglet « Idées »</p>
+ <h2>Le mur d'idées</h2>
+ <p style="color:var(--muted)">Un thème, un jeu, une envie pour un prochain rendez-vous ? Proposez-le : Nat relit chaque idée avant de la publier.</p>
+
+ <form class="card" onsubmit="return false">
+  <div class="field"><label>Votre prénom</label><input value="Camille" maxlength="30"></div>
+  <div class="field"><label>Catégorie <small style="font-weight:400;color:var(--muted)">(facultatif)</small></label>
+   <select><option>Aucune en particulier</option><option>Cafés Nat</option><option>Tables d'hôtes</option><option>ApéroNus</option></select></div>
+  <div class="field"><label>Votre idée de thème</label><textarea rows="3" maxlength="140">Soirée jeux de société d'autrefois</textarea><div class="cnt">33 / 140</div></div>
+  <button class="btn primary block">Proposer mon idée</button>
+ </form>
+ <div class="note" role="status">Merci, Nat va relire votre idée avant de la publier.</div>
+
+ <p class="lbl">Idées publiées, les plus aimées d'abord</p>
+ <div class="idea"><p><b>Table d'hôtes autour des épices du monde</b><small><span class="chip" style="--cbg:var(--tables-bg);--cfg:var(--tables)">Tables d'hôtes</span> · Marie</small></p><button class="like" aria-pressed="true"><span>♥ 12</span>J'aime</button></div>
+ <div class="idea"><p><b>Café Nat spécial lecture à voix haute</b><small><span class="chip" style="--cbg:var(--cafe-bg);--cfg:var(--cafe)">Cafés Nat</span> · Julien</small></p><button class="like" aria-pressed="false"><span>♡ 8</span>J'aime</button></div>
+ <div class="idea"><p><b>Blind test des années 90</b><small>Sans catégorie · Sophie</small></p><button class="like" aria-pressed="false"><span>♡ 3</span>J'aime</button></div>
+ <div class="idea mine"><p><b>Soirée jeux de société d'autrefois</b><small><span class="badge soft">En attente de relecture</span> · votre idée, Camille</small></p></div>
+</section>
+
+<section class="phone" aria-label="Admin : section Idées">
+ <p class="lbl">Admin · section « Idées »</p>
+ <h2>Idées <span class="badge">2 en attente</span></h2>
+ <div class="segment" style="width:fit-content"><button>En attente (2)</button><button style="background:var(--text);color:var(--bg)">Publiées (3)</button><button>Masquées (1)</button></div>
+
+ <div class="card"><div class="card-body"><b>Soirée jeux de société d'autrefois</b><small style="color:var(--muted)">Camille · sans catégorie · il y a 5 min</small></div>
+  <div class="row"><button class="btn sm primary">Publier</button><button class="btn sm">Modifier</button><button class="btn sm">Masquer</button><button class="btn sm danger">Supprimer</button></div></div>
+ <div class="card"><div class="card-body"><b>Apéro dégustation de bières artisanales</b><small style="color:var(--muted)">Paul · ApéroNus · hier</small></div>
+  <div class="row"><button class="btn sm primary">Publier</button><button class="btn sm">Modifier</button><button class="btn sm">Masquer</button><button class="btn sm danger">Supprimer</button></div></div>
+
+ <div class="note"><b>Règles prévues</b><br>• 1 idée par appareil toutes les 5 min<br>• Le texte est affiché tel quel, sans mise en forme<br>• « Modifier » corrige le texte avant ou après publication<br>• « Masquer » retire du mur sans effacer ; « Supprimer » efface aussi les votes</div>
+ <div class="note"><b>Cas limite : session anonyme et /admin/</b><br>Le « J'aime » d'un appareil repose sur une connexion anonyme invisible. Si un visiteur ouvre /admin/, la page refuse tout autre compte que celui de Nat et ferme cette connexion : son appareil reçoit une nouvelle identité. Conséquences : ses anciens « J'aime » restent comptés mais il ne peut plus les retirer, et il pourrait re-voter pour la même idée (+1 en double). La correction (ignorer les sessions anonymes sans les fermer) est petite : je la propose par défaut si vous préférez zéro doublon.</div>
+</section>
+</div></body></html>
