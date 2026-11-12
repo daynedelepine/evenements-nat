@@ -265,3 +265,7 @@ details p{color:var(--muted);padding-bottom:10px}
 .rt-bar button{min-height:44px;min-width:44px;padding:0 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;cursor:pointer}
 .rt-bar button:hover{background:var(--bg2)}
 #x-prev{margin-top:8px}
+
+/* Lien discret vers l'administration (Infos) */
+.admin-link{margin:8px 0 0;text-align:center;font-size:.9rem}
+.admin-link a{color:var(--muted);text-decoration:underline;text-underline-offset:2px;display:inline-block;padding:12px}
