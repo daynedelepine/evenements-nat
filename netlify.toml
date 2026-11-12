@@ -4,6 +4,9 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # Les clés web Firebase (src/firebase.js) sont publiques par conception (protégées par les règles) :
+  # on les exclut seules du scan de secrets, qui les prend à tort pour des secrets.
+  SECRETS_SCAN_SMART_DETECTION_OMIT_VALUES = "AIzaSyCV4Zx7vfR0Et4uDWlYsmPxUptQnRMPCes,AIzaSyDVZ3XM0W6q8TbSCK9GUWTeE9gHevNFMe0"
 
 # Site privé : jamais indexé
 [[headers]]
