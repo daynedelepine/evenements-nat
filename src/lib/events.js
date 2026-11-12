@@ -64,5 +64,5 @@ export function icsFile(e, reg) {
     ...(wait ? [] : [...alarm('-P1D', `Demain : ${e.name}`), ...alarm('-PT2H', `Dans 2 h : ${e.name}`)]), 'END:VEVENT', 'END:VCALENDAR'].map(fold).join('\r\n');
   download(`${e.name.replace(/\W+/g, '-')}.ics`, body, 'text/calendar');
 }
-export const confirmText = (e, n, p) => `Bonjour Nat, c'est ${n}. Je confirme ma venue à « ${e.name} » le ${fmtLong(e)} à ${fmtTime(e)}${p > 1 ? ` (${p} personnes, moi + ${p - 1})` : ''}. À bientôt !`;
+export const confirmText = (e, n, p) => `Bonjour, c’est ${n}. J'ai effectué ma réservation pour l'événement « ${e.name} » le ${fmtLong(e)} à ${fmtTime(e)}${p > 1 ? ` (${p} personnes, moi + ${p - 1})` : ''}. À bientôt !`;
 export const cancelText = (e, n, p) => `Bonjour Nat, c'est ${n}. Je dois annuler mon inscription à « ${e.name} » le ${fmtLong(e)}${p > 1 ? ` (${p} personnes)` : ''}. Désolé(e) et merci !`;
