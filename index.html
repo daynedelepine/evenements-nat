@@ -14,6 +14,7 @@
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/manifest.webmanifest">
   <script type="module" src="/src/site/main.js"></script>
 </head>
 <body>
@@ -81,13 +82,22 @@
             <li>Le respect et la discrétion sont de mise.</li>
           </ul>
         </div>
+        <div class="panel wide" id="install-box" hidden>
+          <h3>Application</h3>
+          <p>Gardez le site sur votre écran d'accueil, comme une application.</p>
+          <button class="btn primary" type="button" id="install-btn" hidden>Installer l'application</button>
+          <p id="install-ios" hidden>Sur iPhone : touchez « Partager », puis « Sur l'écran d'accueil ».</p>
+        </div>
         <div class="panel wide">
           <h3>Questions fréquentes</h3>
           <div>
-            <details><summary>Comment annuler ma venue ?</summary><p>Écrivez à Nat sur WhatsApp ou par téléphone : votre place sera aussitôt libérée pour quelqu'un d'autre.</p></details>
+            <details><summary>Comment annuler ma venue ?</summary><p>Ouvrez l'onglet « Mes inscriptions » et touchez « Annuler » : votre place est aussitôt libérée pour quelqu'un d'autre. Depuis un autre appareil, écrivez à Nat sur WhatsApp ou par téléphone.</p></details>
+            <details><summary>L'événement est complet : que se passe-t-il ?</summary><p>Vous pouvez rejoindre la liste d'attente. Si une place se libère, Nat vous la propose : le changement apparaît dans « Mes inscriptions » et Nat vous prévient par WhatsApp.</p></details>
+            <details><summary>Puis-je venir accompagné(e) ?</summary><p>Oui : indiquez le nombre de personnes (4 au plus) lors de l'inscription. Votre carte affiche alors « +2 », par exemple, pour deux personnes en plus de vous.</p></details>
             <details><summary>Que faut-il apporter ?</summary><p>Rien de particulier : Nat précise sur chaque fiche si un plat ou une boisson est attendu.</p></details>
-            <details><summary>Où se déroule l'événement ?</summary><p>L'adresse est indiquée sur la fiche de l'événement, avec un lien d'itinéraire.</p></details>
-            <details><summary>Que deviennent mes données ?</summary><p>Votre nom et votre numéro servent uniquement à gérer les inscriptions. Ils ne sont jamais partagés et seul l'organisateur y a accès.</p></details>
+            <details><summary>Où se déroule l'événement ?</summary><p>L'adresse est indiquée sur la fiche de l'événement, avec un lien d'itinéraire. Le bouton « Agenda » ajoute l'événement à votre calendrier avec des rappels.</p></details>
+            <details><summary>Puis-je l'utiliser sans connexion ?</summary><p>Le site s'ouvre sans réseau et affiche les derniers événements connus. L'inscription et l'annulation demandent une connexion.</p></details>
+            <details><summary>Que deviennent mes données ?</summary><p>Votre nom et votre numéro servent uniquement à gérer les inscriptions. Ils ne sont jamais partagés et seul l'organisateur y a accès. Votre appareil garde une copie de vos inscriptions pour vous les afficher.</p></details>
           </div>
         </div>
       </div>

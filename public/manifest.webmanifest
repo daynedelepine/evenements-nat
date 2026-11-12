@@ -1,0 +1,15 @@
+{
+  "name": "Événements Nat",
+  "short_name": "Événements Nat",
+  "description": "Cafés Nat, Tables d'hôtes et ApéroNus : réservez votre place.",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#F7F3E8",
+  "theme_color": "#386641",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

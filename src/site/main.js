@@ -11,7 +11,7 @@ import { card, skeletons, empty, filtered, renderList, renderMonth, renderMine, 
 
 const state = { tab: 'events', cat: 'all', free: false, view: 'list', month: 0, day: null, past: false };
 let events = [];          // événements normalisés
-let loaded = false;       // premières données reçues ?
+let loaded = false;       // données disponibles (réseau ou copie locale) ?
 let loadError = false;
 let regs = store.get('nat-regs', []);   // inscriptions de cet appareil : { id, eventId, name, people, status }
 const me = store.get('nat-me', { name: '', phone: '' });
@@ -74,13 +74,17 @@ function renderMineTab() {
 }
 
 /* ---------- Données en direct (Firebase) ---------- */
+// Copie locale des derniers événements (données publiques) : affichage immédiat et hors ligne.
+const load = v => { events = Object.entries(v || {}).map(([id, e]) => normalize(id, e)).filter(e => !e.deleted); loaded = true; loadError = false; };
+const cached = store.get('nat-events', null);
+if (cached) load(cached);
 onValue(ref(db, 'events'), snap => {
   const v = snap.val() || {};
-  events = Object.entries(v).map(([id, e]) => normalize(id, e)).filter(e => !e.deleted);
-  loaded = true; loadError = false;
+  store.set('nat-events', v);
+  load(v);
   render(); watchRegs();
   // Si la fiche ou le formulaire sont ouverts, on les laisse tels quels (pas de rechargement sous les doigts).
-}, err => { console.error('Lecture des événements impossible :', err.code); loadError = true; render(); });
+}, err => { console.error('Lecture des événements impossible :', err.code); loadError = !cached; render(); });
 render();
 
 /* ---------- Suivi du statut de mes inscriptions (lecture du seul champ « status », par identifiant) ---------- */
@@ -219,3 +223,14 @@ $('#free-only').addEventListener('change', ev => { state.free = ev.target.checke
 
 setTab(fromHash(), false);
 
+
+/* ---------- Application installable (PWA) ---------- */
+if ('serviceWorker' in navigator && import.meta.env.PROD) addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(err => console.error('Service worker :', err)));
+const standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+const installBox = $('#install-box'), installBtn = $('#install-btn'), iosHint = $('#install-ios');
+let installEvt = null;
+if (standalone) installBox.hidden = true;
+else if (/iphone|ipad|ipod/i.test(navigator.userAgent)) { installBox.hidden = false; iosHint.hidden = false; installBtn.hidden = true; }
+addEventListener('beforeinstallprompt', ev => { ev.preventDefault(); installEvt = ev; installBox.hidden = false; installBtn.hidden = false; });
+installBtn.addEventListener('click', async () => { if (!installEvt) return; installEvt.prompt(); await installEvt.userChoice; installEvt = null; installBox.hidden = true; });
+addEventListener('appinstalled', () => { installBox.hidden = true; });
