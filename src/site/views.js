@@ -6,7 +6,7 @@ import { startOf, isUpcoming, isoDay, today, fmtLong, fmtTime, monthLabel, short
 
 export function card(e, { past = false, mine = false } = {}) {
   const s = seats(e), c = CATS[e.cat], d = startOf(e), rel = relDay(e);
-  const btn = past ? '' : mine ? `<span class="chip cat-tables">${ic('check')}Inscrit</span>`
+  const btn = past ? '' : e.cancelled ? `<span class="chip cat-aperos">${ic('x')}Annulé</span>` : mine ? `<span class="chip cat-tables">${ic('check')}Inscrit</span>`
     : `<button type="button" class="btn ${s.full ? '' : 'primary'} sm" data-reg="${esc(e.id)}">${s.full ? 'Liste d’attente' : 'S’inscrire'}</button>`;
   return `<article class="card ${c.cls} ${past ? 'past' : ''}">
     <div class="card-top">
@@ -19,7 +19,7 @@ export function card(e, { past = false, mine = false } = {}) {
     </div>
     <div class="card-foot">
       <div class="seats">
-        <span class="seats-text ${s.tone}">${past ? `${e.taken} participants` : s.text}</span>
+        <span class="seats-text ${s.tone}">${past ? `${e.taken} participants` : e.cancelled ? 'Événement annulé' : s.text}</span>
         <div class="meter ${s.tone}" role="img" aria-label="${e.taken} places prises sur ${e.max}"><span style="width:${s.pct}%"></span></div>
       </div>
       ${btn}
@@ -95,7 +95,7 @@ export function eventSheet(e, mine) {
         <div class="row">${ic('pin')}<span>${esc(e.place)}</span></div>
         <div class="row">${ic('users')}<span>${e.taken} / ${e.max} participants</span></div>
       </div>
-      <div class="seats"><span class="seats-text ${s.tone}">${s.text}</span><div class="meter ${s.tone}"><span style="width:${s.pct}%"></span></div></div>
+      <div class="seats"><span class="seats-text ${s.tone}">${e.cancelled ? 'Événement annulé' : s.text}</span><div class="meter ${s.tone}"><span style="width:${s.pct}%"></span></div></div>
       ${e.desc ? `<p class="note">${esc(e.desc)}</p>` : ''}
       <div class="actions">
         <button class="btn sm" type="button" data-share="${esc(e.id)}">${ic('share')}Partager</button>
@@ -105,6 +105,7 @@ export function eventSheet(e, mine) {
     </div>
     <div class="sheet-foot">
       ${past ? '<button class="btn block" type="button" data-close>Événement terminé</button>'
+        : e.cancelled ? '<button class="btn block" type="button" data-close>Événement annulé</button>'
         : mine ? '<button class="btn block" type="button" data-close>Vous êtes déjà inscrit(e)</button>'
         : `<button class="btn primary block" type="button" data-reg="${esc(e.id)}">${s.full ? 'Rejoindre la liste d’attente' : 'S’inscrire à cet événement'}</button>`}
     </div>`;

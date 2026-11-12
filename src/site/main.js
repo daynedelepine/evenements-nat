@@ -76,7 +76,7 @@ function renderMineTab() {
 /* ---------- Données en direct (Firebase) ---------- */
 onValue(ref(db, 'events'), snap => {
   const v = snap.val() || {};
-  events = Object.entries(v).map(([id, e]) => normalize(id, e));
+  events = Object.entries(v).map(([id, e]) => normalize(id, e)).filter(e => !e.deleted);
   loaded = true; loadError = false;
   render();
   // Si la fiche ou le formulaire sont ouverts, on les laisse tels quels (pas de rechargement sous les doigts).
@@ -91,7 +91,7 @@ function openEvent(id) {
 }
 
 function openForm(id) {
-  const e = byId(id); if (!e) return;
+  const e = byId(id); if (!e || e.cancelled) return;
   const s = seats(e), maxP = s.full ? 4 : Math.min(4, s.left);
   openSheet(sheet, formSheet(e, me, maxP));
   const ph = $('#f-phone'); ph.addEventListener('input', () => { ph.value = formatPhone(ph.value); });

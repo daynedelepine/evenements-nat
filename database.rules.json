@@ -16,6 +16,8 @@
         "description": { ".validate": "newData.isString() && newData.val().length <= 1000" },
         "maxParticipants": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100 && newData.val() % 1 === 0" },
         "createdAt":   { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "deletedAt":   { ".validate": "newData.isNumber()" },
+        "cancelled":   { ".validate": "newData.isBoolean()" },
         "taken": {
           ".write": true,
           ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('maxParticipants').val() && (auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || !data.exists() || (newData.val() >= data.val() - 4 && newData.val() <= data.val() + 4))"

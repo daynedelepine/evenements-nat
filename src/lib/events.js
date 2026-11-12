@@ -14,7 +14,7 @@ export function normalize(id, v) {
   return {
     id, name: v.name || '', cat: CAT_BY_LABEL[v.category] || 'cafes', date: v.date, time: v.time,
     place: v.location || '', max: Number(v.maxParticipants) || 0, taken: Number(v.taken) || 0,
-    desc: v.description || '', created: v.createdAt || '',
+    desc: v.description || '', created: v.createdAt || '', deleted: Number(v.deletedAt) || 0, cancelled: v.cancelled === true,
   };
 }
 export const toDb = e => ({
@@ -22,6 +22,13 @@ export const toDb = e => ({
   maxParticipants: e.max, taken: e.taken ?? 0, createdAt: e.created || new Date().toISOString(),
   ...(e.desc ? { description: e.desc } : {}),
 });
+
+// Modèles par catégorie (valeurs proposées à la création, modifiables ensuite)
+export const TEMPLATES = {
+  cafes:  { name: 'Café Nat', time: '10:00', place: 'Chez Nat, 5 place du Marché', max: 8, desc: 'Un café tranquille pour faire connaissance.' },
+  tables: { name: "Table d'hôtes", time: '19:30', place: 'La Maison Verte, 8 chemin des Vignes', max: 10, desc: 'Menu complet préparé par Nat. Prévenez-moi de vos allergies.' },
+  aperos: { name: 'ApéroNus', time: '20:00', place: 'Le Petit Salon, 12 rue des Tilleuls', max: 12, desc: 'Soirée détendue, dans le respect et la discrétion.' },
+};
 
 export const seats = e => {
   const left = Math.max(e.max - e.taken, 0), pct = e.max ? Math.min(100, Math.round(e.taken / e.max * 100)) : 100;

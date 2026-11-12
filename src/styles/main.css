@@ -242,3 +242,16 @@ details p{color:var(--muted);padding-bottom:10px}
   dialog[open]{position:absolute;inset:0;width:100%;max-height:none;box-shadow:none;margin:0}
   .no-print{display:none!important}
 }
+
+/* Administration : onglets, impression */
+.admin-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.admin-tabs .tab{flex:none;flex-direction:row;gap:8px;padding:0 18px;min-height:44px;font-size:.9375rem;border:1px solid var(--line);background:var(--surface)}
+.admin-tabs .tab[aria-selected="true"]{background:color-mix(in srgb,var(--primary) 10%,var(--surface))}
+.admin-card.is-cancelled h3{text-decoration:line-through;text-decoration-color:var(--muted)}
+.table tr.absent td{opacity:.55}
+@media print{
+  dialog[open] .sheet-body{overflow:visible;display:block}
+  .print-only{display:block!important}
+}
+.print-only{display:none}
+[hidden]{display:none!important}

@@ -9,3 +9,4 @@ firebase-debug.log
 Questionnaire-Evenements-Nat.xlsx
 reprise.md
 dist/
+.rules-test/

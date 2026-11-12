@@ -29,4 +29,5 @@ export const db = getDatabase(app);
 export const getAuthInstance = () => getAuth(app);
 
 // Compte administrateur (identifiant public ; les règles de la base font foi)
-export const ADMIN_UID = 'hSfCSlm2tdSnc6WMARMheQP7NpY2';
+const ADMIN_UIDS = { prod: 'hSfCSlm2tdSnc6WMARMheQP7NpY2', test: 'DHxXDMMYv7hWHt259q3lAWzvIQb2' };
+export const ADMIN_UID = isLocal ? ADMIN_UIDS.test : ADMIN_UIDS.prod;

@@ -25,6 +25,8 @@ const denied = r => r.status === 401 || r.status === 403;
   check('Modification du nom d’un événement refusée', denied(await call('PUT', `events/${ids[0]}/name`, 'piraté')));
   check('Suppression d’un événement refusée', denied(await call('DELETE', `events/${ids[0]}`)));
   check('Modification de maxParticipants refusée', denied(await call('PUT', `events/${ids[0]}/maxParticipants`, 999)));
+  check('Mise en corbeille (deletedAt) par un visiteur refusée', denied(await call('PUT', `events/${ids[0]}/deletedAt`, Date.now())));
+  check('Annulation (cancelled) par un visiteur refusée', denied(await call('PUT', `events/${ids[0]}/cancelled`, true)));
 
   const free = ids.find(i => ev[i].taken < ev[i].maxParticipants - 1);
   const full = ids.find(i => ev[i].taken >= ev[i].maxParticipants);

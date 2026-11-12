@@ -34,12 +34,20 @@
   </main>
 
   <main class="container" id="app" hidden>
-    <div class="stats" id="stats"></div>
-    <div class="toolbar" style="margin-top:22px">
-      <h2 style="font-size:1.5rem">Tous les événements</h2>
-      <button class="btn primary" type="button" data-new></button>
-    </div>
-    <div class="grid" id="admin-events"></div>
+    <nav class="admin-tabs" role="tablist" aria-label="Administration">
+      <button class="tab" role="tab" data-tab="dash" aria-selected="true" type="button"><span data-i="chart"></span>Tableau de bord</button>
+      <button class="tab" role="tab" data-tab="events" aria-selected="false" type="button"><span data-i="calendar"></span>Événements</button>
+      <button class="tab" role="tab" data-tab="trash" aria-selected="false" type="button"><span data-i="trash"></span>Corbeille <span id="trash-count"></span></button>
+    </nav>
+    <section id="v-dash"></section>
+    <section id="v-events" hidden>
+      <div class="toolbar">
+        <h2 style="font-size:1.5rem">Tous les événements</h2>
+        <button class="btn primary" type="button" data-new></button>
+      </div>
+      <div class="grid" id="admin-events"></div>
+    </section>
+    <section id="v-trash" hidden></section>
   </main>
 
   <dialog class="sheet wide" id="sheet" aria-labelledby="sheet-title"><div class="sheet-slot" style="display:contents"></div></dialog>
