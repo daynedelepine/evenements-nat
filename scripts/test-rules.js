@@ -46,7 +46,11 @@ const denied = r => r.status === 401 || r.status === 403;
   check('Compteur public incrémenté', (await call('GET', `events/${free}/taken`)).json === T + 1);
   check('Doublon de téléphone refusé', denied(await upd(free, 0, phone, '-testRegB', T + 2, reg())));
   check('Inscription concurrente périmée (même compteur) refusée', denied(await upd(free, 0, '0655443322', '-testRegC', T + 1, reg(1, { phone: '0655443322' }))));
-  check('Le visiteur ne peut pas relire son inscription', denied(await call('GET', `registrations/${free}/${rid}`)));
+  const st = await call('GET', `registrations/${free}/${rid}/status`);
+  check('Le visiteur peut lire le STATUT de son inscription (identifiant connu)', st.status === 200 && st.json === 'ok');
+  check('Le visiteur ne peut pas relire l’inscription complète', denied(await call('GET', `registrations/${free}/${rid}`)));
+  check('Le visiteur ne peut pas lire le téléphone d’une inscription', denied(await call('GET', `registrations/${free}/${rid}/phone`)));
+  check('Le visiteur ne peut pas lister les inscriptions d’un événement', denied(await call('GET', `registrations/${free}`)));
   check('Hausse du compteur de +10 refusée', denied(await call('PUT', `events/${free}/taken`, T + 11)));
 
   if (full) {

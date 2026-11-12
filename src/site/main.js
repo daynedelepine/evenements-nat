@@ -1,13 +1,13 @@
 import '../styles/fonts.css';
 import '../styles/main.css';
-import { ref, push, update, onValue } from 'firebase/database';
+import { ref, push, update, onValue, get } from 'firebase/database';
 import { db } from '../firebase.js';
 import { ic, LOGO } from '../lib/icons.js';
-import { $, $$, esc, store, initTheme, openSheet, initOfflineBanner } from '../lib/dom.js';
-import { CATS, normalize, seats, waLink, NAT_PHONE, icsFile, confirmText } from '../lib/events.js';
+import { $, $$, esc, store, initTheme, openSheet, initOfflineBanner, toast } from '../lib/dom.js';
+import { CATS, normalize, seats, waLink, NAT_PHONE, icsFile, confirmText, cancelText } from '../lib/events.js';
 import { startOf, isUpcoming, fmtLong, fmtTime, relDay } from '../lib/dates.js';
 import { validPhone, toLocalPhone, formatPhone } from '../lib/phone.js';
-import { card, skeletons, empty, filtered, renderList, renderMonth, renderMine, eventSheet, formSheet, successSheet } from './views.js';
+import { card, skeletons, empty, filtered, renderList, renderMonth, renderMine, eventSheet, formSheet, successSheet, cancelSheet, cancelledSheet } from './views.js';
 
 const state = { tab: 'events', cat: 'all', free: false, view: 'list', month: 0, day: null, past: false };
 let events = [];          // événements normalisés
@@ -16,7 +16,7 @@ let loadError = false;
 let regs = store.get('nat-regs', []);   // inscriptions de cet appareil : { id, eventId, name, people, status }
 const me = store.get('nat-me', { name: '', phone: '' });
 const byId = id => events.find(e => e.id === id);
-const mineIds = () => new Set(regs.map(r => r.eventId));
+const mineIds = () => new Map(regs.filter(r => r.status !== 'removed').map(r => [r.eventId, r]));   // événement -> inscription
 const saveRegs = () => store.set('nat-regs', regs);
 
 /* ---------- Initialisation ---------- */
@@ -78,16 +78,67 @@ onValue(ref(db, 'events'), snap => {
   const v = snap.val() || {};
   events = Object.entries(v).map(([id, e]) => normalize(id, e)).filter(e => !e.deleted);
   loaded = true; loadError = false;
-  render();
+  render(); watchRegs();
   // Si la fiche ou le formulaire sont ouverts, on les laisse tels quels (pas de rechargement sous les doigts).
 }, err => { console.error('Lecture des événements impossible :', err.code); loadError = true; render(); });
 render();
+
+/* ---------- Suivi du statut de mes inscriptions (lecture du seul champ « status », par identifiant) ---------- */
+const watching = new Map();   // id d'inscription -> fonction de désabonnement
+function watchRegs() {
+  regs.forEach(r => {
+    const e = byId(r.eventId);
+    if (!e || !isUpcoming(e) || r.status === 'removed' || watching.has(r.id)) return;
+    watching.set(r.id, onValue(ref(db, `registrations/${r.eventId}/${r.id}/status`), snap => {
+      const st = snap.val(), cur = regs.find(x => x.id === r.id);
+      if (!cur) return;
+      if (st === 'ok' && cur.status === 'wait') {
+        cur.status = 'ok'; saveRegs(); render();
+        toast(`Bonne nouvelle : une place s’est libérée pour « ${byId(cur.eventId)?.name || 'cet événement'} ».`);
+      } else if (st === null && cur.status !== 'removed') {
+        cur.status = 'removed'; saveRegs(); render();
+        toast('Une de vos inscriptions a été retirée par Nat.');
+      }
+    }, () => {}));
+  });
+}
+function unwatch(id) { watching.get(id)?.(); watching.delete(id); }
+
+/* ---------- Annulation par le visiteur ---------- */
+function openCancel(rid) {
+  const r = regs.find(x => x.id === rid), e = r && byId(r.eventId); if (!e) return;
+  openSheet(sheet, cancelSheet(e, r));
+}
+async function confirmCancel(rid) {
+  const r = regs.find(x => x.id === rid), e = r && byId(r.eventId); if (!r || !e) return;
+  const btn = $('#c-confirm'), err = $('#e-cancel'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Annulation…'; err.hidden = true;
+  try {
+    // Statut réel (la liste d'attente a pu avancer) : seules les places « ok » sont rendues au compteur.
+    const status = (await get(ref(db, `registrations/${r.eventId}/${rid}/status`))).val();
+    const phone = toLocalPhone(me.phone || '');
+    const updates = { [`registrations/${r.eventId}/${rid}`]: null };
+    if (status === 'ok') updates[`events/${r.eventId}/taken`] = Math.max(0, e.taken - r.people);
+    if (status !== null) {
+      // Le numéro enregistré n'est pas relu : on le retrouve dans la clé « phones » grâce à l'identifiant.
+      const p = r.phone || (validPhone(me.phone || '') ? phone : null);
+      if (p) updates[`phones/${r.eventId}/${p}`] = null;
+      else throw Object.assign(new Error('phone'), { code: 'NO_PHONE' });
+    }
+    await update(ref(db), updates);
+  } catch (ex) {
+    console.error('Annulation impossible :', ex.code || ex);
+    err.innerHTML = ic('info') + (ex.code === 'NO_PHONE' ? 'Annulation impossible depuis cet appareil : prévenez Nat par WhatsApp.' : 'Annulation impossible. Vérifiez votre connexion puis réessayez.');
+    err.hidden = false; btn.disabled = false; btn.textContent = 'Oui, annuler mon inscription'; return;
+  }
+  unwatch(rid); regs = regs.filter(x => x.id !== rid); saveRegs(); render();
+  openSheet(sheet, cancelledSheet(e, waLink(NAT_PHONE, cancelText(e, r.name, r.people))));
+}
 
 /* ---------- Fiche et formulaire ---------- */
 const sheet = $('#sheet');
 function openEvent(id) {
   const e = byId(id); if (!e) return;
-  openSheet(sheet, eventSheet(e, mineIds().has(id)));
+  openSheet(sheet, eventSheet(e, mineIds().get(id)));
 }
 
 function openForm(id) {
@@ -135,13 +186,14 @@ async function submitForm(eventId, getPeople) {
   }
   if ($('#f-mem').checked) store.set('nat-me', { name, phone: phoneRaw });
   me.name = name; me.phone = phoneRaw;
-  regs.push({ id: registrationId, eventId, name, people, status: wait ? 'wait' : 'ok' }); saveRegs(); render();
+  regs.push({ id: registrationId, eventId, name, phone, people, status: wait ? 'wait' : 'ok' }); saveRegs(); render();
+  watchRegs();
   openSheet(sheet, successSheet(e, name, people, wait, waLink(NAT_PHONE, confirmText(e, name, people))));
 }
 
 /* ---------- Événements souris / clavier (délégation) ---------- */
 document.addEventListener('click', ev => {
-  const t = ev.target.closest('[data-open],[data-reg],[data-cat],[data-view],[data-day],[data-month],[data-ics],[data-share],[data-goto],#past-btn');
+  const t = ev.target.closest('[data-open],[data-reg],[data-cat],[data-view],[data-day],[data-month],[data-ics],[data-cancel],[data-cancel-ok],[data-forget],[data-share],[data-goto],#past-btn');
   if (!t) return;
   const d = t.dataset;
   if (d.reg) openForm(d.reg);
@@ -150,7 +202,10 @@ document.addEventListener('click', ev => {
   else if (d.view) { state.view = d.view; render(); }
   else if (d.day) { state.day = d.day; render(); }
   else if (d.month) { state.month = Math.max(0, state.month + Number(d.month)); state.day = null; render(); }
-  else if (d.ics) { const e = byId(d.ics); if (e) icsFile(e); }
+  else if (d.cancelOk) confirmCancel(d.cancelOk);
+  else if (d.cancel) openCancel(d.cancel);
+  else if (d.forget) { unwatch(d.forget); regs = regs.filter(x => x.id !== d.forget); saveRegs(); render(); }
+  else if (d.ics) { const e = byId(d.ics); if (e) icsFile(e, mineIds().get(d.ics)); }
   else if (d.share) {
     const e = byId(d.share); if (!e) return;
     const text = `${e.name} — ${fmtLong(e)} à ${fmtTime(e)}. Réservation : ${location.origin}/`;

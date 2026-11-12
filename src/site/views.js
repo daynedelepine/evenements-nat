@@ -4,9 +4,12 @@ import { esc } from '../lib/dom.js';
 import { CATS, seats, isNew, mapsLink } from '../lib/events.js';
 import { startOf, isUpcoming, isoDay, today, fmtLong, fmtTime, monthLabel, shortDow, shortMon, relDay } from '../lib/dates.js';
 
+/** « +N » : personnes inscrites en plus de soi (vide si inscription individuelle). */
+export const plus = r => (r && r.people > 1 ? ` <b>+${r.people - 1}</b>` : '');
+
 export function card(e, { past = false, mine = false } = {}) {
   const s = seats(e), c = CATS[e.cat], d = startOf(e), rel = relDay(e);
-  const btn = past ? '' : e.cancelled ? `<span class="chip cat-aperos">${ic('x')}Annulé</span>` : mine ? `<span class="chip cat-tables">${ic('check')}Inscrit</span>`
+  const btn = past ? '' : e.cancelled ? `<span class="chip cat-aperos">${ic('x')}Annulé</span>` : mine ? `<span class="chip ${mine.status === 'wait' ? 'cat-cafes' : 'cat-tables'}">${ic(mine.status === 'wait' ? 'clock' : 'check')}${mine.status === 'wait' ? 'En attente' : 'Inscrit'}${plus(mine)}</span>`
     : `<button type="button" class="btn ${s.full ? '' : 'primary'} sm" data-reg="${esc(e.id)}">${s.full ? 'Liste d’attente' : 'S’inscrire'}</button>`;
   return `<article class="card ${c.cls} ${past ? 'past' : ''}">
     <div class="card-top">
@@ -38,7 +41,7 @@ export function renderList(list, mineIds) {
   const groups = {};
   list.forEach(e => (groups[monthLabel(startOf(e))] ??= []).push(e));
   return Object.entries(groups).map(([m, evs]) =>
-    `<h2 class="month">${m}</h2><div class="grid">${evs.map(e => card(e, { mine: mineIds.has(e.id) })).join('')}</div>`).join('');
+    `<h2 class="month">${m}</h2><div class="grid">${evs.map(e => card(e, { mine: mineIds.get(e.id) })).join('')}</div>`).join('');
 }
 
 export function renderMonth(list, upcomingCount, { month, day }, mineIds) {
@@ -63,28 +66,61 @@ export function renderMonth(list, upcomingCount, { month, day }, mineIds) {
       <button type="button" class="icon-btn" data-month="1" aria-label="Mois suivant">${ic('right')}</button>
     </div>
     <div class="cal-grid">${cells}</div></div>
-    <div class="grid" style="margin-top:14px">${sel ? sel.map(e => card(e, { mine: mineIds.has(e.id) })).join('') : ''}</div>
+    <div class="grid" style="margin-top:14px">${sel ? sel.map(e => card(e, { mine: mineIds.get(e.id) })).join('') : ''}</div>
     ${!sel ? `<p class="hint" style="margin-top:12px;text-align:center">${upcomingCount ? 'Touchez un jour marqué d’un point pour voir ses événements.' : ''}</p>` : ''}`;
 }
 
 export function renderMine(regs, byId) {
   const rows = regs.map(r => ({ r, e: byId(r.eventId) })).filter(x => x.e);
   if (!rows.length) return `<div class="empty" style="grid-column:1/-1">${ic('ticket')}<p><b>Aucune inscription</b></p><p>Vos réservations apparaîtront ici.</p><button class="btn primary" type="button" data-goto="events">Voir les événements</button></div>`;
-  return rows.map(({ r, e }) => {
-    const d = startOf(e), wait = r.status === 'wait';
-    return `<article class="card ${CATS[e.cat].cls}"><div class="card-top">
+  return rows.sort((x, y) => startOf(x.e) - startOf(y.e)).map(({ r, e }) => {
+    const d = startOf(e), wait = r.status === 'wait', gone = r.status === 'removed', past = !isUpcoming(e);
+    const chip = gone ? ['cat-aperos', 'x', 'Inscription retirée'] : wait ? ['cat-cafes', 'clock', 'Liste d’attente'] : ['cat-tables', 'check', 'Place réservée'];
+    return `<article class="card ${CATS[e.cat].cls} ${past ? 'past' : ''}"><div class="card-top">
       <div class="datebox" aria-hidden="true"><span class="dow">${shortDow(d)}</span><span class="day">${d.getDate()}</span><span class="mon">${shortMon(d)}</span></div>
-      <div class="card-body"><span class="chip ${wait ? 'cat-cafes' : 'cat-tables'}">${ic(wait ? 'clock' : 'check')}${wait ? 'Liste d’attente' : 'Place réservée'}</span>
+      <div class="card-body"><span class="chip ${chip[0]}">${ic(chip[1])}${chip[2]}</span>${e.cancelled ? `<span class="chip cat-aperos">${ic('x')}Événement annulé</span>` : ''}
       <button type="button" class="card-link" data-open="${esc(e.id)}">${esc(e.name)}</button>
-      <div class="meta"><span>${ic('clock')}${fmtTime(e)}</span><span>${ic('users')}${r.people} personne${r.people > 1 ? 's' : ''}</span></div></div></div>
+      <div class="meta"><span>${ic('clock')}${fmtLong(e)} · ${fmtTime(e)}</span><span>${ic('users')}${r.people} personne${r.people > 1 ? 's' : ''}${plus(r)}</span></div>
+      ${wait && !past && !e.cancelled ? '<p class="hint">Vous serez prévenu(e) ici et par WhatsApp si une place se libère.</p>' : ''}
+      ${gone ? '<p class="hint">Nat a retiré cette inscription. Contactez-le pour toute question.</p>' : ''}</div></div>
       <div class="actions">
-        <button class="btn sm" type="button" data-ics="${esc(e.id)}">${ic('calendar')}Agenda</button>
+        ${gone ? `<button class="btn sm" type="button" data-forget="${esc(r.id)}">${ic('x')}Masquer</button>` : `${past ? '' : `<button class="btn sm" type="button" data-ics="${esc(e.id)}">${ic('calendar')}Agenda</button>
         <a class="btn sm" href="${mapsLink(e)}" target="_blank" rel="noopener">${ic('route')}Itinéraire</a>
+        <button class="btn sm danger" type="button" data-cancel="${esc(r.id)}">${ic('x')}Annuler</button>`}`}
       </div></article>`;
   }).join('');
 }
 
-export function eventSheet(e, mine) {
+export function cancelSheet(e, r) {
+  const wait = r.status === 'wait';
+  return `
+    <div class="sheet-head"><h2 id="sheet-title">Annuler l’inscription ?</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <div class="sheet-body">
+      <div class="recap"><b>${esc(e.name)}</b><br>${fmtLong(e)} · ${fmtTime(e)}<br>${r.people} personne${r.people > 1 ? 's' : ''}${plus(r)}${wait ? ' · liste d’attente' : ''}</div>
+      <p class="note">${wait ? 'Vous quitterez la liste d’attente.' : `Votre place${r.people > 1 ? 's seront libérées' : ' sera libérée'} pour les personnes en attente.`} Pour revenir, il faudra vous réinscrire (sous réserve de places).</p>
+      <p class="error" id="e-cancel" role="alert" hidden></p>
+    </div>
+    <div class="sheet-foot" style="display:grid;gap:8px">
+      <button class="btn danger block" type="button" id="c-confirm" data-cancel-ok="${esc(r.id)}">Oui, annuler mon inscription</button>
+      <button class="btn block" type="button" data-close>Conserver ma place</button>
+    </div>`;
+}
+
+export function cancelledSheet(e, waHref) {
+  return `
+    <div class="sheet-head"><h2 id="sheet-title">Inscription annulée</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <div class="sheet-body"><div class="success">
+      <div class="tick">${ic('check')}</div>
+      <p>Votre inscription à <b>${esc(e.name)}</b> est annulée.</p>
+      <p class="hint">Par courtoisie, vous pouvez prévenir Nat par WhatsApp.</p>
+      <a class="btn wa block" href="${waHref}" target="_blank" rel="noopener">${ic('chat')}Prévenir Nat sur WhatsApp</a>
+    </div></div>
+    <div class="sheet-foot"><button class="btn block" type="button" data-close>Terminé</button></div>`;
+}
+
+export function eventSheet(e, mine) {   // mine : inscription de cet appareil ou undefined
   const s = seats(e), c = CATS[e.cat], past = !isUpcoming(e);
   return `
     <div class="sheet-head"><div><span class="chip ${c.cls}">${ic(c.icon)}${c.label}</span><h2 id="sheet-title" style="margin-top:8px">${esc(e.name)}</h2></div>
@@ -103,10 +139,10 @@ export function eventSheet(e, mine) {
         <a class="btn sm" href="${mapsLink(e)}" target="_blank" rel="noopener">${ic('route')}Itinéraire</a>
       </div>
     </div>
-    <div class="sheet-foot">
+    <div class="sheet-foot" ${mine && !past && mine.status !== 'removed' ? 'style="display:grid;gap:8px"' : ''}>
       ${past ? '<button class="btn block" type="button" data-close>Événement terminé</button>'
         : e.cancelled ? '<button class="btn block" type="button" data-close>Événement annulé</button>'
-        : mine ? '<button class="btn block" type="button" data-close>Vous êtes déjà inscrit(e)</button>'
+        : mine && mine.status !== 'removed' ? `<p class="hint" style="text-align:center">${mine.status === 'wait' ? 'Vous êtes sur liste d’attente' : 'Vous êtes inscrit(e)'}${plus(mine)}</p><button class="btn danger block" type="button" data-cancel="${esc(mine.id)}">Annuler mon inscription</button>`
         : `<button class="btn primary block" type="button" data-reg="${esc(e.id)}">${s.full ? 'Rejoindre la liste d’attente' : 'S’inscrire à cet événement'}</button>`}
     </div>`;
 }
@@ -145,7 +181,7 @@ export function successSheet(e, name, people, wait, waHref) {
     <div class="sheet-body"><div class="success">
       <div class="tick">${ic('check')}</div>
       <p><b>${esc(name)}</b>, ${wait ? 'vous êtes inscrit(e) en liste d’attente.' : 'votre place est réservée.'}</p>
-      <div class="recap"><b>${esc(e.name)}</b><br>${fmtLong(e)} · ${fmtTime(e)}<br>${people} personne${people > 1 ? 's' : ''}</div>
+      <div class="recap"><b>${esc(e.name)}</b><br>${fmtLong(e)} · ${fmtTime(e)}<br>${people} personne${people > 1 ? `s (vous + ${people - 1})` : ''}</div>
       <p class="hint">Dernière étape : envoyez votre confirmation à Nat par WhatsApp.</p>
       <a class="btn wa block" href="${waHref}" target="_blank" rel="noopener">${ic('chat')}Envoyer ma confirmation sur WhatsApp</a>
       <div class="actions" style="justify-content:center"><button class="btn sm" type="button" data-ics="${esc(e.id)}">${ic('calendar')}Agenda</button>

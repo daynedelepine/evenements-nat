@@ -36,7 +36,7 @@
           "phone":     { ".validate": "newData.isString() && newData.val().matches(/^0[1-9][0-9]{8}$/)" },
           "people":    { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 4 && newData.val() % 1 === 0" },
           "note":      { ".validate": "newData.isString() && newData.val().length <= 200" },
-          "status":    { ".validate": "newData.val() === 'ok' || newData.val() === 'wait'" },
+          "status":    { ".read": true, ".validate": "newData.val() === 'ok' || newData.val() === 'wait'" },
           "present":   { ".validate": "newData.isBoolean()" },
           "createdAt": { ".validate": "newData.isNumber()" },
           "$other":    { ".validate": false }

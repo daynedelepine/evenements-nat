@@ -41,12 +41,27 @@ export const isNew = e => e.created && (Date.now() - new Date(e.created).getTime
 export const waLink = (phone, text) => `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
 export const mapsLink = e => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e.place)}`;
 
-export function icsFile(e) {
+// Fichier agenda (.ics) : détails, rappels (veille et 2 h avant), statut selon l'inscription (reg = { people, status }).
+const enc = new TextEncoder();
+const fold = l => {   // lignes de 75 octets au plus (RFC 5545), coupure sur un caractère entier
+  const out = []; let rest = l;
+  while (enc.encode(rest).length > 74) { let n = 74; while (enc.encode(rest.slice(0, n)).length > 74) n--; out.push(rest.slice(0, n)); rest = ' ' + rest.slice(n); }
+  return [...out, rest].join('\r\n');
+};
+export function icsFile(e, reg) {
   const s = startOf(e), end = new Date(s.getTime() + 3 * 3600e3);
   const f = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
-  const clean = t => String(t).replace(/[\r\n]+/g, ' ').replace(/([,;\\])/g, '\\$1');
-  const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Evenements Nat//FR', 'BEGIN:VEVENT', `UID:${e.id}@evenements-nat`, `DTSTAMP:${f(new Date())}`,
-    `DTSTART:${f(s)}`, `DTEND:${f(end)}`, `SUMMARY:${clean(e.name)}`, `LOCATION:${clean(e.place)}`, 'END:VEVENT', 'END:VCALENDAR'].join('\r\n');
+  const clean = t => String(t).replace(/([,;\\])/g, '\\$1').replace(/\r?\n/g, '\\n');
+  const wait = reg?.status === 'wait', url = location.origin + '/';
+  const mine = !reg ? '' : wait ? 'Vous êtes sur liste d’attente : Nat vous prévient si une place se libère.'
+    : `Place réservée pour ${reg.people} personne${reg.people > 1 ? `s (vous + ${reg.people - 1})` : ''}.`;
+  const desc = [e.desc, mine, `Adresse : ${e.place}`, `Itinéraire : ${mapsLink(e)}`, `Pour annuler : ${url}#mes-inscriptions`, `Contact : Nat, WhatsApp +${NAT_PHONE}`].filter(Boolean).join('\n');
+  const alarm = (trig, txt) => ['BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${clean(txt)}`, `TRIGGER:${trig}`, 'END:VALARM'];
+  const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Evenements Nat//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT', `UID:${e.id}@evenements-nat`, `DTSTAMP:${new Date().toISOString().replace(/[-:]|\.\d+/g, '')}`,
+    `DTSTART:${f(s)}`, `DTEND:${f(end)}`, `SUMMARY:${clean((wait ? '(Attente) ' : '') + e.name)}`, `LOCATION:${clean(e.place)}`, `DESCRIPTION:${clean(desc)}`,
+    `CATEGORIES:${clean(CATS[e.cat]?.label || '')}`, `STATUS:${e.cancelled ? 'CANCELLED' : wait ? 'TENTATIVE' : 'CONFIRMED'}`, `URL:${url}`,
+    ...(wait ? [] : [...alarm('-P1D', `Demain : ${e.name}`), ...alarm('-PT2H', `Dans 2 h : ${e.name}`)]), 'END:VEVENT', 'END:VCALENDAR'].map(fold).join('\r\n');
   download(`${e.name.replace(/\W+/g, '-')}.ics`, body, 'text/calendar');
 }
-export const confirmText = (e, n, p) => `Bonjour Nat, c'est ${n}. Je confirme ma venue à « ${e.name} » le ${fmtLong(e)} à ${fmtTime(e)}${p > 1 ? ` (${p} personnes)` : ''}. À bientôt !`;
+export const confirmText = (e, n, p) => `Bonjour Nat, c'est ${n}. Je confirme ma venue à « ${e.name} » le ${fmtLong(e)} à ${fmtTime(e)}${p > 1 ? ` (${p} personnes, moi + ${p - 1})` : ''}. À bientôt !`;
+export const cancelText = (e, n, p) => `Bonjour Nat, c'est ${n}. Je dois annuler mon inscription à « ${e.name} » le ${fmtLong(e)}${p > 1 ? ` (${p} personnes)` : ''}. Désolé(e) et merci !`;
