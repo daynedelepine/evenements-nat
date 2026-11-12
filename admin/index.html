@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#386641">
+  <title>Administration — Événements Nat</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script type="module" src="/src/admin/main.js"></script>
+</head>
+<body>
+  <div id="offline" class="banner" role="status" hidden>Vous êtes hors ligne.</div>
+  <header class="app-header">
+    <div class="container">
+      <span class="brand"><span id="logo"></span><span>Administration</span></span>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn sm" id="logout" type="button" hidden>Déconnexion</button>
+        <button class="icon-btn" id="theme-btn" type="button"></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" id="login-view" hidden>
+    <form class="panel login" id="login-form" novalidate>
+      <h1 style="font-size:1.5rem">Connexion</h1>
+      <div class="field"><label for="a-mail">Adresse e-mail</label><input id="a-mail" type="email" autocomplete="username" required></div>
+      <div class="field"><label for="a-pass">Mot de passe</label><input id="a-pass" type="password" autocomplete="current-password" required></div>
+      <p class="error" id="login-error" role="alert" hidden></p>
+      <button class="btn primary block" type="submit" id="login-btn">Se connecter</button>
+    </form>
+  </main>
+
+  <main class="container" id="app" hidden>
+    <div class="stats" id="stats"></div>
+    <div class="toolbar" style="margin-top:22px">
+      <h2 style="font-size:1.5rem">Tous les événements</h2>
+      <button class="btn primary" type="button" data-new></button>
+    </div>
+    <div class="grid" id="admin-events"></div>
+  </main>
+
+  <dialog class="sheet wide" id="sheet" aria-labelledby="sheet-title"><div class="sheet-slot" style="display:contents"></div></dialog>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+</body>
+</html>

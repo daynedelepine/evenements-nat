@@ -2,232 +2,99 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Evénements Nat</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#386641">
+  <title>Événements Nat</title>
+  <meta name="description" content="Cafés Nat, Tables d'hôtes et ApéroNus : consultez les prochains rendez-vous et réservez votre place.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:title" content="Événements Nat">
+  <meta property="og:description" content="Cafés Nat, Tables d'hôtes et ApéroNus : réservez votre place en moins d'une minute.">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <script type="module" src="/src/site/main.js"></script>
 </head>
 <body>
-  <div id="app">
-    <!-- Header -->
-    <header class="app-header">
-      <h1>Evénements Nat</h1>
-    </header>
+  <div id="offline" class="banner" role="status" hidden>Vous êtes hors ligne : les événements affichés peuvent ne pas être à jour.</div>
 
-    <!-- Tab Navigation -->
-    <nav class="tab-nav">
-      <button class="tab-btn active" data-tab="calendrier">
-        <span class="tab-icon">📅</span>
-        <span>Calendrier</span>
-      </button>
-      <button class="tab-btn" data-tab="reserver">
-        <span class="tab-icon">✓</span>
-        <span>Réserver</span>
-      </button>
-      <button class="tab-btn" data-tab="infos">
-        <span class="tab-icon">ℹ️</span>
-        <span>Infos</span>
-      </button>
-      <button class="tab-btn" data-tab="admin">
-        <span class="tab-icon">⚙️</span>
-        <span>Admin</span>
-      </button>
-    </nav>
-
-    <!-- Tab Content -->
-    <main class="tab-content">
-      <!-- Calendrier Tab -->
-      <section id="calendrier-tab" class="tab-pane active">
-        <div class="container">
-          <h2>Événements à venir</h2>
-          <div id="events-list" class="events-list">
-            <div class="loading">Chargement des événements...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Réserver Tab -->
-      <section id="reserver-tab" class="tab-pane">
-        <div class="container">
-          <h2>Réserver un événement</h2>
-          <div id="booking-events-list" class="booking-events-list">
-            <div class="loading">Chargement des événements...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Informations utiles Tab -->
-      <section id="infos-tab" class="tab-pane">
-        <div class="container">
-          <h2>Informations utiles</h2>
-          <div class="info-card">
-            <h3>Contact</h3>
-            <div class="contact-item">
-              <span class="contact-icon">📱</span>
-              <span>Téléphone : <a href="tel:+33663081980">06 63 08 19 80</a></span>
-            </div>
-            <div class="contact-item">
-              <span class="contact-icon">💬</span>
-              <span>WhatsApp : <a href="https://wa.me/33663081980" target="_blank">Contacter sur WhatsApp</a></span>
-            </div>
-            <div class="contact-item">
-              <span class="contact-icon">✉️</span>
-              <span>Email : <a href="mailto:dayanjmd@hotmail.com">dayanjmd@hotmail.com</a></span>
-            </div>
-          </div>
-
-          <div class="info-card">
-            <h3>Consignes</h3>
-            <ul>
-              <li>Les événements sont régulièrement publiés durant le mois</li>
-              <li>Merci de confirmer votre présence après inscription</li>
-              <li>En cas d'empêchement, pensez à prévenir</li>
-              <li>Le respect et la discrétion sont de mise</li>
-            </ul>
-          </div>
-
-          <div class="info-card">
-            <h3>Confidentialité</h3>
-            <p>Vos données personnelles (nom et numéro de téléphone) ne sont utilisées que pour la gestion des inscriptions et ne sont jamais partagées avec des tiers.</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- Admin Tab -->
-      <section id="admin-tab" class="tab-pane">
-        <div class="container">
-          <!-- Login Form -->
-          <div id="admin-login" class="admin-login">
-            <h2>Administration</h2>
-            <form id="admin-login-form" class="form-card">
-              <div class="form-group">
-                <label class="form-label" for="admin-email">Adresse e-mail</label>
-                <input type="email" id="admin-email" class="form-control" autocomplete="username" required>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="admin-password">Mot de passe</label>
-                <input type="password" id="admin-password" class="form-control" autocomplete="current-password" required>
-              </div>
-              <button type="submit" class="btn btn--primary btn--full-width">Se connecter</button>
-              <div id="admin-error" class="error-message" style="display: none;"></div>
-            </form>
-          </div>
-
-          <!-- Admin Panel -->
-          <div id="admin-panel" class="admin-panel" style="display: none;">
-            <div class="admin-header">
-              <h2>Panneau d'administration</h2>
-              <button id="admin-logout" class="btn btn--secondary btn--sm">Déconnexion</button>
-            </div>
-
-            <!-- Create Event Form -->
-            <div class="admin-section">
-              <h3>Créer un événement</h3>
-              <form id="create-event-form" class="form-card">
-                <div class="form-group">
-                  <label class="form-label" for="event-name">Nom de l'événement</label>
-                  <input type="text" id="event-name" class="form-control" required>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="event-category">Catégorie</label>
-                  <select id="event-category" class="form-control" required>
-                    <option value="">Sélectionner une catégorie</option>
-                    <option value="Cafés Nat">Cafés Nat</option>
-                    <option value="Tables d'hôtes">Tables d'hôtes</option>
-                    <option value="ApéroNus">ApéroNus</option>
-                  </select>
-                </div>
-                <div class="form-row">
-                  <div class="form-group">
-                    <label class="form-label" for="event-date">Date</label>
-                    <input type="date" id="event-date" class="form-control" required>
-                  </div>
-                  <div class="form-group">
-                    <label class="form-label" for="event-time">Heure</label>
-                    <input type="time" id="event-time" class="form-control" required>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="event-location">Lieu</label>
-                  <input type="text" id="event-location" class="form-control" required>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="event-description">Description</label>
-                  <textarea id="event-description" class="form-control" rows="3"></textarea>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="event-max-participants">Nombre maximum de participants</label>
-                  <input type="number" id="event-max-participants" class="form-control" min="1" required>
-                </div>
-                <button type="submit" class="btn btn--primary btn--full-width">Créer l'événement</button>
-              </form>
-            </div>
-
-            <!-- Events Management -->
-            <div class="admin-section">
-              <h3>Tous les événements</h3>
-              <div id="admin-events-list" class="admin-events-list">
-                <div class="loading">Chargement...</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
-
-  <!-- Booking Modal -->
-  <div id="booking-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="modal-event-title">Réserver</h3>
-        <button class="modal-close" id="close-booking-modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <div id="modal-event-details"></div>
-        <form id="booking-form" class="booking-form">
-          <div class="form-group">
-            <label class="form-label" for="booking-name">Votre nom</label>
-            <input type="text" id="booking-name" class="form-control" autocomplete="name" required>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="booking-phone">Numéro de téléphone</label>
-            <input type="tel" id="booking-phone" class="form-control" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78" required>
-          </div>
-          <div id="booking-error" class="error-message" style="display: none;"></div>
-          <div id="booking-success" class="success-message" style="display: none;"></div>
-          <button type="submit" class="btn btn--primary btn--full-width">Confirmer l'inscription</button>
-        </form>
-      </div>
+  <header class="app-header">
+    <div class="container">
+      <a class="brand" href="/" id="logo-link"><span id="logo"></span><span>Événements Nat</span></a>
+      <button class="icon-btn" id="theme-btn" type="button"></button>
     </div>
-  </div>
+  </header>
 
-  <!-- Event Details Modal -->
-  <div id="event-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="event-modal-title">Détails de l'événement</h3>
-        <button class="modal-close" id="close-event-modal">&times;</button>
-      </div>
-      <div class="modal-body" id="event-modal-body">
-        <!-- Event details will be inserted here -->
-      </div>
-    </div>
-  </div>
+  <nav class="tabs" role="tablist" aria-label="Navigation principale">
+    <button class="tab" role="tab" id="t-events" data-tab="events" aria-selected="true"><span data-i="calendar"></span>Événements</button>
+    <button class="tab" role="tab" id="t-mine" data-tab="mine" aria-selected="false"><span data-i="ticket"></span>Mes inscriptions<span class="count" id="mine-count" hidden>0</span></button>
+    <button class="tab" role="tab" id="t-infos" data-tab="infos" aria-selected="false"><span data-i="info"></span>Infos</button>
+  </nav>
 
-  <!-- Participants Modal -->
-  <div id="participants-modal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="participants-modal-title">Participants inscrits</h3>
-        <button class="modal-close" id="close-participants-modal">&times;</button>
+  <main class="container" id="main">
+    <section id="p-events" role="tabpanel" aria-labelledby="t-events">
+      <div class="hero">
+        <h1>Des moments simples, entre gens bien.</h1>
+        <p>Choisissez un événement, réservez votre place en moins d'une minute et retrouvez tout au même endroit.</p>
+        <button class="next-pill" id="next-pill" type="button" hidden></button>
       </div>
-      <div class="modal-body" id="participants-modal-body">
-        <!-- Participants list will be inserted here -->
-      </div>
-    </div>
-  </div>
 
-  <script type="module" src="app.js"></script>
+      <div class="toolbar">
+        <div class="chips" id="chips" role="group" aria-label="Filtrer par catégorie"></div>
+        <div class="segment" role="group" aria-label="Affichage">
+          <button type="button" data-view="list" aria-pressed="true"></button>
+          <button type="button" data-view="month" aria-pressed="false"></button>
+        </div>
+      </div>
+      <label class="switch"><input type="checkbox" id="free-only"> Places disponibles uniquement</label>
+
+      <div id="events-out" aria-live="polite"></div>
+      <div style="margin:22px 0 0"><button class="btn" id="past-btn" type="button" aria-expanded="false" hidden></button></div>
+      <div id="past-out"></div>
+    </section>
+
+    <section id="p-mine" role="tabpanel" aria-labelledby="t-mine" hidden>
+      <h1 style="margin-top:24px;font-size:1.75rem">Mes inscriptions</h1>
+      <p class="hint" style="margin-top:6px">Mémorisées sur cet appareil uniquement. Aucun compte à créer.</p>
+      <div id="mine-out" class="grid" style="margin-top:16px"></div>
+    </section>
+
+    <section id="p-infos" role="tabpanel" aria-labelledby="t-infos" hidden>
+      <div class="cards">
+        <div class="panel wide">
+          <h2>À propos</h2>
+          <p>Événements Nat réunit un petit cercle autour de trois rendez-vous : les <b>Cafés Nat</b>, les <b>Tables d'hôtes</b> et les <b>ApéroNus</b>. Public averti, événements privés.</p>
+        </div>
+        <div class="panel">
+          <h3>Contact</h3>
+          <a class="contact-link" href="tel:+33663081980"><span data-i="phone"></span> 06 63 08 19 80</a>
+          <a class="contact-link" href="https://wa.me/33663081980" target="_blank" rel="noopener"><span data-i="chat"></span> Écrire sur WhatsApp</a>
+          <a class="contact-link" href="mailto:dayanjmd@hotmail.com"><span data-i="mail"></span> dayanjmd@hotmail.com</a>
+        </div>
+        <div class="panel">
+          <h3>Consignes</h3>
+          <ul>
+            <li>Les événements sont régulièrement publiés durant le mois.</li>
+            <li>Merci de confirmer votre présence après inscription.</li>
+            <li>En cas d'empêchement, pensez à prévenir.</li>
+            <li>Le respect et la discrétion sont de mise.</li>
+          </ul>
+        </div>
+        <div class="panel wide">
+          <h3>Questions fréquentes</h3>
+          <div>
+            <details><summary>Comment annuler ma venue ?</summary><p>Écrivez à Nat sur WhatsApp ou par téléphone : votre place sera aussitôt libérée pour quelqu'un d'autre.</p></details>
+            <details><summary>Que faut-il apporter ?</summary><p>Rien de particulier : Nat précise sur chaque fiche si un plat ou une boisson est attendu.</p></details>
+            <details><summary>Où se déroule l'événement ?</summary><p>L'adresse est indiquée sur la fiche de l'événement, avec un lien d'itinéraire.</p></details>
+            <details><summary>Que deviennent mes données ?</summary><p>Votre nom et votre numéro servent uniquement à gérer les inscriptions. Ils ne sont jamais partagés et seul l'organisateur y a accès.</p></details>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="sheet" id="sheet" aria-labelledby="sheet-title"><div class="sheet-slot" style="display:contents"></div></dialog>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
 </body>
 </html>

@@ -4,14 +4,35 @@
     {
       "name": "maquette",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5173", "--directory", "maquette"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5173",
+        "--directory",
+        "maquette"
+      ],
       "port": 5173
     },
     {
       "name": "site",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5174", "--bind", "127.0.0.1"],
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5174",
+        "--bind",
+        "127.0.0.1"
+      ],
       "port": 5174
+    },
+    {
+      "name": "vite",
+      "runtimeExecutable": "npm.cmd",
+      "runtimeArgs": [
+        "run",
+        "dev"
+      ],
+      "port": 5175
     }
   ]
 }

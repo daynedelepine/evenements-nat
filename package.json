@@ -1,0 +1,20 @@
+{
+  "name": "evenements-nat",
+  "private": true,
+  "version": "2.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test:rules": "node scripts/test-rules.js https://evenements-nat-test-default-rtdb.firebaseio.com"
+  },
+  "devDependencies": {
+    "vite": "^8.3.8"
+  },
+  "dependencies": {
+    "@fontsource-variable/dm-sans": "^5.3.0",
+    "@fontsource-variable/fraunces": "^5.3.0",
+    "firebase": "^13.3.0"
+  }
+}
