@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#386641">
+  <title>Événements Nat — maquette</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ribbon">Maquette — données fictives, rien n'est enregistré. <a href="admin.html">Voir la maquette Administration →</a></div>
+  <div id="offline" class="banner" role="status" hidden>Vous êtes hors ligne : les événements affichés peuvent ne pas être à jour.</div>
+
+  <header class="app-header">
+    <div class="container">
+      <a class="brand" href="./" id="logo-link"><span id="logo"></span><span>Événements Nat</span></a>
+      <button class="icon-btn" id="theme-btn" type="button"></button>
+    </div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Navigation principale">
+    <button class="tab" role="tab" id="t-events" data-tab="events" aria-selected="true"><span data-i="calendar"></span>Événements</button>
+    <button class="tab" role="tab" id="t-mine" data-tab="mine" aria-selected="false"><span data-i="ticket"></span>Mes inscriptions<span class="count" id="mine-count" hidden>0</span></button>
+    <button class="tab" role="tab" id="t-infos" data-tab="infos" aria-selected="false"><span data-i="info"></span>Infos</button>
+  </nav>
+
+  <main class="container" id="main">
+    <!-- Onglet Événements -->
+    <section id="p-events" role="tabpanel" aria-labelledby="t-events">
+      <div class="hero">
+        <h1>Des moments simples, entre gens bien.</h1>
+        <p>Choisissez un événement, réservez votre place en moins d'une minute et retrouvez tout au même endroit.</p>
+        <button class="next-pill" id="next-pill" type="button" hidden></button>
+      </div>
+
+      <div class="toolbar">
+        <div class="chips" id="chips" role="group" aria-label="Filtrer par catégorie"></div>
+        <div class="segment" role="group" aria-label="Affichage">
+          <button type="button" data-view="list" aria-pressed="true"></button>
+          <button type="button" data-view="month" aria-pressed="false"></button>
+        </div>
+      </div>
+      <label class="switch"><input type="checkbox" id="free-only"> Places disponibles uniquement</label>
+
+      <div id="events-out" aria-live="polite"></div>
+      <div style="margin:22px 0 0"><button class="btn" id="past-btn" type="button" aria-expanded="false"></button></div>
+      <div id="past-out"></div>
+    </section>
+
+    <!-- Onglet Mes inscriptions -->
+    <section id="p-mine" role="tabpanel" aria-labelledby="t-mine" hidden>
+      <h1 style="margin-top:24px;font-size:1.75rem">Mes inscriptions</h1>
+      <p class="hint" style="margin-top:6px">Mémorisées sur cet appareil uniquement. Aucun compte à créer.</p>
+      <div id="mine-out" class="grid" style="margin-top:16px"></div>
+    </section>
+
+    <!-- Onglet Infos -->
+    <section id="p-infos" role="tabpanel" aria-labelledby="t-infos" hidden>
+      <div class="cards">
+        <div class="panel wide">
+          <h2>À propos</h2>
+          <p>Événements Nat réunit un petit cercle autour de trois rendez-vous : les <b>Cafés Nat</b>, les <b>Tables d'hôtes</b> et les <b>ApéroNus</b>. Public averti, événements privés. <span class="hint">(Texte à rédiger avec vous.)</span></p>
+        </div>
+        <div class="panel">
+          <h3>Contact</h3>
+          <a class="contact-link" href="tel:+33663081980"><span data-i="phone"></span> 06 63 08 19 80</a>
+          <a class="contact-link" href="https://wa.me/33663081980" target="_blank" rel="noopener"><span data-i="chat"></span> Écrire sur WhatsApp</a>
+          <a class="contact-link" href="mailto:dayanjmd@hotmail.com"><span data-i="mail"></span> dayanjmd@hotmail.com</a>
+        </div>
+        <div class="panel">
+          <h3>Consignes</h3>
+          <ul>
+            <li>Les événements sont régulièrement publiés durant le mois.</li>
+            <li>Merci de confirmer votre présence après inscription.</li>
+            <li>En cas d'empêchement, pensez à prévenir.</li>
+            <li>Le respect et la discrétion sont de mise.</li>
+          </ul>
+        </div>
+        <div class="panel wide">
+          <h3>Questions fréquentes</h3>
+          <div>
+            <details><summary>Comment annuler ma venue ?</summary><p>Depuis « Mes inscriptions », ou en écrivant à Nat sur WhatsApp. Votre place est aussitôt proposée à la liste d'attente.</p></details>
+            <details><summary>Que faut-il apporter ?</summary><p>Rien de particulier : Nat précise sur chaque fiche si un plat ou une boisson est attendu.</p></details>
+            <details><summary>Où se déroule l'événement ?</summary><p>L'adresse est indiquée sur la fiche de l'événement, avec un lien d'itinéraire.</p></details>
+            <details><summary>Que deviennent mes données ?</summary><p>Votre nom et votre numéro servent uniquement à gérer les inscriptions. Ils ne sont jamais partagés et seul l'organisateur y a accès.</p></details>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Fiche événement / inscription -->
+  <dialog class="sheet" id="sheet" aria-labelledby="sheet-title"><div class="sheet-slot" style="display:contents"></div></dialog>
+
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script src="common.js"></script>
+<script>
+const WA_TXT = (e, n, p) => `Bonjour Nat, c'est ${n}. Je confirme ma venue à « ${e.name} » le ${fmtLong(e)} à ${fmtTime(e)}${p > 1 ? ` (${p} personnes)` : ''}. À bientôt !`;
+const state = { tab: 'events', cat: 'all', free: false, view: 'list', month: 0, day: null, past: false };
+let regs = store.get('nat-regs', null) ?? [{ id: 'r0', eventId: 'e4', name: 'Camille', people: 2, status: 'ok' }]; // exemple de départ
+const saveRegs = () => { store.set('nat-regs', regs); renderMine(); };
+const me = store.get('nat-me', { name: '', phone: '' });
+
+/* ---------- Initialisation ---------- */
+$('#logo').innerHTML = LOGO;
+$$('[data-i]').forEach(s => s.outerHTML = ic(s.dataset.i));
+$('[data-view="list"]').innerHTML = ic('list') + 'Liste';
+$('[data-view="month"]').innerHTML = ic('calendar') + 'Mois';
+initTheme();
+
+$('#chips').innerHTML = [['all', 'Tous', null], ...Object.entries(CATS).map(([k, c]) => [k, c.label, c.icon])]
+  .map(([k, l, i]) => `<button type="button" class="fchip" data-cat="${k}" aria-pressed="${k === 'all'}">${i ? ic(i) : ''}${l}</button>`).join('');
+
+/* ---------- Navigation par onglets ---------- */
+function setTab(t) {
+  state.tab = t;
+  $$('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
+  ['events', 'mine', 'infos'].forEach(p => $('#p-' + p).hidden = p !== t);
+  scrollTo({ top: 0 });
+}
+$$('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
+$('#logo-link').addEventListener('click', e => { e.preventDefault(); setTab('events'); });
+
+/* ---------- Cartes ---------- */
+function card(e, past = false) {
+  const s = seats(e), c = CATS[e.cat], d = startOf(e), rel = relDay(e);
+  const dow = new Intl.DateTimeFormat('fr-FR', { weekday: 'short' }).format(d).replace('.', '');
+  const mon = new Intl.DateTimeFormat('fr-FR', { month: 'short' }).format(d).replace('.', '');
+  const mine = regs.some(r => r.eventId === e.id);
+  const btn = past ? '' : mine ? `<span class="chip cat-tables">${ic('check')}Inscrit</span>`
+    : `<button type="button" class="btn ${s.full ? '' : 'primary'} sm" data-reg="${e.id}">${s.full ? 'Liste d’attente' : 'S’inscrire'}</button>`;
+  return `<article class="card ${c.cls} ${past ? 'past' : ''}">
+    <div class="card-top">
+      <div class="datebox" aria-hidden="true"><span class="dow">${dow}</span><span class="day">${d.getDate()}</span><span class="mon">${mon}</span></div>
+      <div class="card-body">
+        <span class="chip ${c.cls}">${ic(c.icon)}${c.label}${isNew(e) && !past ? '<span class="badge">Nouveau</span>' : ''}</span>
+        <button type="button" class="card-link" data-open="${e.id}">${esc(e.name)}</button>
+        <div class="meta"><span>${ic('clock')}${rel ? `<b>${rel}</b> · ` : ''}${fmtTime(e)}</span><span>${ic('pin')}${esc(e.place)}</span></div>
+      </div>
+    </div>
+    <div class="card-foot">
+      <div class="seats">
+        <span class="seats-text ${s.tone}">${past ? `${e.taken} participants` : s.text}</span>
+        <div class="meter ${s.tone}" role="img" aria-label="${e.taken} places prises sur ${e.max}"><span style="width:${s.pct}%"></span></div>
+      </div>
+      ${btn}
+    </div>
+  </article>`;
+}
+const skeletons = () => `<div class="grid" style="margin-top:14px">${'<div class="skeleton"></div>'.repeat(4)}</div>`;
+const empty = (t, sub = '') => `<div class="empty">${ic('calendar')}<p><b>${t}</b></p><p>${sub}</p></div>`;
+
+function filtered() {
+  return EVENTS.filter(isUpcoming).filter(e => (state.cat === 'all' || e.cat === state.cat) && (!state.free || seats(e).left > 0))
+    .sort((a, b) => startOf(a) - startOf(b));
+}
+
+/* ---------- Rendu : liste groupée par mois ---------- */
+function renderList() {
+  const list = filtered();
+  if (!list.length) return empty('Aucun événement ne correspond', 'Essayez un autre filtre ou revenez bientôt : de nouveaux rendez-vous sont publiés régulièrement.');
+  const groups = {};
+  list.forEach(e => (groups[monthLabel(startOf(e))] ??= []).push(e));
+  return Object.entries(groups).map(([m, evs]) => `<h2 class="month">${m}</h2><div class="grid">${evs.map(e => card(e)).join('')}</div>`).join('');
+}
+
+/* ---------- Rendu : vue mensuelle ---------- */
+function renderMonth() {
+  const first = new Date(TODAY.getFullYear(), TODAY.getMonth() + state.month, 1);
+  const lead = (first.getDay() + 6) % 7, days = new Date(first.getFullYear(), first.getMonth() + 1, 0).getDate();
+  const evs = filtered(), allUp = EVENTS.filter(isUpcoming);
+  const on = iso => evs.filter(e => e.date === iso);
+  let cells = ['lun', 'mar', 'mer', 'jeu', 'ven', 'sam', 'dim'].map(d => `<span class="cal-dow">${d}</span>`).join('');
+  cells += '<span></span>'.repeat(lead);
+  for (let d = 1; d <= days; d++) {
+    const iso = isoDay(new Date(first.getFullYear(), first.getMonth(), d)), list = on(iso), isToday = iso === isoDay(TODAY);
+    const dots = list.map(e => `<i class="${CATS[e.cat].cls}"></i>`).join('');
+    cells += list.length
+      ? `<button type="button" class="cal-day ${isToday ? 'today' : ''}" data-day="${iso}" aria-pressed="${state.day === iso}" aria-label="${d} : ${list.length} événement${list.length > 1 ? 's' : ''}">${d}<span class="dots">${dots}</span></button>`
+      : `<span class="cal-day muted ${isToday ? 'today' : ''}">${d}</span>`;
+  }
+  const sel = state.day && on(state.day).length ? on(state.day) : null;
+  return `<div class="cal">
+    <div class="cal-head">
+      <button type="button" class="icon-btn" data-month="-1" aria-label="Mois précédent" ${state.month <= 0 ? 'disabled style="opacity:.4"' : ''}>${ic('left')}</button>
+      <h2>${monthLabel(first)}</h2>
+      <button type="button" class="icon-btn" data-month="1" aria-label="Mois suivant">${ic('right')}</button>
+    </div>
+    <div class="cal-grid">${cells}</div></div>
+    <div class="grid" style="margin-top:14px">${sel ? sel.map(e => card(e)).join('') : ''}</div>
+    ${!sel ? `<p class="hint" style="margin-top:12px;text-align:center">${allUp.length ? 'Touchez un jour marqué d’un point pour voir ses événements.' : ''}</p>` : ''}`;
+}
+
+function render() {
+  const out = $('#events-out');
+  out.innerHTML = state.view === 'list' ? renderList() : renderMonth();
+  $$('.fchip').forEach(b => b.setAttribute('aria-pressed', b.dataset.cat === state.cat));
+  $$('.segment button').forEach(b => b.setAttribute('aria-pressed', b.dataset.view === state.view));
+  const past = EVENTS.filter(e => !isUpcoming(e)).sort((a, b) => startOf(b) - startOf(a));
+  $('#past-btn').innerHTML = `${ic('clock')} ${state.past ? 'Masquer' : 'Voir'} les événements passés (${past.length})`;
+  $('#past-btn').setAttribute('aria-expanded', state.past);
+  $('#past-out').innerHTML = state.past ? `<div class="grid" style="margin-top:14px">${past.map(e => card(e, true)).join('')}</div>` : '';
+  const next = EVENTS.filter(isUpcoming).sort((a, b) => startOf(a) - startOf(b))[0];
+  const np = $('#next-pill');
+  if (next) { np.hidden = false; np.dataset.open = next.id; np.innerHTML = `<span class="dot"></span><span>Prochain : <b>${esc(next.name)}</b> · ${relDay(next) || fmtLong(next)} · ${fmtTime(next)}</span>`; }
+  renderMine();
+}
+
+/* ---------- Mes inscriptions ---------- */
+function renderMine() {
+  const cnt = $('#mine-count'); cnt.hidden = !regs.length; cnt.textContent = regs.length;
+  const out = $('#mine-out');
+  if (!regs.length) { out.innerHTML = `<div class="empty" style="grid-column:1/-1">${ic('ticket')}<p><b>Aucune inscription</b></p><p>Vos réservations apparaîtront ici.</p><button class="btn primary" type="button" data-goto="events">Voir les événements</button></div>`; return; }
+  out.innerHTML = regs.map(r => {
+    const e = byId(r.eventId); if (!e) return '';
+    return `<article class="card ${CATS[e.cat].cls}"><div class="card-top">
+      <div class="datebox" aria-hidden="true"><span class="dow">${new Intl.DateTimeFormat('fr-FR', { weekday: 'short' }).format(startOf(e)).replace('.', '')}</span><span class="day">${startOf(e).getDate()}</span><span class="mon">${new Intl.DateTimeFormat('fr-FR', { month: 'short' }).format(startOf(e)).replace('.', '')}</span></div>
+      <div class="card-body"><span class="chip ${r.status === 'wait' ? 'cat-cafes' : 'cat-tables'}">${ic(r.status === 'wait' ? 'clock' : 'check')}${r.status === 'wait' ? 'Liste d’attente' : 'Place réservée'}</span>
+      <h3 class="card-title">${esc(e.name)}</h3>
+      <div class="meta"><span>${ic('clock')}${fmtTime(e)}</span><span>${ic('users')}${r.people} personne${r.people > 1 ? 's' : ''}</span></div></div></div>
+      <div class="actions">
+        <button class="btn sm" type="button" data-ics="${e.id}">${ic('calendar')}Agenda</button>
+        <a class="btn sm" href="${mapsLink(e)}" target="_blank" rel="noopener">${ic('route')}Itinéraire</a>
+        <button class="btn sm danger" type="button" data-cancel="${r.id}">Annuler</button>
+      </div></article>`;
+  }).join('');
+}
+
+/* ---------- Fiche événement ---------- */
+function openEvent(id) {
+  const e = byId(id), s = seats(e), c = CATS[e.cat], past = !isUpcoming(e), mine = regs.some(r => r.eventId === id);
+  openSheet($('#sheet'), `
+    <div class="sheet-head"><div><span class="chip ${c.cls}">${ic(c.icon)}${c.label}</span><h2 id="sheet-title" style="margin-top:8px">${esc(e.name)}</h2></div>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <div class="sheet-body">
+      <div class="rows">
+        <div class="row">${ic('calendar')}<span><b style="text-transform:capitalize">${fmtLong(e)}</b> à ${fmtTime(e)}</span></div>
+        <div class="row">${ic('pin')}<span>${esc(e.place)}</span></div>
+        <div class="row">${ic('users')}<span>${e.taken} / ${e.max} participants</span></div>
+      </div>
+      <div class="seats"><span class="seats-text ${s.tone}">${s.text}</span><div class="meter ${s.tone}"><span style="width:${s.pct}%"></span></div></div>
+      ${e.desc ? `<p class="note">${esc(e.desc)}</p>` : ''}
+      <div class="actions">
+        <button class="btn sm" type="button" data-share="${id}">${ic('share')}Partager</button>
+        <button class="btn sm" type="button" data-ics="${id}">${ic('calendar')}Agenda</button>
+        <a class="btn sm" href="${mapsLink(e)}" target="_blank" rel="noopener">${ic('route')}Itinéraire</a>
+      </div>
+    </div>
+    <div class="sheet-foot">
+      ${past ? '<button class="btn block" type="button" data-close>Événement terminé</button>'
+        : mine ? '<button class="btn block" type="button" data-close>Vous êtes déjà inscrit(e)</button>'
+        : `<button class="btn primary block" type="button" data-reg="${id}">${s.full ? 'Rejoindre la liste d’attente' : 'S’inscrire à cet événement'}</button>`}
+    </div>`);
+}
+
+/* ---------- Formulaire d'inscription ---------- */
+function openForm(id) {
+  const e = byId(id), s = seats(e), maxP = s.full ? 4 : Math.min(4, s.left);
+  openSheet($('#sheet'), `
+    <div class="sheet-head"><div><h2 id="sheet-title">${s.full ? 'Liste d’attente' : 'Réserver'}</h2><p class="hint" style="margin-top:4px">${esc(e.name)} · ${fmtLong(e)} · ${fmtTime(e)}</p></div>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <form id="reg-form" novalidate style="display:contents">
+      <div class="sheet-body">
+        ${s.full ? `<p class="note">L'événement est complet. Vous serez prévenu(e) par WhatsApp si une place se libère.</p>` : ''}
+        <div class="field"><label for="f-name">Votre nom</label>
+          <input id="f-name" type="text" autocomplete="name" value="${esc(me.name)}" aria-describedby="e-name" required>
+          <p class="error" id="e-name" hidden>${ic('info')}Indiquez votre prénom et votre nom.</p></div>
+        <div class="field"><label for="f-phone">Téléphone</label>
+          <input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78" value="${esc(me.phone)}" aria-describedby="e-phone h-phone" required>
+          <p class="hint" id="h-phone">Utilisé uniquement par Nat, jamais affiché publiquement.</p>
+          <p class="error" id="e-phone" hidden>${ic('info')}Numéro invalide. Exemple : 06 12 34 56 78.</p></div>
+        <div class="field"><span class="label" id="l-people">Nombre de personnes</span>
+          <div class="stepper" role="group" aria-labelledby="l-people">
+            <button type="button" data-step="-1" aria-label="Une personne de moins">${ic('minus')}</button><output id="f-people" aria-live="polite">1</output><button type="button" data-step="1" aria-label="Une personne de plus">${ic('plus')}</button></div>
+          <p class="hint">Jusqu'à ${maxP} personne${maxP > 1 ? 's' : ''} par réservation.</p></div>
+        <div class="field"><label for="f-note">Allergies, régime, remarques <span class="hint">(facultatif)</span></label><textarea id="f-note" rows="2"></textarea></div>
+        <label class="check"><input type="checkbox" id="f-mem" checked> Mémoriser mon nom et mon numéro sur cet appareil</label>
+      </div>
+      <div class="sheet-foot"><button class="btn primary block" type="submit" id="f-submit">${s.full ? 'Rejoindre la liste d’attente' : 'Confirmer l’inscription'}</button></div>
+    </form>`);
+  const ph = $('#f-phone'); ph.addEventListener('input', () => ph.value = formatPhone(ph.value));
+  let n = 1;
+  $$('[data-step]').forEach(b => b.addEventListener('click', () => { n = Math.min(maxP, Math.max(1, n + Number(b.dataset.step))); $('#f-people').textContent = n; }));
+  $('#reg-form').addEventListener('submit', ev => {
+    ev.preventDefault();
+    const name = $('#f-name').value.trim(), phone = $('#f-phone').value;
+    const okName = name.length >= 2, okPhone = validPhone(phone);
+    $('#e-name').hidden = okName; $('#f-name').setAttribute('aria-invalid', !okName);
+    $('#e-phone').hidden = okPhone; $('#f-phone').setAttribute('aria-invalid', !okPhone);
+    if (!okName || !okPhone) { (okName ? $('#f-phone') : $('#f-name')).focus(); return; }
+    const btn = $('#f-submit'); btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Enregistrement…';
+    setTimeout(() => finish(e, name, phone, n, $('#f-mem').checked), 900); // simulation du réseau
+  });
+}
+
+function finish(e, name, phone, people, remember) {
+  const full = seats(e).full, status = full ? 'wait' : 'ok';
+  if (remember) store.set('nat-me', { name, phone }); me.name = name; me.phone = phone;
+  if (full) e.wait += people; else e.taken += people;
+  regs.push({ id: 'r' + Date.now(), eventId: e.id, name, people, status }); saveRegs(); render();
+  openSheet($('#sheet'), `
+    <div class="sheet-head"><h2 id="sheet-title">${full ? 'Sur liste d’attente' : 'Inscription enregistrée'}</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <div class="sheet-body"><div class="success">
+      <div class="tick">${ic('check')}</div>
+      <p><b>${esc(name)}</b>, ${full ? 'vous êtes inscrit(e) en liste d’attente.' : 'votre place est réservée.'}</p>
+      <div class="recap"><b>${esc(e.name)}</b><br>${fmtLong(e)} · ${fmtTime(e)}<br>${people} personne${people > 1 ? 's' : ''}</div>
+      <p class="hint">Dernière étape : envoyez votre confirmation à Nat par WhatsApp.</p>
+      <a class="btn wa block" href="${waLink(NAT_PHONE, WA_TXT(e, name, people))}" target="_blank" rel="noopener">${ic('chat')}Envoyer ma confirmation sur WhatsApp</a>
+      <div class="actions" style="justify-content:center"><button class="btn sm" type="button" data-ics="${e.id}">${ic('calendar')}Agenda</button>
+      <a class="btn sm" href="${mapsLink(e)}" target="_blank" rel="noopener">${ic('route')}Itinéraire</a></div>
+    </div></div>
+    <div class="sheet-foot"><button class="btn block" type="button" data-close>Terminé</button></div>`);
+}
+
+/* ---------- Événements souris / clavier (délégation) ---------- */
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('[data-open],[data-reg],[data-cat],[data-view],[data-day],[data-month],[data-ics],[data-share],[data-cancel],[data-goto],#past-btn');
+  if (!t) return;
+  const d = t.dataset;
+  if (d.reg) openForm(d.reg);
+  else if (d.open) openEvent(d.open);
+  else if (d.cat && t.classList.contains('fchip')) { state.cat = d.cat; state.day = null; render(); }
+  else if (d.view) { state.view = d.view; render(); }
+  else if (d.day) { state.day = d.day; render(); }
+  else if (d.month) { state.month = Math.max(0, state.month + Number(d.month)); state.day = null; render(); }
+  else if (d.ics) icsFile(byId(d.ics));
+  else if (d.share) { const e = byId(d.share); window.open(waLink('', `${e.name} — ${fmtLong(e)} à ${fmtTime(e)}. Réservation : ${location.href.split('#')[0]}`).replace('wa.me//', 'wa.me/'), '_blank', 'noopener'); }
+  else if (d.cancel) askCancel(t, d.cancel);
+  else if (d.goto) setTab(d.goto);
+  else if (t.id === 'past-btn') { state.past = !state.past; render(); }
+});
+function askCancel(btn, rid) {
+  btn.outerHTML = `<span class="actions"><button class="btn sm danger" type="button" data-doCancel="${rid}">Confirmer l'annulation</button><button class="btn sm" type="button" data-keep>Garder</button></span>`;
+}
+document.addEventListener('click', ev => {
+  const c = ev.target.closest('[data-docancel]'), k = ev.target.closest('[data-keep]');
+  if (k) renderMine();
+  if (!c) return;
+  const r = regs.find(x => x.id === c.dataset.docancel), e = byId(r.eventId), snapshot = [...regs];
+  if (r.status === 'wait') e.wait -= r.people; else e.taken -= r.people;
+  regs = regs.filter(x => x !== r); saveRegs(); render();
+  toast('Inscription annulée.', { label: 'Annuler', fn: () => { regs = snapshot; if (r.status === 'wait') e.wait += r.people; else e.taken += r.people; saveRegs(); render(); } });
+});
+$('#free-only').addEventListener('change', ev => { state.free = ev.target.checked; render(); });
+
+/* ---------- Hors ligne ---------- */
+const syncNet = () => $('#offline').hidden = navigator.onLine;
+addEventListener('online', syncNet); addEventListener('offline', syncNet); syncNet();
+
+/* ---------- Démarrage : squelettes puis données ---------- */
+$('#events-out').innerHTML = skeletons();
+setTimeout(render, 700);
+renderMine();
+</script>
+</body>
+</html>

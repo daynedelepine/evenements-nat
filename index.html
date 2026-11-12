@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
   <title>Evénements Nat</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -71,7 +72,7 @@
             </div>
             <div class="contact-item">
               <span class="contact-icon">✉️</span>
-              <span>Email : <a href="email:dayanjmd@hotmail.com">dayanjmd@hotmail.com</a></span>
+              <span>Email : <a href="mailto:dayanjmd@hotmail.com">dayanjmd@hotmail.com</a></span>
             </div>
           </div>
 
@@ -100,8 +101,12 @@
             <h2>Administration</h2>
             <form id="admin-login-form" class="form-card">
               <div class="form-group">
+                <label class="form-label" for="admin-email">Adresse e-mail</label>
+                <input type="email" id="admin-email" class="form-control" autocomplete="username" required>
+              </div>
+              <div class="form-group">
                 <label class="form-label" for="admin-password">Mot de passe</label>
-                <input type="password" id="admin-password" class="form-control" required>
+                <input type="password" id="admin-password" class="form-control" autocomplete="current-password" required>
               </div>
               <button type="submit" class="btn btn--primary btn--full-width">Se connecter</button>
               <div id="admin-error" class="error-message" style="display: none;"></div>
@@ -183,11 +188,11 @@
         <form id="booking-form" class="booking-form">
           <div class="form-group">
             <label class="form-label" for="booking-name">Votre nom</label>
-            <input type="text" id="booking-name" class="form-control" required>
+            <input type="text" id="booking-name" class="form-control" autocomplete="name" required>
           </div>
           <div class="form-group">
             <label class="form-label" for="booking-phone">Numéro de téléphone</label>
-            <input type="tel" id="booking-phone" class="form-control" placeholder="06 12 34 56 78" required>
+            <input type="tel" id="booking-phone" class="form-control" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78" required>
           </div>
           <div id="booking-error" class="error-message" style="display: none;"></div>
           <div id="booking-success" class="success-message" style="display: none;"></div>

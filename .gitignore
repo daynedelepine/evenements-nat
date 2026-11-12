@@ -1,0 +1,10 @@
+# Données personnelles et secrets : ne jamais pousser (dépôt public)
+sauvegardes/
+*.txt
+.env
+.env.*
+node_modules/
+.firebase/
+firebase-debug.log
+Questionnaire-Evenements-Nat.xlsx
+reprise.md

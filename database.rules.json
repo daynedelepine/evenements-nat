@@ -1,0 +1,54 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "events": {
+      ".read": true,
+      "$eid": {
+        ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2'",
+        ".validate": "newData.hasChildren(['name','category','date','time','location','maxParticipants','taken'])",
+        "name":        { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 100" },
+        "category":    { ".validate": "newData.val() === 'Cafés Nat' || newData.val() === 'Tables d\\'hôtes' || newData.val() === 'ApéroNus'" },
+        "date":        { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/)" },
+        "time":        { ".validate": "newData.isString() && newData.val().matches(/^[0-9]{2}:[0-9]{2}$/)" },
+        "location":    { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 150" },
+        "description": { ".validate": "newData.isString() && newData.val().length <= 1000" },
+        "maxParticipants": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 100 && newData.val() % 1 === 0" },
+        "createdAt":   { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "taken": {
+          ".write": true,
+          ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= newData.parent().child('maxParticipants').val() && (auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || !data.exists() || (newData.val() >= data.val() - 4 && newData.val() <= data.val() + 4))"
+        },
+        "$other": { ".validate": false }
+      }
+    },
+
+    "registrations": {
+      ".read": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2'",
+      "$eid": {
+        "$rid": {
+          ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (!data.exists() && newData.exists()) || (data.exists() && !newData.exists())",
+          ".validate": "newData.hasChildren(['name','phone','people','status','createdAt']) && (auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (newData.parent().parent().parent().child('phones').child($eid).child(newData.child('phone').val()).val() === $rid && ((newData.child('status').val() === 'ok' && newData.parent().parent().parent().child('events').child($eid).child('taken').val() === root.child('events').child($eid).child('taken').val() + newData.child('people').val() && newData.parent().parent().parent().child('events').child($eid).child('taken').val() <= root.child('events').child($eid).child('maxParticipants').val()) || (newData.child('status').val() === 'wait' && root.child('events').child($eid).child('taken').val() >= root.child('events').child($eid).child('maxParticipants').val()))))",
+          "name":      { ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 60" },
+          "phone":     { ".validate": "newData.isString() && newData.val().matches(/^0[1-9][0-9]{8}$/)" },
+          "people":    { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 4 && newData.val() % 1 === 0" },
+          "note":      { ".validate": "newData.isString() && newData.val().length <= 200" },
+          "status":    { ".validate": "newData.val() === 'ok' || newData.val() === 'wait'" },
+          "present":   { ".validate": "newData.isBoolean()" },
+          "createdAt": { ".validate": "newData.isNumber()" },
+          "$other":    { ".validate": false }
+        }
+      }
+    },
+
+    "phones": {
+      "$eid": {
+        "$phone": {
+          ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (!data.exists() && newData.exists()) || (data.exists() && !newData.exists())",
+          ".validate": "newData.isString() && $phone.matches(/^0[1-9][0-9]{8}$/)"
+        }
+      }
+    }
+  }
+}

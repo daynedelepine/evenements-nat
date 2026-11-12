@@ -1,0 +1,7 @@
+{
+  "projects": {
+    "default": "evenements-nat-test",
+    "prod": "evenements-nat",
+    "test": "evenements-nat-test"
+  }
+}

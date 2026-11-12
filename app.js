@@ -1,32 +1,51 @@
 // Firebase imports
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-import { getDatabase, ref, push, set, get, remove, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getDatabase, ref, push, set, update, onValue } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
-// Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyCV4Zx7vfR0Et4uDWlYsmPxUptQnRMPCes",
-  authDomain: "evenements-nat.firebaseapp.com",
-  databaseURL: "https://evenements-nat-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "evenements-nat",
-  storageBucket: "evenements-nat.firebasestorage.app",
-  messagingSenderId: "283381369320",
-  appId: "1:283381369320:web:c106273508efef48503c5d",
-  measurementId: "G-K8V46GMK0L"
+// Configuration Firebase : projet de TEST en local (localhost), production sinon.
+const CONFIGS = {
+  prod: {
+    apiKey: "AIzaSyCV4Zx7vfR0Et4uDWlYsmPxUptQnRMPCes",
+    authDomain: "evenements-nat.firebaseapp.com",
+    databaseURL: "https://evenements-nat-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "evenements-nat",
+    storageBucket: "evenements-nat.firebasestorage.app",
+    messagingSenderId: "283381369320",
+    appId: "1:283381369320:web:c106273508efef48503c5d",
+    measurementId: "G-K8V46GMK0L"
+  },
+  test: {
+    apiKey: "AIzaSyDVZ3XM0W6q8TbSCK9GUWTeE9gHevNFMe0",
+    authDomain: "evenements-nat-test.firebaseapp.com",
+    databaseURL: "https://evenements-nat-test-default-rtdb.firebaseio.com",
+    projectId: "evenements-nat-test",
+    storageBucket: "evenements-nat-test.firebasestorage.app",
+    messagingSenderId: "193804076960",
+    appId: "1:193804076960:web:0a6e5bc00728c6aff006c5"
+  }
 };
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
+const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+const app = initializeApp(isLocal ? CONFIGS.test : CONFIGS.prod);
 const database = getDatabase(app);
+const auth = getAuth(app);
+
+// Compte administrateur (identifiant public, sans danger : les règles Firebase font foi)
+const ADMIN_UID = 'hSfCSlm2tdSnc6WMARMheQP7NpY2';
 
 // State management (in-memory)
 const state = {
   currentTab: 'calendrier',
   isAdminLoggedIn: false,
   events: {},
+  registrations: {},
   selectedEventId: null
 };
 
-const ADMIN_PASSWORD = 'admin123';
+// Échappement HTML : tout texte saisi par un utilisateur passe par esc() avant innerHTML
+function esc(value) {
+  return String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
@@ -104,33 +123,55 @@ function initModals() {
   bookingForm.addEventListener('submit', handleBookingSubmit);
 }
 
-// Admin authentication
+// Admin authentication (Firebase Authentication, compte unique)
+let unsubRegistrations = null;
+
+function watchRegistrations() {
+  if (unsubRegistrations) unsubRegistrations();
+  unsubRegistrations = onValue(ref(database, 'registrations'), (snapshot) => {
+    state.registrations = snapshot.val() || {};
+    renderAdminEventsList();
+  }, (error) => console.error('Lecture des inscriptions refusée :', error.code));
+}
+
 function initAdminForm() {
   const adminLoginForm = document.getElementById('admin-login-form');
   const adminLogoutBtn = document.getElementById('admin-logout');
+  const errorEl = document.getElementById('admin-error');
 
-  adminLoginForm.addEventListener('submit', (e) => {
+  adminLoginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    errorEl.style.display = 'none';
+    const email = document.getElementById('admin-email').value.trim();
     const password = document.getElementById('admin-password').value;
-    const errorEl = document.getElementById('admin-error');
-
-    if (password === ADMIN_PASSWORD) {
-      state.isAdminLoggedIn = true;
-      document.getElementById('admin-login').style.display = 'none';
-      document.getElementById('admin-panel').style.display = 'block';
-      loadAdminEvents();
-      errorEl.style.display = 'none';
-    } else {
-      errorEl.textContent = 'Mot de passe incorrect';
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error) {
+      errorEl.textContent = 'Identifiants incorrects';
       errorEl.style.display = 'block';
     }
   });
 
-  adminLogoutBtn.addEventListener('click', () => {
-    state.isAdminLoggedIn = false;
-    document.getElementById('admin-login').style.display = 'block';
-    document.getElementById('admin-panel').style.display = 'none';
-    document.getElementById('admin-password').value = '';
+  adminLogoutBtn.addEventListener('click', () => signOut(auth));
+
+  onAuthStateChanged(auth, (user) => {
+    if (user && user.uid !== ADMIN_UID) {
+      signOut(auth);
+      errorEl.textContent = 'Ce compte n\u2019est pas autorisé';
+      errorEl.style.display = 'block';
+      return;
+    }
+    state.isAdminLoggedIn = !!user;
+    document.getElementById('admin-login').style.display = user ? 'none' : 'block';
+    document.getElementById('admin-panel').style.display = user ? 'block' : 'none';
+    if (user) {
+      watchRegistrations();
+      loadAdminEvents();
+    } else {
+      if (unsubRegistrations) { unsubRegistrations(); unsubRegistrations = null; }
+      state.registrations = {};
+      document.getElementById('admin-password').value = '';
+    }
   });
 }
 
@@ -149,7 +190,7 @@ function initCreateEventForm() {
       location: document.getElementById('event-location').value,
       description: document.getElementById('event-description').value,
       maxParticipants: parseInt(document.getElementById('event-max-participants').value),
-      participants: {},
+      taken: 0,
       createdAt: new Date().toISOString()
     };
 
@@ -201,7 +242,7 @@ function renderEventsList() {
   }
 
   eventsListEl.innerHTML = events.map(event => {
-    const participantCount = event.participants ? Object.keys(event.participants).length : 0;
+    const participantCount = (event.taken || 0);
     const availableSeats = event.maxParticipants - participantCount;
     const isNew = isEventNew(event.createdAt);
     const categoryClass = getCategoryClass(event.category);
@@ -209,19 +250,19 @@ function renderEventsList() {
     return `
       <div class="event-card" onclick="showEventDetails('${event.id}')">
         <div class="event-card-header">
-          <h3 class="event-card-title">${event.name}</h3>
-          <span class="event-category ${categoryClass}">${event.category}</span>
+          <h3 class="event-card-title">${esc(event.name)}</h3>
+          <span class="event-category ${categoryClass}">${esc(event.category)}</span>
         </div>
         <div class="event-card-body">
           <div class="event-info">
             <span class="event-info-icon">📅</span>
-            <span>${formatDate(event.date)} à ${event.time}</span>
+            <span>${formatDate(event.date)} à ${esc(event.time)}</span>
           </div>
           <div class="event-info">
             <span class="event-info-icon">📍</span>
-            <span>${event.location}</span>
+            <span>${esc(event.location)}</span>
           </div>
-          ${event.description ? `<p style="margin-top: 8px; color: var(--color-text-secondary);">${event.description}</p>` : ''}
+          ${event.description ? `<p style="margin-top: 8px; color: var(--color-text-secondary);">${esc(event.description)}</p>` : ''}
         </div>
         <div class="event-card-footer">
           <span class="seats-info">
@@ -252,7 +293,7 @@ function renderBookingEventsList() {
   }
 
   bookingEventsListEl.innerHTML = events.map(event => {
-    const participantCount = event.participants ? Object.keys(event.participants).length : 0;
+    const participantCount = (event.taken || 0);
     const availableSeats = event.maxParticipants - participantCount;
     const isFull = availableSeats <= 0;
     const categoryClass = getCategoryClass(event.category);
@@ -260,19 +301,19 @@ function renderBookingEventsList() {
     return `
       <div class="booking-event-card">
         <div class="event-card-header">
-          <h3 class="event-card-title">${event.name}</h3>
-          <span class="event-category ${categoryClass}">${event.category}</span>
+          <h3 class="event-card-title">${esc(event.name)}</h3>
+          <span class="event-category ${categoryClass}">${esc(event.category)}</span>
         </div>
         <div class="event-card-body">
           <div class="event-info">
             <span class="event-info-icon">📅</span>
-            <span>${formatDate(event.date)} à ${event.time}</span>
+            <span>${formatDate(event.date)} à ${esc(event.time)}</span>
           </div>
           <div class="event-info">
             <span class="event-info-icon">📍</span>
-            <span>${event.location}</span>
+            <span>${esc(event.location)}</span>
           </div>
-          ${event.description ? `<p style="margin-top: 8px; color: var(--color-text-secondary);">${event.description}</p>` : ''}
+          ${event.description ? `<p style="margin-top: 8px; color: var(--color-text-secondary);">${esc(event.description)}</p>` : ''}
         </div>
         <div class="event-card-footer">
           <span class="seats-info">
@@ -309,15 +350,15 @@ function renderAdminEventsList() {
   }
 
   adminEventsListEl.innerHTML = events.map(event => {
-    const participantCount = event.participants ? Object.keys(event.participants).length : 0;
+    const participantCount = (event.taken || 0);
     const categoryClass = getCategoryClass(event.category);
 
     return `
       <div class="admin-event-card">
         <div class="admin-event-header">
           <div>
-            <h4>${event.name}</h4>
-            <span class="event-category ${categoryClass}">${event.category}</span>
+            <h4>${esc(event.name)}</h4>
+            <span class="event-category ${categoryClass}">${esc(event.category)}</span>
           </div>
           <div class="admin-event-actions">
             <button class="btn btn--secondary btn--sm" onclick="showParticipants('${event.id}')">
@@ -331,11 +372,11 @@ function renderAdminEventsList() {
         <div class="event-card-body">
           <div class="event-info">
             <span class="event-info-icon">📅</span>
-            <span>${formatDate(event.date)} à ${event.time}</span>
+            <span>${formatDate(event.date)} à ${esc(event.time)}</span>
           </div>
           <div class="event-info">
             <span class="event-info-icon">📍</span>
-            <span>${event.location}</span>
+            <span>${esc(event.location)}</span>
           </div>
           <div class="event-info">
             <span class="event-info-icon">👥</span>
@@ -352,24 +393,24 @@ window.showEventDetails = function(eventId) {
   const event = state.events[eventId];
   if (!event) return;
 
-  const participantCount = event.participants ? Object.keys(event.participants).length : 0;
+  const participantCount = (event.taken || 0);
   const availableSeats = event.maxParticipants - participantCount;
   const categoryClass = getCategoryClass(event.category);
 
   const modalBody = document.getElementById('event-modal-body');
   modalBody.innerHTML = `
     <div class="event-card-header">
-      <h3 class="event-card-title">${event.name}</h3>
-      <span class="event-category ${categoryClass}">${event.category}</span>
+      <h3 class="event-card-title">${esc(event.name)}</h3>
+      <span class="event-category ${categoryClass}">${esc(event.category)}</span>
     </div>
     <div class="event-card-body" style="margin-top: 16px;">
       <div class="event-info">
         <span class="event-info-icon">📅</span>
-        <span>${formatDate(event.date)} à ${event.time}</span>
+        <span>${formatDate(event.date)} à ${esc(event.time)}</span>
       </div>
       <div class="event-info">
         <span class="event-info-icon">📍</span>
-        <span>${event.location}</span>
+        <span>${esc(event.location)}</span>
       </div>
       <div class="event-info">
         <span class="event-info-icon">👥</span>
@@ -377,7 +418,7 @@ window.showEventDetails = function(eventId) {
       </div>
       ${event.description ? `
         <div style="margin-top: 16px; padding: 12px; background: var(--color-secondary); border-radius: var(--radius-base);">
-          <p style="margin: 0;">${event.description}</p>
+          <p style="margin: 0;">${esc(event.description)}</p>
         </div>
       ` : ''}
     </div>
@@ -402,18 +443,18 @@ window.openBookingModal = function(eventId) {
 
   state.selectedEventId = eventId;
   
-  const participantCount = event.participants ? Object.keys(event.participants).length : 0;
+  const participantCount = (event.taken || 0);
   const availableSeats = event.maxParticipants - participantCount;
 
-  document.getElementById('modal-event-title').textContent = `Réserver - ${event.name}`;
+  document.getElementById('modal-event-title').textContent = `Réserver - ${esc(event.name)}`;
   document.getElementById('modal-event-details').innerHTML = `
     <div class="event-info" style="margin-bottom: 16px;">
       <span class="event-info-icon">📅</span>
-      <span>${formatDate(event.date)} à ${event.time}</span>
+      <span>${formatDate(event.date)} à ${esc(event.time)}</span>
     </div>
     <div class="event-info" style="margin-bottom: 16px;">
       <span class="event-info-icon">📍</span>
-      <span>${event.location}</span>
+      <span>${esc(event.location)}</span>
     </div>
     <div class="seats-info" style="margin-bottom: 20px;">
       Places disponibles: <span class="seats-available">${availableSeats}</span>
@@ -428,71 +469,55 @@ window.openBookingModal = function(eventId) {
 // Handle booking form submission
 async function handleBookingSubmit(e) {
   e.preventDefault();
-  
+
   const name = document.getElementById('booking-name').value.trim();
-  const phone = document.getElementById('booking-phone').value.trim();
+  const phone = normalizePhone(document.getElementById('booking-phone').value);
   const errorEl = document.getElementById('booking-error');
   const successEl = document.getElementById('booking-success');
-  
+  const submitBtn = document.querySelector('#booking-form button[type="submit"]');
+  const showError = (msg) => { errorEl.textContent = msg; errorEl.style.display = 'block'; };
+
   errorEl.style.display = 'none';
   successEl.style.display = 'none';
 
-  // Validate phone number (French format)
+  if (name.length < 2) { showError('Indiquez votre nom (2 caractères minimum).'); return; }
   if (!validatePhoneNumber(phone)) {
-    errorEl.textContent = 'Numéro de téléphone invalide. Format attendu: 06 12 34 56 78 ou 0612345678';
-    errorEl.style.display = 'block';
+    showError('Numéro de téléphone invalide. Format attendu: 06 12 34 56 78 ou 0612345678');
     return;
   }
 
-  const event = state.events[state.selectedEventId];
-  if (!event) {
-    errorEl.textContent = 'Événement introuvable';
-    errorEl.style.display = 'block';
-    return;
-  }
+  const eventId = state.selectedEventId;
+  const event = state.events[eventId];
+  if (!event) { showError('Événement introuvable'); return; }
 
-  // Check if already registered
-  if (event.participants) {
-    const existingParticipant = Object.values(event.participants).find(
-      p => p.phone === phone
-    );
-    if (existingParticipant) {
-      errorEl.textContent = 'Ce numéro de téléphone est déjà inscrit à cet événement';
-      errorEl.style.display = 'block';
-      return;
-    }
-  }
+  const taken = event.taken || 0;
+  if (taken >= event.maxParticipants) { showError('Désolé, cet événement est complet'); return; }
 
-  // Check available seats
-  const participantCount = event.participants ? Object.keys(event.participants).length : 0;
-  if (participantCount >= event.maxParticipants) {
-    errorEl.textContent = 'Désolé, cet événement est complet';
-    errorEl.style.display = 'block';
-    return;
-  }
+  // Une seule écriture atomique : inscription + numéro (anti-doublon) + compteur de places.
+  // Les règles Firebase refusent l'écriture si le compteur n'est pas exactement taken + 1.
+  const registrationId = push(ref(database, `registrations/${eventId}`)).key;
+  const updates = {
+    [`registrations/${eventId}/${registrationId}`]: { name, phone, people: 1, status: 'ok', createdAt: Date.now() },
+    [`phones/${eventId}/${phone}`]: registrationId,
+    [`events/${eventId}/taken`]: taken + 1
+  };
 
+  submitBtn.disabled = true;
   try {
-    const participantData = {
-      name,
-      phone,
-      registeredAt: new Date().toISOString()
-    };
-
-    const participantsRef = ref(database, `events/${state.selectedEventId}/participants`);
-    const newParticipantRef = push(participantsRef);
-    await set(newParticipantRef, participantData);
-
-    successEl.textContent = '✓ Inscription confirmée! Vous recevrez une confirmation.';
+    await update(ref(database), updates);
+    successEl.textContent = '✓ Inscription enregistrée !';
     successEl.style.display = 'block';
-    
     setTimeout(() => {
       document.getElementById('booking-modal').classList.remove('active');
       resetBookingForm();
     }, 2000);
   } catch (error) {
-    console.error('Error booking event:', error);
-    errorEl.textContent = 'Erreur lors de l\'inscription. Veuillez réessayer.';
-    errorEl.style.display = 'block';
+    console.error('Error booking event:', error.code || error);
+    showError(error.code === 'PERMISSION_DENIED'
+      ? 'Inscription impossible : ce numéro est déjà inscrit, ou l\u2019événement vient de se remplir. Actualisez la page.'
+      : 'Erreur lors de l\u2019inscription. Veuillez réessayer.');
+  } finally {
+    submitBtn.disabled = false;
   }
 }
 
@@ -504,30 +529,31 @@ function resetBookingForm() {
   state.selectedEventId = null;
 }
 
-// Show participants modal
-window.showParticipants = async function(eventId) {
+// Show participants modal (admin : lit /registrations, protégé par les règles)
+window.showParticipants = function(eventId) {
   const event = state.events[eventId];
   if (!event) return;
 
   const participantsModalBody = document.getElementById('participants-modal-body');
   document.getElementById('participants-modal-title').textContent = `Participants - ${event.name}`;
+  const registrations = Object.entries(state.registrations[eventId] || {});
 
-  if (!event.participants || Object.keys(event.participants).length === 0) {
+  if (registrations.length === 0) {
     participantsModalBody.innerHTML = `
       <div class="empty-state">
         <p>Aucun participant inscrit</p>
       </div>
     `;
   } else {
-    const participantsList = Object.entries(event.participants).map(([participantId, participant]) => `
+    const participantsList = registrations.map(([participantId, participant]) => `
       <div class="participant-item">
         <div class="participant-info">
-          <div class="participant-name">${participant.name}</div>
-          <div class="participant-phone">📱 ${participant.phone}</div>
+          <div class="participant-name">${esc(participant.name)}</div>
+          <div class="participant-phone">📱 ${esc(participant.phone)}</div>
         </div>
-        <button 
-          class="btn btn--danger btn--sm" 
-          onclick="removeParticipant('${eventId}', '${participantId}')"
+        <button
+          class="btn btn--danger btn--sm"
+          onclick="removeParticipant('${esc(eventId)}', '${esc(participantId)}')"
         >
           Retirer
         </button>
@@ -544,15 +570,23 @@ window.showParticipants = async function(eventId) {
   document.getElementById('participants-modal').classList.add('active');
 }
 
-// Remove participant
+// Remove participant (admin) : supprime l'inscription, son numéro et libère la place
 window.removeParticipant = async function(eventId, participantId) {
   if (!confirm('Voulez-vous vraiment retirer ce participant?')) return;
 
+  const registration = (state.registrations[eventId] || {})[participantId];
+  if (!registration) return;
+
+  const updates = {
+    [`registrations/${eventId}/${participantId}`]: null,
+    [`phones/${eventId}/${registration.phone}`]: null
+  };
+  if (registration.status !== 'wait') {
+    updates[`events/${eventId}/taken`] = Math.max(0, (state.events[eventId].taken || 0) - (registration.people || 1));
+  }
+
   try {
-    const participantRef = ref(database, `events/${eventId}/participants/${participantId}`);
-    await remove(participantRef);
-    
-    // Refresh participants modal
+    await update(ref(database), updates);
     showParticipants(eventId);
   } catch (error) {
     console.error('Error removing participant:', error);
@@ -565,8 +599,11 @@ window.deleteEvent = async function(eventId) {
   if (!confirm('Voulez-vous vraiment supprimer cet événement?')) return;
 
   try {
-    const eventRef = ref(database, `events/${eventId}`);
-    await remove(eventRef);
+    await update(ref(database), {
+      [`events/${eventId}`]: null,
+      [`registrations/${eventId}`]: null,
+      [`phones/${eventId}`]: null
+    });
     alert('Événement supprimé avec succès');
   } catch (error) {
     console.error('Error deleting event:', error);
@@ -580,11 +617,16 @@ function loadAdminEvents() {
 }
 
 // Utility functions
+function isoToday() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
 function getUpcomingEvents() {
   const now = new Date();
   return Object.entries(state.events)
     .map(([id, event]) => ({ ...event, id }))
-    .filter(event => new Date(event.date) >= now)
+    .filter(event => event.date >= isoToday())
     .sort((a, b) => new Date(a.date) - new Date(b.date));
 }
 
@@ -616,9 +658,11 @@ function isEventNew(createdAt) {
   return hoursSinceCreation < 48; // New if created in last 48 hours
 }
 
+function normalizePhone(phone) {
+  return String(phone).replace(/[\s.\-]/g, '').replace(/^\+33/, '0');
+}
+
 function validatePhoneNumber(phone) {
-  // French phone number validation
-  const cleanPhone = phone.replace(/\s+/g, '');
-  const phoneRegex = /^(\+33|0)[1-9](\d{8})$/;
-  return phoneRegex.test(cleanPhone);
+  // Numéro français : 10 chiffres commençant par 0 (ou +33 converti)
+  return /^0[1-9][0-9]{8}$/.test(normalizePhone(phone));
 }

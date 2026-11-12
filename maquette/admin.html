@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Administration — maquette</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ribbon">Maquette Administration — données fictives. <a href="index.html">← Retour au site public</a></div>
+  <header class="app-header">
+    <div class="container">
+      <a class="brand" href="index.html"><span id="logo"></span><span>Administration</span></a>
+      <div style="display:flex;gap:8px;align-items:center">
+        <button class="btn sm" id="logout" type="button" hidden>Déconnexion</button>
+        <button class="icon-btn" id="theme-btn" type="button"></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Connexion (Firebase Authentication à l'étape de développement) -->
+  <main class="container" id="login-view">
+    <form class="panel login" id="login-form">
+      <h1 style="font-size:1.5rem">Connexion</h1>
+      <p class="hint">Page non liée depuis le site public. Compte unique protégé par Firebase Authentication (maquette : aucun mot de passe n'est vérifié).</p>
+      <div class="field"><label for="a-mail">Adresse e-mail</label><input id="a-mail" type="email" autocomplete="username" value="nat@exemple.fr"></div>
+      <div class="field"><label for="a-pass">Mot de passe</label><input id="a-pass" type="password" autocomplete="current-password" value="••••••••"></div>
+      <button class="btn primary block" type="submit">Se connecter</button>
+    </form>
+  </main>
+
+  <main class="container" id="app" hidden>
+    <nav class="tabs" role="tablist" aria-label="Administration" style="position:static;border:0;background:none;padding:0;margin-top:16px;gap:8px;width:auto">
+      <button class="tab" role="tab" data-tab="dash" aria-selected="true" style="flex:none;flex-direction:row;gap:8px;padding:0 18px;min-height:44px;border:1px solid var(--line);background:var(--surface)"><span data-i="chart"></span>Tableau de bord</button>
+      <button class="tab" role="tab" data-tab="events" aria-selected="false" style="flex:none;flex-direction:row;gap:8px;padding:0 18px;min-height:44px;border:1px solid var(--line);background:var(--surface)"><span data-i="calendar"></span>Événements</button>
+      <button class="tab" role="tab" data-tab="trash" aria-selected="false" style="flex:none;flex-direction:row;gap:8px;padding:0 18px;min-height:44px;border:1px solid var(--line);background:var(--surface)"><span data-i="trash"></span>Corbeille <span id="trash-count"></span></button>
+    </nav>
+    <section id="v-dash"></section>
+    <section id="v-events" hidden></section>
+    <section id="v-trash" hidden></section>
+  </main>
+
+  <dialog class="sheet wide" id="sheet" aria-labelledby="sheet-title"><div class="sheet-slot" style="display:contents"></div></dialog>
+  <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script src="common.js"></script>
+<script>
+$('#logo').innerHTML = LOGO;
+$('#login-view h1').textContent = 'Connexion';
+initTheme();
+const parts = {}; EVENTS.forEach(e => parts[e.id] = makeParticipants(e));
+const waitlist = { e3: [{ id: 'w1', name: 'Romain G.', phone: '06 00 00 00 91', people: 1, note: '' }, { id: 'w2', name: 'Salomé A.', phone: '06 00 00 00 92', people: 1, note: '' }] };
+let trash = [];
+const TEMPLATES = {
+  cafes:  { name: 'Café Nat', time: '10:00', place: 'Chez Nat, 5 place du Marché', max: 8, desc: 'Un café tranquille pour faire connaissance.' },
+  tables: { name: "Table d'hôtes", time: '19:30', place: 'La Maison Verte, 8 chemin des Vignes', max: 10, desc: 'Menu complet préparé par Nat. Prévenez-moi de vos allergies.' },
+  aperos: { name: 'ApéroNus', time: '20:00', place: 'Le Petit Salon, 12 rue des Tilleuls', max: 12, desc: 'Soirée détendue, dans le respect et la discrétion.' },
+};
+
+$$('[data-i]').forEach(s => s.outerHTML = ic(s.dataset.i));
+$('#login-form').addEventListener('submit', ev => { ev.preventDefault(); $('#login-view').hidden = true; $('#app').hidden = false; $('#logout').hidden = false; render(); });
+$('#logout').addEventListener('click', () => { $('#login-view').hidden = false; $('#app').hidden = true; $('#logout').hidden = true; });
+$$('#app .tab').forEach(b => b.addEventListener('click', () => {
+  $$('#app .tab').forEach(x => x.setAttribute('aria-selected', x === b));
+  ['dash', 'events', 'trash'].forEach(v => $('#v-' + v).hidden = v !== b.dataset.tab);
+}));
+
+const upcoming = () => EVENTS.filter(isUpcoming).sort((a, b) => startOf(a) - startOf(b));
+const count = id => (parts[id] || []).reduce((n, p) => n + p.people, 0);
+
+/* ---------- Tableau de bord ---------- */
+function dash() {
+  const up = upcoming(), reg = up.reduce((n, e) => n + e.taken, 0), cap = up.reduce((n, e) => n + e.max, 0);
+  const wait = up.reduce((n, e) => n + e.wait, 0);
+  const byCat = Object.entries(CATS).map(([k, c]) => { const l = EVENTS.filter(e => e.cat === k); return [c, l.reduce((n, e) => n + e.taken, 0), l.reduce((n, e) => n + e.max, 0)]; });
+  return `<div class="stats">
+    <div class="stat"><b>${up.length}</b><span>Événements à venir</span></div>
+    <div class="stat"><b>${reg}</b><span>Places réservées</span></div>
+    <div class="stat"><b>${Math.round(reg / cap * 100)} %</b><span>Taux de remplissage</span></div>
+    <div class="stat"><b>${wait}</b><span>En liste d'attente</span></div></div>
+  <div class="cards">
+    <div class="panel"><h2>Remplissage par événement</h2>${up.map(e => { const s = seats(e); return `<div class="bar-row"><span>${esc(e.name)}</span><b>${e.taken}/${e.max}</b><div class="meter ${s.tone}"><span style="width:${s.pct}%"></span></div></div>`; }).join('')}</div>
+    <div class="panel"><h2>Catégories les plus suivies</h2>${byCat.map(([c, t, m]) => `<div class="bar-row"><span class="chip ${c.cls}">${ic(c.icon)}${c.label}</span><b>${Math.round(t / m * 100)} %</b><div class="meter"><span style="width:${Math.round(t / m * 100)}%;background:var(--cfg)" class="${c.cls}"></span></div></div>`).join('')}
+      <h3 style="margin-top:12px;font-size:1.0625rem">Inscrits les plus fidèles</h3>
+      <table class="table"><tbody><tr><td class="who"><b>Camille R.</b></td><td>6 événements</td></tr><tr><td class="who"><b>Julien M.</b></td><td>5 événements</td></tr><tr><td class="who"><b>Sophie L.</b></td><td>4 événements</td></tr></tbody></table></div></div>`;
+}
+
+/* ---------- Liste des événements ---------- */
+function eventsView() {
+  const list = [...EVENTS].sort((a, b) => startOf(b) - startOf(a));
+  return `<div class="toolbar"><h2 style="font-size:1.5rem">Tous les événements</h2><button class="btn primary" type="button" data-new>${ic('plus')}Nouvel événement</button></div>
+  <div class="grid">${list.map(e => { const c = CATS[e.cat], s = seats(e); return `<article class="card admin-card ${c.cls}">
+    <div><span class="chip ${c.cls}">${ic(c.icon)}${c.label}</span><h3 style="margin-top:6px;font-size:1.1875rem">${esc(e.name)}</h3>
+    <div class="meta" style="margin-top:4px"><span>${ic('calendar')}${fmtLong(e)} · ${fmtTime(e)}</span><span>${ic('users')}${e.taken}/${e.max}${e.wait ? ` · ${e.wait} en attente` : ''}</span></div></div>
+    <div class="meter ${s.tone}"><span style="width:${s.pct}%"></span></div>
+    <div class="actions">
+      <button class="btn sm primary" type="button" data-guests="${e.id}">${ic('users')}Inscrits (${e.taken})</button>
+      <button class="btn sm" type="button" data-edit="${e.id}">${ic('edit')}Modifier</button>
+      <button class="btn sm" type="button" data-dup="${e.id}">${ic('copy')}Dupliquer</button>
+      <button class="btn sm" type="button" data-cancelev="${e.id}">${ic('x')}Annuler l'événement</button>
+      <button class="btn sm danger" type="button" data-del="${e.id}">${ic('trash')}Supprimer</button>
+    </div></article>`; }).join('')}</div>`;
+}
+
+function trashView() {
+  $('#trash-count').textContent = trash.length ? `(${trash.length})` : '';
+  if (!trash.length) return `<div class="empty">${ic('trash')}<p><b>La corbeille est vide</b></p><p>Un événement supprimé reste ici de façon récupérable.</p></div>`;
+  return `<div class="grid" style="margin-top:16px">${trash.map(e => `<article class="card admin-card"><div><h3>${esc(e.name)}</h3><p class="hint">${fmtLong(e)} · ${e.taken} inscrits conservés</p></div>
+    <div class="actions"><button class="btn sm primary" type="button" data-restore="${e.id}">${ic('undo')}Restaurer</button></div></article>`).join('')}</div>`;
+}
+function render() { $('#v-dash').innerHTML = dash(); $('#v-events').innerHTML = eventsView(); $('#v-trash').innerHTML = trashView(); }
+
+/* ---------- Inscrits : présences, WhatsApp, export, impression ---------- */
+function guests(id) {
+  const e = byId(id), list = parts[id] || [], w = waitlist[id] || [], past = !isUpcoming(e);
+  const row = (p, wait) => `<tr><td>${wait ? '' : `<input type="checkbox" data-present="${p.id}" ${p.present ? 'checked' : ''} aria-label="Présent : ${esc(p.name)}">`}</td>
+    <td class="who"><b>${esc(p.name)}</b><small>${esc(p.phone)}</small>${p.note ? ` <span class="tag">${esc(p.note)}</span>` : ''}</td><td>${p.people}</td>
+    <td style="text-align:right;white-space:nowrap" class="no-print"><a class="btn sm wa" target="_blank" rel="noopener" href="${waLink(intlPhone(p.phone), `Bonjour ${p.name.split(' ')[0]}, c'est Nat. Je vous écris au sujet de « ${e.name} ».`)}" aria-label="WhatsApp à ${esc(p.name)}">${ic('chat')}</a>
+    ${wait ? `<button class="btn sm primary" type="button" data-promote="${p.id}">Promouvoir</button>` : `<button class="btn sm danger" type="button" data-remove="${p.id}" aria-label="Retirer ${esc(p.name)}">${ic('trash')}</button>`}</td></tr>`;
+  openSheet($('#sheet'), `
+    <div class="sheet-head"><div><h2 id="sheet-title">${esc(e.name)}</h2><p class="hint">${fmtLong(e)} · ${fmtTime(e)} · ${e.taken}/${e.max} places${past ? ' · présences à pointer' : ''}</p></div>
+      <button class="icon-btn no-print" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <div class="sheet-body">
+      <div class="actions no-print">
+        <button class="btn sm" type="button" data-add="${id}">${ic('plus')}Ajouter à la main</button>
+        <button class="btn sm" type="button" data-bulk="${id}">${ic('chat')}Message groupé</button>
+        <button class="btn sm" type="button" data-csv="${id}">${ic('download')}Export CSV</button>
+        <button class="btn sm" type="button" onclick="window.print()">${ic('printer')}Imprimer la liste</button></div>
+      <table class="table"><thead><tr><th>Présent</th><th>Inscrit</th><th>Pers.</th><th class="no-print"></th></tr></thead>
+      <tbody>${list.length ? list.map(p => row(p)).join('') : `<tr><td colspan="4" class="hint">Aucun inscrit pour le moment.</td></tr>`}</tbody></table>
+      ${w.length ? `<h3 style="font-size:1.0625rem">Liste d'attente (${w.length})</h3><table class="table"><tbody>${w.map(p => row(p, true)).join('')}</tbody></table>` : ''}
+    </div>`);
+}
+
+function bulk(id, cancel = false) {
+  const e = byId(id), list = parts[id] || [];
+  const msg = cancel ? `Bonjour, malheureusement « ${e.name} » du ${fmtLong(e)} est annulé. Désolé pour la gêne — Nat` : `Bonjour, petit rappel : « ${e.name} » ${fmtLong(e)} à ${fmtTime(e)}. À bientôt ! — Nat`;
+  openSheet($('#sheet'), `
+    <div class="sheet-head"><div><h2 id="sheet-title">${cancel ? 'Annuler et prévenir' : 'Message groupé'}</h2><p class="hint">WhatsApp ne permet pas l'envoi automatique gratuit : un bouton par personne, message déjà prêt.</p></div>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <div class="sheet-body">
+      <div class="field"><label for="b-msg">Message</label><textarea id="b-msg" rows="3">${esc(msg)}</textarea></div>
+      <div class="rows" id="b-list">${list.map(p => `<div class="row" style="align-items:center;justify-content:space-between"><span>${esc(p.name)} <span class="hint">${esc(p.phone)}</span></span><a class="btn sm wa" target="_blank" rel="noopener" data-phone="${intlPhone(p.phone)}" href="#">${ic('chat')}Envoyer</a></div>`).join('')}</div>
+    </div>
+    <div class="sheet-foot">${cancel ? `<button class="btn danger" type="button" data-confirmcancel="${id}">Marquer l'événement comme annulé</button>` : ''}<button class="btn" type="button" data-close>Fermer</button></div>`);
+  const upd = () => $$('#b-list a').forEach(a => a.href = waLink(a.dataset.phone, $('#b-msg').value));
+  $('#b-msg').addEventListener('input', upd); upd();
+}
+
+/* ---------- Formulaire événement (création / modification / modèles) ---------- */
+function form(id, dupOf) {
+  const src = id ? byId(id) : dupOf ? { ...byId(dupOf), date: '', name: byId(dupOf).name + ' (copie)' } : { cat: 'cafes', name: '', date: '', time: '', place: '', max: 8, desc: '' };
+  openSheet($('#sheet'), `
+    <div class="sheet-head"><h2 id="sheet-title">${id ? 'Modifier l’événement' : dupOf ? 'Dupliquer l’événement' : 'Nouvel événement'}</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <form id="ev-form" style="display:contents"><div class="sheet-body">
+      ${id ? '' : `<div class="field"><label for="x-tpl">Partir d'un modèle</label><select id="x-tpl"><option value="">Aucun</option>${Object.entries(CATS).map(([k, c]) => `<option value="${k}">${c.label}</option>`).join('')}</select><p class="hint">Pré-remplit lieu, horaire, places et description.</p></div>`}
+      <div class="field"><label for="x-name">Nom</label><input id="x-name" type="text" value="${esc(src.name)}" required></div>
+      <div class="field"><label for="x-cat">Catégorie</label><select id="x-cat">${Object.entries(CATS).map(([k, c]) => `<option value="${k}" ${src.cat === k ? 'selected' : ''}>${c.label}</option>`).join('')}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px"><div class="field"><label for="x-date">Date</label><input id="x-date" type="date" value="${src.date}" required></div>
+        <div class="field"><label for="x-time">Heure</label><input id="x-time" type="time" value="${src.time}" required></div></div>
+      <div class="field"><label for="x-place">Lieu</label><input id="x-place" type="text" value="${esc(src.place)}"></div>
+      <div class="field"><label for="x-max">Nombre de places</label><input id="x-max" type="number" min="1" value="${src.max}"></div>
+      <div class="field"><label for="x-desc">Description</label><textarea id="x-desc" rows="3">${esc(src.desc)}</textarea></div>
+      <div class="field"><label for="x-rep">Répétition <span class="hint">(à discuter)</span></label><select id="x-rep"><option>Aucune</option><option>Chaque semaine, 4 fois</option><option>Chaque mois, 3 fois</option></select></div>
+      <div class="field"><label for="x-img">Image <span class="hint">(facultatif)</span></label><input id="x-img" type="file" accept="image/*"></div>
+    </div><div class="sheet-foot"><button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="submit">Enregistrer</button></div></form>`);
+  const tpl = $('#x-tpl');
+  if (tpl) tpl.addEventListener('change', () => { const t = TEMPLATES[tpl.value]; if (!t) return; $('#x-name').value = t.name; $('#x-cat').value = tpl.value; $('#x-time').value = t.time; $('#x-place').value = t.place; $('#x-max').value = t.max; $('#x-desc').value = t.desc; });
+  $('#ev-form').addEventListener('submit', ev => {
+    ev.preventDefault();
+    const data = { cat: $('#x-cat').value, name: $('#x-name').value.trim(), date: $('#x-date').value, time: $('#x-time').value, place: $('#x-place').value, max: Math.max(1, Number($('#x-max').value) || 1), desc: $('#x-desc').value };
+    if (id) Object.assign(byId(id), data); else { const e = { id: 'n' + Date.now(), taken: 0, wait: 0, created: isoDay(TODAY), ...data }; EVENTS.push(e); parts[e.id] = []; }
+    $('#sheet').close(); render(); toast(id ? 'Événement modifié.' : 'Événement créé.');
+  });
+}
+
+/* ---------- Actions (délégation) ---------- */
+document.addEventListener('click', ev => {
+  const t = ev.target.closest('[data-new],[data-edit],[data-dup],[data-guests],[data-del],[data-restore],[data-cancelev],[data-confirmcancel],[data-bulk],[data-csv],[data-add],[data-remove],[data-promote]');
+  if (!t) return; const d = t.dataset;
+  if ('new' in d) form();
+  else if (d.edit) form(d.edit);
+  else if (d.dup) form(null, d.dup);
+  else if (d.guests) guests(d.guests);
+  else if (d.bulk) bulk(d.bulk);
+  else if (d.cancelev) bulk(d.cancelev, true);
+  else if (d.confirmcancel) { $('#sheet').close(); toast('Événement marqué comme annulé (maquette).'); }
+  else if (d.del) { const e = byId(d.del); EVENTS.splice(EVENTS.indexOf(e), 1); trash.push(e); render(); toast(`« ${e.name} » déplacé dans la corbeille.`, { label: 'Annuler', fn: () => restore(e.id) }); }
+  else if (d.restore) restore(d.restore);
+  else if (d.csv) { const e = byId(d.csv); download(`inscrits-${e.id}.csv`, 'Nom;Téléphone;Personnes;Remarque;Présent\n' + (parts[e.id] || []).map(p => [p.name, p.phone, p.people, p.note, p.present ? 'oui' : 'non'].join(';')).join('\n'), 'text/csv'); }
+  else if (d.add) { const id = d.add; (parts[id] ||= []).push({ id: id + '-m' + Date.now(), name: 'Invité ajouté', phone: '06 00 00 00 00', people: 1, note: '', present: false }); byId(id).taken++; render(); guests(id); toast('Participant ajouté à la main.'); }
+  else if (d.remove) { const id = d.remove.split('-')[0]; parts[id] = parts[id].filter(p => p.id !== d.remove); byId(id).taken = Math.max(0, byId(id).taken - 1); render(); guests(id); toast('Participant retiré.'); }
+  else if (d.promote) { const id = d.promote.startsWith('w') ? 'e3' : ''; const w = waitlist[id]; const p = w.find(x => x.id === d.promote); waitlist[id] = w.filter(x => x !== p); parts[id].push({ ...p, present: false }); byId(id).wait = Math.max(0, byId(id).wait - 1); byId(id).taken++; render(); guests(id); toast(`${p.name} promu(e) : pensez à le/la prévenir par WhatsApp.`); }
+});
+document.addEventListener('change', ev => {
+  const c = ev.target.closest('[data-present]'); if (!c) return;
+  const id = c.dataset.present.split('-')[0], p = parts[id].find(x => x.id === c.dataset.present); p.present = c.checked;
+});
+function restore(id) { const e = trash.find(x => x.id === id); trash = trash.filter(x => x !== e); EVENTS.push(e); render(); toast('Événement restauré.'); }
+</script>
+</body>
+</html>
