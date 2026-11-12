@@ -1,6 +1,7 @@
 // Rendus HTML du site public (fonctions pures : état -> chaîne). Tout texte saisi passe par esc().
 import { ic } from '../lib/icons.js';
 import { esc } from '../lib/dom.js';
+import { richHtml } from '../lib/richtext.js';
 import { CATS, seats, isNew, mapsLink } from '../lib/events.js';
 import { startOf, isUpcoming, isoDay, today, fmtLong, fmtTime, monthLabel, shortDow, shortMon, relDay } from '../lib/dates.js';
 
@@ -132,7 +133,7 @@ export function eventSheet(e, mine) {   // mine : inscription de cet appareil ou
         <div class="row">${ic('users')}<span>${e.taken} / ${e.max} participants</span></div>
       </div>
       <div class="seats"><span class="seats-text ${s.tone}">${e.cancelled ? 'Événement annulé' : s.text}</span><div class="meter ${s.tone}"><span style="width:${s.pct}%"></span></div></div>
-      ${e.desc ? `<p class="note">${esc(e.desc)}</p>` : ''}
+      ${e.desc ? `<div class="note rich">${richHtml(e.desc)}</div>` : ''}
       <div class="actions">
         <button class="btn sm" type="button" data-share="${esc(e.id)}">${ic('share')}Partager</button>
         <button class="btn sm" type="button" data-ics="${esc(e.id)}">${ic('calendar')}Agenda</button>

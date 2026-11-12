@@ -7,6 +7,7 @@ import { ic, LOGO } from '../lib/icons.js';
 import { $, $$, toast, initTheme, openSheet, initOfflineBanner, download } from '../lib/dom.js';
 import { CATS, TEMPLATES, normalize, toDb, waLink } from '../lib/events.js';
 import { toLocalPhone, validPhone, formatPhone } from '../lib/phone.js';
+import { richHtml } from '../lib/richtext.js';
 import { dashboard, eventCards, trashView, purgeSheet, guestsSheet, addGuestSheet, bulkSheet, formSheet, guestRows } from './views.js';
 
 const auth = getAuthInstance();
@@ -77,10 +78,30 @@ async function write(updates, okMsg, failMsg) {
 const showGuests = id => { openGuests = id; openSheet(sheet, guestsSheet(byId(id), registrations[id])); };
 
 /* ---------- Création / modification / duplication ---------- */
+// Barre de mise en forme de la description : insère la syntaxe autour de la sélection + aperçu en direct.
+function initRichEditor() {
+  const ta = $('#x-desc'), prev = $('#x-prev');
+  const paint = () => { prev.hidden = !ta.value.trim(); prev.innerHTML = richHtml(ta.value); };
+  const wrap = (a, b, ph) => {
+    const { selectionStart: s0, selectionEnd: s1, value: v } = ta, sel = v.slice(s0, s1) || ph;
+    ta.value = v.slice(0, s0) + a + sel + b + v.slice(s1);
+    ta.focus(); ta.setSelectionRange(s0 + a.length, s0 + a.length + sel.length); paint();
+  };
+  $$('[data-fmt]', ta.closest('.field')).forEach(btn => btn.addEventListener('click', () => {
+    const f = btn.dataset.fmt;
+    if (f === 'bold') wrap('**', '**', 'texte');
+    else if (f === 'italic') wrap('*', '*', 'texte');
+    else if (f === 'link') wrap('[', '](https://)', 'texte du lien');
+    else { const s0 = ta.selectionStart, ls = ta.value.lastIndexOf('\n', s0 - 1) + 1; ta.value = ta.value.slice(0, ls) + '- ' + ta.value.slice(ls); ta.focus(); ta.setSelectionRange(s0 + 2, s0 + 2); paint(); }
+  }));
+  ta.addEventListener('input', paint); paint();
+}
+
 function openForm({ id, dupId } = {}) {
   const event = id && byId(id), dupOf = dupId && byId(dupId);
   openGuests = null;
   openSheet(sheet, formSheet({ event, dupOf }));
+  initRichEditor();
   const tpl = $('#x-tpl');
   tpl?.addEventListener('change', () => {
     const t = TEMPLATES[tpl.value]; if (!t) return;

@@ -159,7 +159,12 @@ export function formSheet({ event, dupOf } = {}) {
         <div class="field"><label for="x-time">Heure</label><input id="x-time" type="time" value="${esc(src.time)}" required></div></div>
       <div class="field"><label for="x-place">Lieu</label><input id="x-place" type="text" maxlength="150" value="${esc(src.place)}" required></div>
       <div class="field"><label for="x-max">Nombre de places</label><input id="x-max" type="number" min="1" max="100" value="${esc(src.max)}" required></div>
-      <div class="field"><label for="x-desc">Description <span class="hint">(facultatif)</span></label><textarea id="x-desc" rows="3" maxlength="1000">${esc(src.desc)}</textarea></div>
+      <div class="field"><label for="x-desc">Description <span class="hint">(facultatif)</span></label><div class="rt-bar" role="toolbar" aria-label="Mise en forme">
+          <button type="button" data-fmt="bold" aria-label="Gras"><b>G</b></button><button type="button" data-fmt="italic" aria-label="Italique"><i>I</i></button>
+          <button type="button" data-fmt="list" aria-label="Liste à puces">• Liste</button><button type="button" data-fmt="link" aria-label="Lien">Lien</button></div>
+        <textarea id="x-desc" rows="5" maxlength="1000" aria-describedby="x-desc-h">${esc(src.desc)}</textarea>
+        <p class="hint" id="x-desc-h">**gras**, *italique*, « - » en début de ligne pour une liste, [texte](https://adresse) pour un lien.</p>
+        <div class="note rich" id="x-prev" aria-live="polite" hidden></div></div>
       <p class="error" id="x-err" role="alert" hidden></p>
     </div><div class="sheet-foot"><button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="submit" id="x-save">Enregistrer</button></div></form>`;
 }

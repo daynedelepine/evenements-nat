@@ -1,5 +1,6 @@
 import { startOf, pad, fmtLong, fmtTime } from './dates.js';
 import { download } from './dom.js';
+import { richPlain } from './richtext.js';
 
 export const NAT_PHONE = '33663081980'; // numéro de contact déjà public sur le site
 export const CATS = {
@@ -55,7 +56,7 @@ export function icsFile(e, reg) {
   const wait = reg?.status === 'wait', url = location.origin + '/';
   const mine = !reg ? '' : wait ? 'Vous êtes sur liste d’attente : Nat vous prévient si une place se libère.'
     : `Place réservée pour ${reg.people} personne${reg.people > 1 ? `s (vous + ${reg.people - 1})` : ''}.`;
-  const desc = [e.desc, mine, `Adresse : ${e.place}`, `Itinéraire : ${mapsLink(e)}`, `Pour annuler : ${url}#mes-inscriptions`, `Contact : Nat, WhatsApp +${NAT_PHONE}`].filter(Boolean).join('\n');
+  const desc = [richPlain(e.desc), mine, `Adresse : ${e.place}`, `Itinéraire : ${mapsLink(e)}`, `Pour annuler : ${url}#mes-inscriptions`, `Contact : Nat, WhatsApp +${NAT_PHONE}`].filter(Boolean).join('\n');
   const alarm = (trig, txt) => ['BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${clean(txt)}`, `TRIGGER:${trig}`, 'END:VALARM'];
   const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Evenements Nat//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT', `UID:${e.id}@evenements-nat`, `DTSTAMP:${new Date().toISOString().replace(/[-:]|\.\d+/g, '')}`,
     `DTSTART:${f(s)}`, `DTEND:${f(end)}`, `SUMMARY:${clean((wait ? '(Attente) ' : '') + e.name)}`, `LOCATION:${clean(e.place)}`, `DESCRIPTION:${clean(desc)}`,

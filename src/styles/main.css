@@ -255,3 +255,13 @@ details p{color:var(--muted);padding-bottom:10px}
 }
 .print-only{display:none}
 [hidden]{display:none!important}
+
+/* Descriptions mises en forme (gras, italique, listes, liens) */
+.rich p{margin:0 0 .6em}.rich p:last-child,.rich ul:last-child{margin-bottom:0}
+.rich ul{margin:0 0 .6em;padding-left:1.3em}.rich li{margin:.15em 0}
+.rich a{color:var(--text);text-decoration:underline;text-underline-offset:2px;font-weight:600}
+.rich b{color:var(--text)}
+.rt-bar{display:flex;gap:6px;margin-bottom:6px;flex-wrap:wrap}
+.rt-bar button{min-height:44px;min-width:44px;padding:0 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;cursor:pointer}
+.rt-bar button:hover{background:var(--bg2)}
+#x-prev{margin-top:8px}
