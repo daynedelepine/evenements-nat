@@ -51,6 +51,55 @@
           ".validate": "newData.isString() && $phone.matches(/^0[1-9][0-9]{8}$/)"
         }
       }
+    },
+
+    "ideas": {
+      ".read": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2'",
+      "$iid": {
+        ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (!data.exists() && newData.exists())",
+        ".validate": "newData.hasChildren(['text','name','createdAt','status','uid']) && (auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (newData.child('status').val() === 'pending' && newData.child('uid').val() === auth.uid && newData.child('createdAt').val() === now && newData.parent().parent().child('ideaLimit').child(auth.uid).val() === now))",
+        "text":      { ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 140" },
+        "name":      { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 30" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "status":    { ".validate": "newData.val() === 'pending' || newData.val() === 'ok' || newData.val() === 'hidden'" },
+        "uid":       { ".validate": "newData.isString() && newData.val().length <= 40" },
+        "$other":    { ".validate": false }
+      }
+    },
+
+    "ideaLimit": {
+      "$uid": {
+        ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (auth != null && auth.uid === $uid && newData.exists())",
+        ".validate": "newData.isNumber() && (auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (newData.val() === now && (!data.exists() || data.val() < now - 300000)))"
+      }
+    },
+
+    "ideasPublic": {
+      ".read": true,
+      "$iid": {
+        ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2'",
+        ".validate": "newData.hasChildren(['text','name','createdAt','votes'])",
+        "text":      { ".validate": "newData.isString() && newData.val().length >= 3 && newData.val().length <= 140" },
+        "name":      { ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 30" },
+        "createdAt": { ".validate": "newData.isNumber()" },
+        "votes": {
+          ".write": "auth != null",
+          ".validate": "newData.isNumber() && newData.val() >= 0 && (auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (data.exists() && ((newData.val() === data.val() + 1 && newData.parent().parent().parent().child('ideaVotes').child($iid).child(auth.uid).val() === true && !root.child('ideaVotes').child($iid).child(auth.uid).exists()) || (newData.val() === data.val() - 1 && !newData.parent().parent().parent().child('ideaVotes').child($iid).child(auth.uid).exists() && root.child('ideaVotes').child($iid).child(auth.uid).exists()))))"
+        },
+        "$other":    { ".validate": false }
+      }
+    },
+
+    "ideaVotes": {
+      ".read": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2'",
+      ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2'",
+      "$iid": {
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && auth.uid === $uid && root.child('ideasPublic').child($iid).exists() && ((!data.exists() && newData.exists() && newData.parent().parent().parent().child('ideasPublic').child($iid).child('votes').val() === root.child('ideasPublic').child($iid).child('votes').val() + 1) || (data.exists() && !newData.exists() && newData.parent().parent().parent().child('ideasPublic').child($iid).child('votes').val() === root.child('ideasPublic').child($iid).child('votes').val() - 1))",
+          ".validate": "newData.val() === true"
+        }
+      }
     }
   }
 }

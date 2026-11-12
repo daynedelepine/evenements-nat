@@ -168,3 +168,36 @@ export function formSheet({ event, dupOf } = {}) {
       <p class="error" id="x-err" role="alert" hidden></p>
     </div><div class="sheet-foot"><button class="btn" type="button" data-close>Annuler</button><button class="btn primary" type="submit" id="x-save">Enregistrer</button></div></form>`;
 }
+
+/* ---------- Idées (mur d'idées) ---------- */
+const IDEA_GROUPS = [['pending', 'En attente de relecture'], ['ok', 'Publiées'], ['hidden', 'Masquées']];
+export function ideasView(ideas) {
+  if (!ideas.length) return `<div class="empty">${ic('bulb')}<p><b>Aucune idée pour le moment</b></p><p>Les idées proposées par les visiteurs apparaîtront ici avant publication.</p></div>`;
+  const when = t => (t ? new Date(t).toLocaleString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '');
+  return IDEA_GROUPS.map(([st, label]) => {
+    const list = ideas.filter(i => i.status === st).sort((a, b) => st === 'ok' ? b.votes - a.votes : b.createdAt - a.createdAt);
+    if (!list.length) return '';
+    return `<h3 style="margin:22px 0 10px">${label} (${list.length})</h3><div class="grid">${list.map(i => `<article class="card admin-card"><div>
+      <p style="font-weight:600;overflow-wrap:anywhere">${esc(i.text)}</p>
+      <p class="hint">${esc(i.name)} · ${when(i.createdAt)}${st === 'ok' ? ` · ${i.votes} vote${i.votes > 1 ? 's' : ''}` : ''}</p></div>
+      <div class="actions">
+        ${st === 'ok' ? '' : `<button class="btn sm primary" type="button" data-ipub="${esc(i.id)}">${ic('check')}Publier</button>`}
+        <button class="btn sm" type="button" data-iedit="${esc(i.id)}">${ic('edit')}Modifier</button>
+        ${st === 'hidden' ? '' : `<button class="btn sm" type="button" data-ihide="${esc(i.id)}">${ic('x')}Masquer</button>`}
+        <button class="btn sm danger" type="button" data-idel="${esc(i.id)}">${ic('trash')}Supprimer</button></div></article>`).join('')}</div>`;
+  }).join('');
+}
+
+export function ideaEditSheet(i) {
+  return `
+    <div class="sheet-head"><h2 id="sheet-title">Modifier l’idée</h2>
+      <button class="icon-btn" type="button" data-close aria-label="Fermer">${ic('x')}</button></div>
+    <form id="idea-edit" novalidate style="display:contents">
+      <div class="sheet-body">
+        <div class="field"><label for="ie-name">Prénom</label><input id="ie-name" type="text" maxlength="30" value="${esc(i.name)}" required></div>
+        <div class="field"><label for="ie-text">Idée</label><textarea id="ie-text" rows="3" maxlength="140" required>${esc(i.text)}</textarea></div>
+        <p class="error" id="ie-err" role="alert" hidden></p>
+      </div>
+      <div class="sheet-foot"><button class="btn primary block" type="submit" id="ie-save">Enregistrer</button></div>
+    </form>`;
+}

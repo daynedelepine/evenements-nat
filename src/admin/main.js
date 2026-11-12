@@ -1,6 +1,6 @@
 import '../styles/fonts.css';
 import '../styles/main.css';
-import { ref, push, update, onValue } from 'firebase/database';
+import { ref, push, update, onValue, get } from 'firebase/database';
 import { signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'firebase/auth';
 import { db, getAuthInstance, ADMIN_UID } from '../firebase.js';
 import { ic, LOGO } from '../lib/icons.js';
@@ -8,12 +8,14 @@ import { $, $$, toast, initTheme, openSheet, initOfflineBanner, download } from 
 import { CATS, TEMPLATES, normalize, toDb, waLink } from '../lib/events.js';
 import { toLocalPhone, validPhone, formatPhone } from '../lib/phone.js';
 import { richHtml } from '../lib/richtext.js';
-import { dashboard, eventCards, trashView, purgeSheet, guestsSheet, addGuestSheet, bulkSheet, formSheet, guestRows } from './views.js';
+import { ideasView, ideaEditSheet, dashboard, eventCards, trashView, purgeSheet, guestsSheet, addGuestSheet, bulkSheet, formSheet, guestRows } from './views.js';
 
 const auth = getAuthInstance();
 const sheet = $('#sheet');
 let events = [], registrations = {};
-let unsubEvents = null, unsubRegs = null;
+let unsubEvents = null, unsubRegs = null, unsubIdeas = [];
+let ideas = [], ideasPub = {};
+const ideaList = () => ideas.map(i => ({ ...i, votes: ideasPub[i.id]?.votes || 0 }));
 let openGuests = null; // identifiant de l'événement dont la liste d'inscrits est affichée (rafraîchie en direct)
 const byId = id => events.find(e => e.id === id);
 
@@ -26,6 +28,10 @@ function render() {
   $('#v-dash').innerHTML = dashboard(events, registrations);
   $('#admin-events').innerHTML = eventCards(events, registrations);
   $('#v-trash').innerHTML = trashView(events);
+  $('#v-ideas').innerHTML = ideasView(ideaList());
+  const np = ideas.filter(i => i.status === 'pending').length;
+  $('#ideas-count').textContent = np ? `(${np})` : '';
+  $$('#v-ideas [data-i]').forEach(x => { x.outerHTML = ic(x.dataset.i); });
   const n = events.filter(e => e.deleted).length;
   $('#trash-count').textContent = n ? `(${n})` : '';
   $$('#v-dash [data-i],#v-trash [data-i]').forEach(x => { x.outerHTML = ic(x.dataset.i); });
@@ -41,7 +47,7 @@ sheet.addEventListener('close', () => { openGuests = null; });
 
 $$('#app .tab').forEach(b => b.addEventListener('click', () => {
   $$('#app .tab').forEach(x => x.setAttribute('aria-selected', x === b));
-  ['dash', 'events', 'trash'].forEach(v => { $('#v-' + v).hidden = v !== b.dataset.tab; });
+  ['dash', 'events', 'ideas', 'trash'].forEach(v => { $('#v-' + v).hidden = v !== b.dataset.tab; });
 }));
 
 function showError(msg) { const el = $('#login-error'); el.textContent = msg; el.hidden = !msg; }
@@ -57,16 +63,21 @@ $('#login-form').addEventListener('submit', async ev => {
 $('#logout').addEventListener('click', () => signOut(auth));
 
 onAuthStateChanged(auth, user => {
+  if (user?.isAnonymous) user = null;   // session anonyme d'un visiteur (mur d'idées) : ignorée, sans la fermer
   if (user && user.uid !== ADMIN_UID) { signOut(auth); showError('Ce compte n’est pas autorisé.'); return; }
   const on = !!user;
   $('#login-view').hidden = on; $('#app').hidden = !on; $('#logout').hidden = !on;
-  unsubEvents?.(); unsubRegs?.(); unsubEvents = unsubRegs = null;
+  unsubEvents?.(); unsubRegs?.(); unsubEvents = unsubRegs = null; unsubIdeas.forEach(f => f()); unsubIdeas = [];
   if (on) {
     $('#a-pass').value = '';
     unsubEvents = onValue(ref(db, 'events'), s => { events = Object.entries(s.val() || {}).map(([id, e]) => normalize(id, e)); render(); });
     unsubRegs = onValue(ref(db, 'registrations'), s => { registrations = s.val() || {}; render(); },
       err => { console.error('Lecture des inscriptions refusée :', err.code); toast('Lecture des inscriptions refusée.'); });
-  } else { events = []; registrations = {}; openGuests = null; sheet.open && sheet.close(); }
+    unsubIdeas = [
+      onValue(ref(db, 'ideas'), s => { ideas = Object.entries(s.val() || {}).map(([id, v]) => ({ id, ...v })); render(); }, err => console.error('Lecture des idées refusée :', err.code)),
+      onValue(ref(db, 'ideasPublic'), s => { ideasPub = s.val() || {}; render(); }, () => {}),
+    ];
+  } else { events = []; registrations = {}; ideas = []; ideasPub = {}; openGuests = null; sheet.open && sheet.close(); }
 });
 
 /* ---------- Écriture ---------- */
@@ -238,3 +249,35 @@ async function recount() {
 }
 
 $$('[data-i]').forEach(s => { s.outerHTML = ic(s.dataset.i); });
+
+/* ---------- Idées : publier / masquer / modifier / supprimer ---------- */
+const ideaById = id => ideaList().find(i => i.id === id);
+async function publishIdea(id) {
+  const i = ideaById(id); if (!i) return;
+  // Les votes déjà reçus (idée republiée) sont recomptés depuis la liste des votants.
+  let votes = 0;
+  try { votes = Object.keys((await get(ref(db, `ideaVotes/${id}`))).val() || {}).length; } catch { /* repart de 0 */ }
+  write({ [`ideas/${id}/status`]: 'ok', [`ideasPublic/${id}`]: { text: i.text, name: i.name, createdAt: i.createdAt, votes } }, 'Idée publiée.', 'Publication impossible.');
+}
+document.addEventListener('click', async ev => {
+  const t = ev.target.closest('[data-ipub],[data-ihide],[data-idel],[data-iedit]'); if (!t) return;
+  const d = t.dataset;
+  if (d.ipub) publishIdea(d.ipub);
+  else if (d.ihide) write({ [`ideas/${d.ihide}/status`]: 'hidden', [`ideasPublic/${d.ihide}`]: null }, 'Idée masquée.', 'Opération impossible.');
+  else if (d.idel) {
+    if (!confirm('Supprimer définitivement cette idée et ses votes ?')) return;
+    write({ [`ideas/${d.idel}`]: null, [`ideasPublic/${d.idel}`]: null, [`ideaVotes/${d.idel}`]: null }, 'Idée supprimée.', 'Suppression impossible.');
+  } else if (d.iedit) {
+    const i = ideaById(d.iedit); if (!i) return;
+    openGuests = null; openSheet(sheet, ideaEditSheet(i));
+    $('#idea-edit').addEventListener('submit', async e => {
+      e.preventDefault();
+      const name = $('#ie-name').value.trim(), text = $('#ie-text').value.trim().replace(/\s+/g, ' ');
+      const err = $('#ie-err');
+      if (!name || text.length < 3) { err.textContent = 'Renseignez le prénom et l’idée.'; err.hidden = false; return; }
+      const u = { [`ideas/${i.id}/name`]: name, [`ideas/${i.id}/text`]: text };
+      if (i.status === 'ok') { u[`ideasPublic/${i.id}/name`] = name; u[`ideasPublic/${i.id}/text`] = text; }
+      if (await write(u, 'Idée modifiée.', null)) sheet.close(); else { err.textContent = 'Enregistrement impossible. Réessayez.'; err.hidden = false; }
+    });
+  }
+});

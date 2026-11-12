@@ -269,3 +269,15 @@ details p{color:var(--muted);padding-bottom:10px}
 /* Lien discret vers l'administration (Infos) */
 .admin-link{margin:8px 0 0;text-align:center;font-size:.9rem}
 .admin-link a{color:var(--muted);text-decoration:underline;text-underline-offset:2px;display:inline-block;padding:12px}
+
+/* Mur d'idées */
+.ideas{display:grid;gap:10px;margin-top:12px}
+.idea{display:flex;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:12px 14px}
+.idea.mine{border-style:dashed}
+.idea-body{flex:1;min-width:0;display:grid;gap:4px}
+.idea-text{font-weight:600;overflow-wrap:anywhere;white-space:pre-line}
+.like{flex:none;min-width:60px;min-height:56px;border-radius:16px;border:1px solid var(--line);background:var(--bg2);display:grid;place-items:center;padding:6px 10px;font-weight:700;color:var(--muted)}
+.like b{font-size:.9375rem;line-height:1}
+.like[aria-pressed="true"]{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.like[aria-pressed="true"] .ic{fill:currentColor}
+.like[disabled]{opacity:.6}

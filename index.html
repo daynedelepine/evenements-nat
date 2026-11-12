@@ -30,6 +30,7 @@
   <nav class="tabs" role="tablist" aria-label="Navigation principale">
     <button class="tab" role="tab" id="t-events" data-tab="events" aria-selected="true"><span data-i="calendar"></span>Événements</button>
     <button class="tab" role="tab" id="t-mine" data-tab="mine" aria-selected="false"><span data-i="ticket"></span>Mes inscriptions<span class="count" id="mine-count" hidden>0</span></button>
+    <button class="tab" role="tab" id="t-ideas" data-tab="ideas" aria-selected="false"><span data-i="bulb"></span>Idées</button>
     <button class="tab" role="tab" id="t-infos" data-tab="infos" aria-selected="false"><span data-i="info"></span>Infos</button>
   </nav>
 
@@ -59,6 +60,23 @@
       <h1 style="margin-top:24px;font-size:1.75rem">Mes inscriptions</h1>
       <p class="hint" style="margin-top:6px">Mémorisées sur cet appareil uniquement. Aucun compte à créer.</p>
       <div id="mine-out" class="grid" style="margin-top:16px"></div>
+    </section>
+
+    <section id="p-ideas" role="tabpanel" aria-labelledby="t-ideas" hidden>
+      <h1 style="margin-top:24px;font-size:1.75rem">Le mur d’idées</h1>
+      <p class="hint" style="margin-top:6px">Un thème, un jeu, une envie pour un prochain rendez-vous ? Proposez donc, faites-vous plaisir. Pour les Cafés Nat.</p>
+      <form class="panel" id="idea-form" novalidate style="margin-top:16px">
+        <div class="field"><label for="i-name">Votre prénom</label>
+          <input id="i-name" type="text" maxlength="30" autocomplete="given-name" required></div>
+        <div class="field"><label for="i-text">Votre idée de thème</label>
+          <textarea id="i-text" rows="3" maxlength="140" aria-describedby="i-count" required></textarea>
+          <p class="hint" id="i-count" style="text-align:right">0 / 140</p></div>
+        <p class="error" id="i-err" role="alert" hidden></p>
+        <button class="btn primary block" type="submit" id="i-submit">Proposer mon idée</button>
+        <p class="note" id="i-thanks" role="status" hidden>Merci, nous relisons votre idée avant de la publier.</p>
+      </form>
+      <h2 style="margin-top:26px;font-size:1.25rem">Les idées du moment</h2>
+      <div id="ideas-out" class="ideas" aria-live="polite"></div>
     </section>
 
     <section id="p-infos" role="tabpanel" aria-labelledby="t-infos" hidden>
@@ -94,6 +112,7 @@
             <details><summary>Comment annuler ma venue ?</summary><p>Ouvrez l'onglet « Mes inscriptions » et touchez « Annuler » : votre place est aussitôt libérée pour quelqu'un d'autre. Depuis un autre appareil, écrivez à Nat sur WhatsApp ou par téléphone.</p></details>
             <details><summary>L'événement est complet : que se passe-t-il ?</summary><p>Vous pouvez rejoindre la liste d'attente. Si une place se libère, Nat vous la propose : le changement apparaît dans « Mes inscriptions » et Nat vous prévient par WhatsApp.</p></details>
             <details><summary>Puis-je venir accompagné(e) ?</summary><p>Oui : indiquez le nombre de personnes (4 au plus) lors de l'inscription. Votre carte affiche alors « +2 », par exemple, pour deux personnes en plus de vous.</p></details>
+            <details><summary>Comment proposer une idée ?</summary><p>Dans l’onglet « Idées », indiquez votre prénom et votre idée de thème pour un Café Nat. Nous relisons chaque idée avant de la publier ; votre prénom est affiché avec elle. Touchez le cœur pour soutenir une idée (un vote par appareil, que vous pouvez retirer).</p></details>
             <details><summary>Que faut-il apporter ?</summary><p>Rien de particulier : Nat précise sur chaque fiche si un plat ou une boisson est attendu.</p></details>
             <details><summary>Où se déroule l'événement ?</summary><p>L'adresse est indiquée sur la fiche de l'événement, avec un lien d'itinéraire. Le bouton « Agenda » ajoute l'événement à votre calendrier avec des rappels.</p></details>
             <details><summary>Puis-je l'utiliser sans connexion ?</summary><p>Le site s'ouvre sans réseau et affiche les derniers événements connus. L'inscription et l'annulation demandent une connexion.</p></details>

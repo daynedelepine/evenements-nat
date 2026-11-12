@@ -37,6 +37,7 @@
     <nav class="admin-tabs" role="tablist" aria-label="Administration">
       <button class="tab" role="tab" data-tab="dash" aria-selected="true" type="button"><span data-i="chart"></span>Tableau de bord</button>
       <button class="tab" role="tab" data-tab="events" aria-selected="false" type="button"><span data-i="calendar"></span>Événements</button>
+      <button class="tab" role="tab" data-tab="ideas" aria-selected="false" type="button"><span data-i="bulb"></span>Idées <span id="ideas-count"></span></button>
       <button class="tab" role="tab" data-tab="trash" aria-selected="false" type="button"><span data-i="trash"></span>Corbeille <span id="trash-count"></span></button>
     </nav>
     <section id="v-dash"></section>
@@ -47,6 +48,7 @@
       </div>
       <div class="grid" id="admin-events"></div>
     </section>
+    <section id="v-ideas" hidden></section>
     <section id="v-trash" hidden></section>
   </main>
 

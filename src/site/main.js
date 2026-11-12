@@ -7,6 +7,7 @@ import { $, $$, esc, store, initTheme, openSheet, initOfflineBanner, toast } fro
 import { CATS, normalize, seats, waLink, NAT_PHONE, icsFile, confirmText, cancelText } from '../lib/events.js';
 import { startOf, isUpcoming, fmtLong, fmtTime, relDay } from '../lib/dates.js';
 import { validPhone, toLocalPhone, formatPhone } from '../lib/phone.js';
+import { startIdeas, toggleLike } from './ideas.js';
 import { card, skeletons, empty, filtered, renderList, renderMonth, renderMine, eventSheet, formSheet, successSheet, cancelSheet, cancelledSheet } from './views.js';
 
 const state = { tab: 'events', cat: 'all', free: false, view: 'list', month: 0, day: null, past: false };
@@ -30,13 +31,14 @@ initTheme();
 initOfflineBanner();
 
 /* ---------- Onglets (synchronisés avec l'adresse : #mes-inscriptions, #infos) ---------- */
-const HASH = { events: '', mine: '#mes-inscriptions', infos: '#infos' };
+const HASH = { events: '', mine: '#mes-inscriptions', ideas: '#idees', infos: '#infos' };
 const fromHash = () => Object.keys(HASH).find(k => HASH[k] === location.hash) || 'events';
 function setTab(t, push = true) {
   state.tab = t;
   $$('.tab').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t));
-  ['events', 'mine', 'infos'].forEach(p => { $('#p-' + p).hidden = p !== t; });
+  ['events', 'mine', 'ideas', 'infos'].forEach(p => { $('#p-' + p).hidden = p !== t; });
   if (push && location.hash !== HASH[t]) history.pushState(null, '', HASH[t] || location.pathname);
+  if (t === 'ideas') startIdeas();
   scrollTo({ top: 0 });
 }
 $$('.tab').forEach(b => b.addEventListener('click', () => setTab(b.dataset.tab)));
@@ -197,10 +199,11 @@ async function submitForm(eventId, getPeople) {
 
 /* ---------- Événements souris / clavier (délégation) ---------- */
 document.addEventListener('click', ev => {
-  const t = ev.target.closest('[data-open],[data-reg],[data-cat],[data-view],[data-day],[data-month],[data-ics],[data-cancel],[data-cancel-ok],[data-forget],[data-share],[data-goto],#past-btn');
+  const t = ev.target.closest('[data-open],[data-reg],[data-cat],[data-view],[data-day],[data-month],[data-ics],[data-cancel],[data-cancel-ok],[data-forget],[data-share],[data-goto],[data-like],#past-btn');
   if (!t) return;
   const d = t.dataset;
-  if (d.reg) openForm(d.reg);
+  if (d.like) toggleLike(d.like);
+  else if (d.reg) openForm(d.reg);
   else if (d.open) openEvent(d.open);
   else if (d.cat && t.classList.contains('fchip')) { state.cat = d.cat; state.day = null; render(); }
   else if (d.view) { state.view = d.view; render(); }

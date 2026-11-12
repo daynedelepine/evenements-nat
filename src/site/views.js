@@ -190,3 +190,18 @@ export function successSheet(e, name, people, wait, waHref) {
     </div></div>
     <div class="sheet-foot"><button class="btn block" type="button" data-close>Terminé</button></div>`;
 }
+
+/* ---------- Mur d'idées ---------- */
+/** Idées de cet appareil encore en attente de relecture, puis idées publiées (déjà triées). Tout texte passe par esc(). */
+export function ideasList(list, voted, mine, pending, canVote) {
+  const items = [
+    ...pending.map(p => `<article class="idea mine"><div class="idea-body"><p class="idea-text">${esc(p.text)}</p>
+      <p class="hint"><span class="badge soft" style="margin:0">En attente de relecture</span> ${esc(p.name)} · votre idée</p></div></article>`),
+    ...list.map(i => {
+      const on = voted.has(i.id);
+      return `<article class="idea"><div class="idea-body"><p class="idea-text">${esc(i.text)}</p>
+        <p class="hint">${esc(i.name)}${mine.has(i.id) ? ' · votre idée' : ''}</p></div>
+        <button type="button" class="like" data-like="${esc(i.id)}" aria-pressed="${on}" aria-label="${on ? 'Retirer mon vote' : 'J’aime cette idée'} (${i.votes} vote${i.votes > 1 ? 's' : ''})" ${canVote ? '' : 'disabled'}>${ic('heart')}<b>${i.votes}</b></button></article>`;
+    })];
+  return items.length ? items.join('') : empty('Pas encore d’idée publiée', 'Soyez la première personne à proposer un thème.', 'bulb');
+}
