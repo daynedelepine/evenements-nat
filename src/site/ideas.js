@@ -1,7 +1,6 @@
 // Mur d'idées : proposition (modérée), liste publiée, vote « J'aime » (un par appareil, via l'authentification anonyme).
 import { ref, push, update, get, onValue, serverTimestamp } from 'firebase/database';
-import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
-import { db, getAuthInstance } from '../firebase.js';
+import { db } from '../firebase.js';
 import { $, store, toast } from '../lib/dom.js';
 import { ideasList } from './views.js';
 
@@ -10,31 +9,23 @@ let published = [];                       // { id, text, name, votes, createdAt 
 let myIdeas = store.get('nat-ideas', []); // idées envoyées depuis cet appareil : { id, text, name, ts }
 const voted = new Set();                  // idées que cet appareil a aimées (lues dans la base)
 const watching = new Map();
-let uid = null, started = false, uidPromise = null;
+let started = false;
 
-// Identité anonyme créée à la première utilisation de l'onglet (aucune donnée personnelle).
-function getUid() {
-  if (uid) return Promise.resolve(uid);
-  return uidPromise ||= new Promise((res, rej) => {
-    const auth = getAuthInstance();
-    const off = onAuthStateChanged(auth, u => {
-      off();
-      if (u) { uid = u.uid; res(uid); }
-      else signInAnonymously(auth).then(c => { uid = c.user.uid; res(uid); }, rej);
-    });
-  }).catch(e => { uidPromise = null; throw e; });
-}
+// Identifiant d'appareil aléatoire (aucun compte, aucune donnée personnelle) : un vote par appareil, limite de fréquence.
+function newId() { const b = crypto.getRandomValues(new Uint8Array(18)); return btoa(String.fromCharCode(...b)).replaceAll('+', '-').replaceAll('/', '_'); }
+let uid = store.get('nat-device', null);
+if (!uid) { uid = newId(); store.set('nat-device', uid); }
+const getUid = () => Promise.resolve(uid);
 
 function render() {
   const list = [...published].sort((a, b) => b.votes - a.votes || b.createdAt - a.createdAt);
   const ids = new Set(published.map(i => i.id));
   const pending = myIdeas.filter(p => !ids.has(p.id));
-  $('#ideas-out').innerHTML = ideasList(list, voted, new Set(myIdeas.map(p => p.id)), pending, !!uid);
+  $('#ideas-out').innerHTML = ideasList(list, voted, new Set(myIdeas.map(p => p.id)), pending, true);
 }
 
 // Suivi de MON vote sur chaque idée publiée (lecture de la seule clé qui porte mon identifiant).
 function watchVotes() {
-  if (!uid) return;
   published.forEach(i => {
     if (watching.has(i.id)) return;
     watching.set(i.id, onValue(ref(db, `ideaVotes/${i.id}/${uid}`), s => { s.exists() ? voted.add(i.id) : voted.delete(i.id); render(); }, () => {}));
@@ -48,7 +39,6 @@ export function startIdeas() {
     published = Object.entries(s.val() || {}).map(([id, v]) => ({ id, text: v.text, name: v.name, votes: v.votes || 0, createdAt: v.createdAt || 0 }));
     render(); watchVotes();
   }, err => { console.error('Lecture des idées impossible :', err.code); $('#ideas-out').innerHTML = '<p class="hint">Impossible de charger les idées. Vérifiez votre connexion.</p>'; });
-  getUid().then(() => { render(); watchVotes(); }).catch(e => console.error('Connexion anonyme impossible :', e.code || e));
   render();
 }
 

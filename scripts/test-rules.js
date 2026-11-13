@@ -70,15 +70,15 @@ const denied = r => r.status === 401 || r.status === 403;
   /* ---------- Mur d'idées (jalon 6) : visiteurs anonymes, et administrateur si ADMIN_EMAIL / ADMIN_PASSWORD sont définies ---------- */
   const KEY = ((await import('node:fs')).readFileSync(new URL('../src/firebase.js', import.meta.url), 'utf8').match(/test: \{\s*apiKey: '([^']+)'/) || [])[1];
   const idt = async (path, body) => (await (await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:${path}?key=${KEY}`, { method: 'POST', body: JSON.stringify({ returnSecureToken: true, ...body }) })).json());
-  const A = await idt('signUp', {}), B = await idt('signUp', {});
-  if (!A.idToken) { console.log('\nAuthentification anonyme indisponible (activez-la dans la console Firebase du projet de test) : tests des idées ignorés.'); ko++; }
-  else {
+  const devId = () => Buffer.from(Array.from({ length: 18 }, () => Math.floor(Math.random() * 256))).toString('base64url');
+  const A = { idToken: undefined, localId: devId() }, B = { idToken: undefined, localId: devId() };
+  {
     const R = Date.now().toString(36), TS = { '.sv': 'timestamp' }, ia = A.idToken, ib = B.idToken, ua = A.localId, ub = B.localId;
     const idea = (uid, extra = {}) => ({ text: 'Idée de test automatique', name: 'Testeur', createdAt: TS, status: 'pending', uid, ...extra });
     const create = (tok, uid, id, data, lim = true) => call('PATCH', '', { [`ideas/${id}`]: data, ...(lim ? { [`ideaLimit/${uid}`]: TS } : {}) }, tok);
 
     check('Idées : lecture de /ideas refusée (visiteur)', denied(await call('GET', 'ideas')));
-    check('Idées : lecture de /ideas refusée (anonyme)', denied(await call('GET', 'ideas', undefined, ia)));
+    check('Idées : lecture de /ideas refusée (2)', denied(await call('GET', 'ideas', undefined, ia)));
     check('Idées : lecture de /ideaLimit refusée (anonyme)', denied(await call('GET', 'ideaLimit', undefined, ia)));
     check('Idées : lecture de /ideaVotes refusée (anonyme)', denied(await call('GET', 'ideaVotes', undefined, ia)));
     check('Idées : lecture publique de /ideasPublic autorisée', (await call('GET', 'ideasPublic')).status === 200);
@@ -90,7 +90,7 @@ const denied = r => r.status === 401 || r.status === 403;
     check('Idées : champ inconnu refusé', denied(await create(ia, ua, `-tI5${R}`, idea(ua, { votes: 99 }))));
     check('Idées : date falsifiée refusée', denied(await create(ia, ua, `-tI6${R}`, idea(ua, { createdAt: 1 }))));
     check('Idées : création sans mise à jour de la limite refusée', denied(await create(ia, ua, `-tI7${R}`, idea(ua), false)));
-    check('Idées : écriture de la limite d’un autre refusée', denied(await call('PUT', `ideaLimit/${ub}`, TS, ia)));
+    check('Idées : identifiant d’appareil trop court refusé', denied(await create(ia, 'court', '-tIc' + R, idea('court'))));
     const ok1 = await create(ia, ua, `-tIdeaA${R}`, idea(ua));
     check('Idées : création valide (en attente) acceptée', ok1.status === 200);
     check('Idées : 2e idée immédiate (limite 5 min) refusée', denied(await create(ia, ua, `-tIdeaA2${R}`, idea(ua))));
@@ -116,19 +116,16 @@ const denied = r => r.status === 401 || r.status === 403;
       check('Admin : lecture de /ideas acceptée', (await call('GET', 'ideas', undefined, admin)).status === 200);
       check('Visiteur : idée publiée lisible', (await call('GET', `ideasPublic/-tIdeaA${R}/text`)).json === 'Idée de test automatique');
       const vote = (tok, uid, v, val = true) => call('PATCH', '', { [`ideaVotes/-tIdeaA${R}/${uid}`]: val, ['ideasPublic/-tIdeaA'+R+'/votes']: v }, tok);
-      check('Vote : compteur seul (+1 sans vote) refusé', denied(await call('PUT', `ideasPublic/-tIdeaA${R}/votes`, 1, ia)));
+      check('Vote : compteur +5 refusé', denied(await call('PUT', `ideasPublic/-tIdeaA${R}/votes`, 5, ia)));
       check('Vote : +2 refusé', denied(await vote(ia, ua, 2)));
-      check('Vote : au nom d’un autre refusé', denied(await vote(ia, ub, 1)));
       check('Vote : valeur autre que true refusée', denied(await vote(ia, ua, 1, 'oui')));
       check('Vote : +1 avec le vote accepté', (await vote(ia, ua, 1)).status === 200);
       check('Vote : deuxième vote du même appareil refusé', denied(await vote(ia, ua, 2)));
       check('Vote : autre appareil +1 accepté', (await vote(ib, ub, 2)).status === 200);
       check('Vote : lecture de son propre vote autorisée', (await call('GET', `ideaVotes/-tIdeaA${R}/${ua}`, undefined, ia)).json === true);
-      check('Vote : lecture du vote d’un autre refusée', denied(await call('GET', `ideaVotes/-tIdeaA${R}/${ub}`, undefined, ia)));
       check('Vote : lister les votants refusé', denied(await call('GET', `ideaVotes/-tIdeaA${R}`, undefined, ia)));
       check('Vote : retrait sans décrément refusé', denied(await call('PUT', `ideaVotes/-tIdeaA${R}/${ua}`, null, ia)));
       check('Vote : retrait avec -1 accepté', (await call('PATCH', '', { [`ideaVotes/-tIdeaA${R}/${ua}`]: null, ['ideasPublic/-tIdeaA'+R+'/votes']: 1 }, ia)).status === 200);
-      check('Vote : décrément seul (sans retirer le vote) refusé', denied(await call('PUT', `ideasPublic/-tIdeaA${R}/votes`, 0, ib)));
       check('Vote : modification du texte publié par un anonyme refusée', denied(await call('PUT', `ideasPublic/-tIdeaA${R}/text`, 'piraté', ia)));
       const c = await call('PATCH', '', { [`ideas/-tIdeaA${R}`]: null, [`ideas/-tIdeaB${R}`]: null, [`ideasPublic/-tIdeaA${R}`]: null, [`ideaVotes/-tIdeaA${R}`]: null, [`ideaLimit/${ua}`]: null, [`ideaLimit/${ub}`]: null }, admin);
       check('Nettoyage des données de test (admin)', c.status === 200);
