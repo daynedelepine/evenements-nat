@@ -3,7 +3,7 @@
 // - /assets/* (noms empreints) et polices : copie locale d'abord.
 // - Rien d'autre n'est intercepté : Firebase, /admin et les requêtes non GET passent directement.
 // Les événements eux-mêmes sont gardés par le site (stockage local), pas ici.
-const CACHE = 'nat-shell-v1';
+const CACHE = 'nat-shell-v2';   // v2 : force la mise à jour des appareils restés sur l'ancien code (mur d'idées)
 const PAGE = '/';
 
 const urlsIn = text => [...text.matchAll(/(?:src|href)="(\/assets\/[^"]+)"/g)].map(m => m[1]);
@@ -40,8 +40,11 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
-    for (const k of await caches.keys()) if (k !== CACHE) await caches.delete(k);
+    const keys = await caches.keys(), upgrade = keys.some(k => k !== CACHE);
+    for (const k of keys) if (k !== CACHE) await caches.delete(k);
     await self.clients.claim();
+    // Mise à jour d'une ancienne version : les pages déjà ouvertes (onglet, application installée) sont rechargées une fois.
+    if (upgrade) for (const c of await self.clients.matchAll({ type: 'window' })) { try { await c.navigate(c.url); } catch { /* page fermée */ } }
   })());
 });
 
