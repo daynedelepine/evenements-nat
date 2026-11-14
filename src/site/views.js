@@ -161,8 +161,8 @@ export function formSheet(e, me, maxP) {
           <p class="error" id="e-name" hidden>${ic('info')}Indiquez votre prénom et votre nom.</p></div>
         <div class="field"><label for="f-phone">Téléphone</label>
           <input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78" value="${esc(me.phone)}" aria-describedby="e-phone h-phone" required>
-          <p class="hint" id="h-phone">Utilisé uniquement par Nat, jamais affiché publiquement.</p>
-          <p class="error" id="e-phone" hidden>${ic('info')}Numéro invalide. Exemple : 06 12 34 56 78.</p></div>
+          <p class="hint" id="h-phone">Utilisé uniquement par Nat, jamais affiché publiquement. Hors de France, commencez par + et l’indicatif (ex. +32 pour la Belgique).</p>
+          <p class="error" id="e-phone" hidden>${ic('info')}Numéro invalide. Exemples : 06 12 34 56 78 ou +32 475 12 34 56.</p></div>
         <div class="field"><span class="label" id="l-people">Nombre de personnes</span>
           <div class="stepper" role="group" aria-labelledby="l-people">
             <button type="button" data-step="-1" aria-label="Une personne de moins">${ic('minus')}</button><output id="f-people" aria-live="polite">1</output><button type="button" data-step="1" aria-label="Une personne de plus">${ic('plus')}</button></div>

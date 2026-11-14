@@ -147,7 +147,7 @@ function openAddGuest(eid) {
     const name = $('#g-name').value.trim().replace(/\s+/g, ' '), phone = toLocalPhone(ph.value), people = Math.round(Number($('#g-people').value)), note = $('#g-note').value.trim();
     const err = $('#g-err'), fail = m => { err.textContent = m; err.hidden = false; };
     if (name.length < 2) return fail('Indiquez un nom (2 caractères au moins).');
-    if (!validPhone(ph.value)) return fail('Numéro de téléphone français invalide.');
+    if (!validPhone(ph.value)) return fail('Numéro de téléphone invalide (06… ou international +32…).');
     if (!(people >= 1 && people <= 4)) return fail('Entre 1 et 4 personnes.');
     if (Object.values(registrations[eid] || {}).some(r => r.phone === phone)) return fail('Ce numéro est déjà inscrit à cet événement.');
     const wait = e.taken + people > e.max, key = push(ref(db, `registrations/${eid}`)).key;

@@ -37,6 +37,8 @@ const denied = r => r.status === 401 || r.status === 403;
   check('Inscription sans incrément du compteur refusée', denied(await upd(free, 0, phone, rid, T, reg())));
   check('Inscription avec mauvais incrément (+2 pour 1 personne) refusée', denied(await upd(free, 0, phone, rid, T + 2, reg())));
   check('Téléphone invalide refusé', denied(await upd(free, 0, '12345', rid, T + 1, reg(1, { phone: '12345' }))));
+  for (const bad of ['+33', '+12345', '+0123456789', '+1234567890123456', '+32 475 12 34 56', '0032475123456', '+32475abc456'])
+    check(`Téléphone international mal formé refusé (${bad})`, denied(await upd(free, 0, bad, rid, T + 1, reg(1, { phone: bad }))));
   check('5 personnes refusé', denied(await upd(free, 0, phone, rid, T + 5, reg(5))));
   check('Champ inconnu refusé', denied(await upd(free, 0, phone, rid, T + 1, reg(1, { admin: true }))));
   check('Nom trop court refusé', denied(await upd(free, 0, phone, rid, T + 1, reg(1, { name: 'A' }))));
@@ -62,6 +64,14 @@ const denied = r => r.status === 401 || r.status === 403;
     check('Retrait de la liste d’attente accepté', wd.status === 200);
   }
 
+  // Numéros internationaux (forme enregistrée : + puis 8 à 15 chiffres)
+  for (const intl of ['+32475123456', '+14155550123']) {
+    const iid = '-testIntl';
+    const okIntl = await upd(free, 0, intl, iid, T + 2, reg(1, { phone: intl }));
+    check(`Inscription avec numéro international acceptée (${intl})`, okIntl.status === 200);
+    const delIntl = await call('PATCH', '', { [`registrations/${free}/${iid}`]: null, [`phones/${free}/${intl}`]: null, [`events/${free}/taken`]: T + 1 });
+    check(`Annulation de l'inscription internationale acceptée (${intl})`, delIntl.status === 200);
+  }
   const cancel = await call('PATCH', '', { [`registrations/${free}/${rid}`]: null, [`phones/${free}/${phone}`]: null, [`events/${free}/taken`]: T });
   check('Annulation par le visiteur (identifiant connu) acceptée', cancel.status === 200);
   check('Compteur revenu à sa valeur initiale', (await call('GET', `events/${free}/taken`)).json === T);

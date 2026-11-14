@@ -33,7 +33,7 @@
           ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (!data.exists() && newData.exists()) || (data.exists() && !newData.exists())",
           ".validate": "newData.hasChildren(['name','phone','people','status','createdAt']) && (auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (newData.parent().parent().parent().child('phones').child($eid).child(newData.child('phone').val()).val() === $rid && ((newData.child('status').val() === 'ok' && newData.parent().parent().parent().child('events').child($eid).child('taken').val() === root.child('events').child($eid).child('taken').val() + newData.child('people').val() && newData.parent().parent().parent().child('events').child($eid).child('taken').val() <= root.child('events').child($eid).child('maxParticipants').val()) || (newData.child('status').val() === 'wait' && root.child('events').child($eid).child('taken').val() >= root.child('events').child($eid).child('maxParticipants').val()))))",
           "name":      { ".validate": "newData.isString() && newData.val().length >= 2 && newData.val().length <= 60" },
-          "phone":     { ".validate": "newData.isString() && newData.val().matches(/^0[1-9][0-9]{8}$/)" },
+          "phone":     { ".validate": "newData.isString() && newData.val().matches(/^(0[1-9][0-9]{8}|[+][1-9][0-9]{7,14})$/)" },
           "people":    { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 4 && newData.val() % 1 === 0" },
           "note":      { ".validate": "newData.isString() && newData.val().length <= 200" },
           "status":    { ".read": true, ".validate": "newData.val() === 'ok' || newData.val() === 'wait'" },
@@ -48,7 +48,7 @@
       "$eid": {
         "$phone": {
           ".write": "auth != null && auth.uid === 'hSfCSlm2tdSnc6WMARMheQP7NpY2' || (!data.exists() && newData.exists()) || (data.exists() && !newData.exists())",
-          ".validate": "newData.isString() && $phone.matches(/^0[1-9][0-9]{8}$/)"
+          ".validate": "newData.isString() && $phone.matches(/^(0[1-9][0-9]{8}|[+][1-9][0-9]{7,14})$/)"
         }
       }
     },
