@@ -6,7 +6,7 @@ import { db, getAuthInstance, ADMIN_UID } from '../firebase.js';
 import { ic, LOGO } from '../lib/icons.js';
 import { $, $$, toast, initTheme, openSheet, initOfflineBanner, download } from '../lib/dom.js';
 import { CATS, TEMPLATES, normalize, toDb, waLink } from '../lib/events.js';
-import { toLocalPhone, validPhone, formatPhone } from '../lib/phone.js';
+import { normalizePhone, validPhone, formatPhone } from '../lib/phone.js';
 import { richHtml } from '../lib/richtext.js';
 import { ideasView, ideaEditSheet, dashboard, eventCards, trashView, purgeSheet, guestsSheet, addGuestSheet, bulkSheet, formSheet, guestRows } from './views.js';
 
@@ -144,7 +144,7 @@ function openAddGuest(eid) {
   const ph = $('#g-phone'); ph.addEventListener('input', () => { ph.value = formatPhone(ph.value); });
   $('#add-form').addEventListener('submit', async ev => {
     ev.preventDefault();
-    const name = $('#g-name').value.trim().replace(/\s+/g, ' '), phone = toLocalPhone(ph.value), people = Math.round(Number($('#g-people').value)), note = $('#g-note').value.trim();
+    const name = $('#g-name').value.trim().replace(/\s+/g, ' '), phone = normalizePhone(ph.value), people = Math.round(Number($('#g-people').value)), note = $('#g-note').value.trim();
     const err = $('#g-err'), fail = m => { err.textContent = m; err.hidden = false; };
     if (name.length < 2) return fail('Indiquez un nom (2 caractères au moins).');
     if (!validPhone(ph.value)) return fail('Numéro de téléphone invalide (06… ou international +32…).');

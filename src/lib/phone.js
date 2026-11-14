@@ -8,7 +8,6 @@ export const normalizePhone = p => {
   const fr = s.match(/^\+330?([1-9]\d{8})$/); // +33 6… ou +33 (0)6…
   return fr ? '0' + fr[1] : s;
 };
-export const toLocalPhone = normalizePhone; // ancien nom, conservé pour les appels existants
 export const validPhone = p => /^(0[1-9]\d{8}|\+[1-9]\d{7,14})$/.test(normalizePhone(p));
 // Saisie : numéro français groupé par deux ; numéro international laissé tel quel (caractères parasites retirés).
 export const formatPhone = v => /^\s*(\+|00)/.test(v)

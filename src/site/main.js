@@ -6,7 +6,7 @@ import { ic, LOGO } from '../lib/icons.js';
 import { $, $$, esc, store, initTheme, openSheet, initOfflineBanner, toast } from '../lib/dom.js';
 import { CATS, normalize, seats, waLink, NAT_PHONE, icsFile, confirmText, cancelText } from '../lib/events.js';
 import { startOf, isUpcoming, fmtLong, fmtTime, relDay } from '../lib/dates.js';
-import { validPhone, toLocalPhone, formatPhone } from '../lib/phone.js';
+import { validPhone, normalizePhone, formatPhone } from '../lib/phone.js';
 import { startIdeas, toggleLike } from './ideas.js';
 import { card, skeletons, empty, filtered, renderList, renderMonth, renderMine, eventSheet, formSheet, successSheet, cancelSheet, cancelledSheet } from './views.js';
 
@@ -121,7 +121,7 @@ async function confirmCancel(rid) {
   try {
     // Statut réel (la liste d'attente a pu avancer) : seules les places « ok » sont rendues au compteur.
     const status = (await get(ref(db, `registrations/${r.eventId}/${rid}/status`))).val();
-    const phone = toLocalPhone(me.phone || '');
+    const phone = normalizePhone(me.phone || '');
     const updates = { [`registrations/${r.eventId}/${rid}`]: null };
     if (status === 'ok') updates[`events/${r.eventId}/taken`] = Math.max(0, e.taken - r.people);
     if (status !== null) {
@@ -167,7 +167,7 @@ async function submitForm(eventId, getPeople) {
 
   const e = byId(eventId), people = getPeople();
   if (!e) { formErr.textContent = 'Événement introuvable. Actualisez la page.'; formErr.hidden = false; return; }
-  const phone = toLocalPhone(phoneRaw), wait = seats(e).full;
+  const phone = normalizePhone(phoneRaw), wait = seats(e).full;
 
   // Écriture atomique : inscription + numéro (anti-doublon) + compteur de places.
   // Les règles Firebase refusent tout compteur différent de « ancien + nombre de personnes ».
