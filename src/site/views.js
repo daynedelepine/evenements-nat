@@ -83,7 +83,7 @@ export function renderMine(regs, byId) {
       <button type="button" class="card-link" data-open="${esc(e.id)}">${esc(e.name)}</button>
       <div class="meta"><span>${ic('clock')}${fmtLong(e)} · ${fmtTime(e)}</span><span>${ic('users')}${r.people} personne${r.people > 1 ? 's' : ''}${plus(r)}</span></div>
       ${wait && !past && !e.cancelled ? '<p class="hint">Vous serez prévenu(e) ici et par WhatsApp si une place se libère.</p>' : ''}
-      ${gone ? '<p class="hint">Nat a retiré cette inscription. Contactez-le pour toute question.</p>' : ''}</div></div>
+      ${gone ? '<p class="hint">Cette inscription a été retirée par l’organisation. Contactez-nous pour toute question.</p>' : ''}</div></div>
       <div class="actions">
         ${gone ? `<button class="btn sm" type="button" data-forget="${esc(r.id)}">${ic('x')}Masquer</button>` : `${past ? '' : `<button class="btn sm" type="button" data-ics="${esc(e.id)}">${ic('calendar')}Agenda</button>
         <a class="btn sm" href="${mapsLink(e)}" target="_blank" rel="noopener">${ic('route')}Itinéraire</a>
@@ -115,8 +115,8 @@ export function cancelledSheet(e, waHref) {
     <div class="sheet-body"><div class="success">
       <div class="tick">${ic('check')}</div>
       <p>Votre inscription à <b>${esc(e.name)}</b> est annulée.</p>
-      <p class="hint">Par courtoisie, vous pouvez prévenir Nat par WhatsApp.</p>
-      <a class="btn wa block" href="${waHref}" target="_blank" rel="noopener">${ic('chat')}Prévenir Nat sur WhatsApp</a>
+      <p class="hint">Par courtoisie, vous pouvez nous prévenir par WhatsApp.</p>
+      <a class="btn wa block" href="${waHref}" target="_blank" rel="noopener">${ic('chat')}Nous prévenir sur WhatsApp</a>
     </div></div>
     <div class="sheet-foot"><button class="btn block" type="button" data-close>Terminé</button></div>`;
 }
@@ -161,7 +161,7 @@ export function formSheet(e, me, maxP) {
           <p class="error" id="e-name" hidden>${ic('info')}Indiquez votre prénom et votre nom.</p></div>
         <div class="field"><label for="f-phone">Téléphone</label>
           <input id="f-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="06 12 34 56 78" value="${esc(me.phone)}" aria-describedby="e-phone h-phone" required>
-          <p class="hint" id="h-phone">Utilisé uniquement par Nat, jamais affiché publiquement. Hors de France, commencez par + et l’indicatif (ex. +32 pour la Belgique).</p>
+          <p class="hint" id="h-phone">Utilisé uniquement par l’organisation, jamais affiché publiquement. Hors de France, commencez par + et l’indicatif (ex. +32 pour la Belgique).</p>
           <p class="error" id="e-phone" hidden>${ic('info')}Numéro invalide. Exemples : 06 12 34 56 78 ou +32 475 12 34 56.</p></div>
         <div class="field"><span class="label" id="l-people">Nombre de personnes</span>
           <div class="stepper" role="group" aria-labelledby="l-people">
@@ -183,7 +183,7 @@ export function successSheet(e, name, people, wait, waHref) {
       <div class="tick">${ic('check')}</div>
       <p><b>${esc(name)}</b>, ${wait ? 'vous êtes inscrit(e) en liste d’attente.' : 'votre place est réservée.'}</p>
       <div class="recap"><b>${esc(e.name)}</b><br>${fmtLong(e)} · ${fmtTime(e)}<br>${people} personne${people > 1 ? `s (vous + ${people - 1})` : ''}</div>
-      <p class="hint">Dernière étape : envoyez votre confirmation à Nat par WhatsApp.</p>
+      <p class="hint">Dernière étape : envoyez-nous votre confirmation par WhatsApp.</p>
       <a class="btn wa block" href="${waHref}" target="_blank" rel="noopener">${ic('chat')}Envoyer ma confirmation sur WhatsApp</a>
       <div class="actions" style="justify-content:center"><button class="btn sm" type="button" data-ics="${esc(e.id)}">${ic('calendar')}Agenda</button>
       <a class="btn sm" href="${mapsLink(e)}" target="_blank" rel="noopener">${ic('route')}Itinéraire</a></div>

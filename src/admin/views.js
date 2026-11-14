@@ -93,7 +93,7 @@ export function guestsSheet(e, regs) {
     ${isWait ? '' : `<td><input type="checkbox" data-present="${esc(r.id)}" ${r.present ? 'checked' : ''} aria-label="Présent : ${esc(r.name)}"></td>`}
     <td class="who"><b>${esc(r.name)}</b><small>${esc(spacedPhone(r.phone))}</small>${r.note ? ` <span class="tag">${esc(r.note)}</span>` : ''}</td>
     <td>${esc(r.people)}</td>
-    <td style="text-align:right;white-space:nowrap" class="no-print">${wa(r, `Bonjour ${firstName(r)}, c'est Nat. Je vous écris au sujet de « ${e.name} ».`)}
+    <td style="text-align:right;white-space:nowrap" class="no-print">${wa(r, `Bonjour ${firstName(r)}, je vous écris au sujet de « ${e.name} ».`)}
       ${isWait ? `<button class="btn sm primary" type="button" data-promote="${esc(r.id)}">Promouvoir</button>` : ''}
       <button class="btn sm danger" type="button" data-remove="${esc(r.id)}" aria-label="Retirer ${esc(r.name)}">${ic('trash')}</button></td></tr>`;
   const here = ok.filter(r => r.present).reduce((n, r) => n + r.people, 0);
@@ -128,8 +128,8 @@ export function addGuestSheet(e) {
 }
 
 /* ---------- Message groupé / annulation ---------- */
-export const reminderText = e => `Bonjour, petit rappel : « ${e.name} » ${fmtLong(e)} à ${fmtTime(e)}. À bientôt ! — Nat`;
-export const cancelText = e => `Bonjour, malheureusement « ${e.name} » du ${fmtLong(e)} est annulé. Désolé pour la gêne — Nat`;
+export const reminderText = e => `Bonjour, petit rappel : « ${e.name} » ${fmtLong(e)} à ${fmtTime(e)}. À bientôt ! — Événements Nat`;
+export const cancelText = e => `Bonjour, malheureusement « ${e.name} » du ${fmtLong(e)} est annulé. Désolé pour la gêne — Événements Nat`;
 
 export function bulkSheet(e, regs, cancel) {
   const g = guestRows(regs), list = cancel ? g.all : g.ok, msg = cancel ? cancelText(e) : reminderText(e);

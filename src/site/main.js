@@ -103,7 +103,7 @@ function watchRegs() {
         toast(`Bonne nouvelle : une place s’est libérée pour « ${byId(cur.eventId)?.name || 'cet événement'} ».`);
       } else if (st === null && cur.status !== 'removed') {
         cur.status = 'removed'; saveRegs(); render();
-        toast('Une de vos inscriptions a été retirée par Nat.');
+        toast('Une de vos inscriptions a été retirée par l’organisation.');
       }
     }, () => {}));
   });
@@ -133,7 +133,7 @@ async function confirmCancel(rid) {
     await update(ref(db), updates);
   } catch (ex) {
     console.error('Annulation impossible :', ex.code || ex);
-    err.innerHTML = ic('info') + (ex.code === 'NO_PHONE' ? 'Annulation impossible depuis cet appareil : prévenez Nat par WhatsApp.' : 'Annulation impossible. Vérifiez votre connexion puis réessayez.');
+    err.innerHTML = ic('info') + (ex.code === 'NO_PHONE' ? 'Annulation impossible depuis cet appareil : prévenez-nous par WhatsApp.' : 'Annulation impossible. Vérifiez votre connexion puis réessayez.');
     err.hidden = false; btn.disabled = false; btn.textContent = 'Oui, annuler mon inscription'; return;
   }
   unwatch(rid); regs = regs.filter(x => x.id !== rid); saveRegs(); render();

@@ -26,8 +26,8 @@ export const toDb = e => ({
 
 // Modèles par catégorie (valeurs proposées à la création, modifiables ensuite)
 export const TEMPLATES = {
-  cafes:  { name: 'Café Nat', time: '10:00', place: 'Chez Nat, 5 place du Marché', max: 8, desc: 'Un café tranquille pour faire connaissance.' },
-  tables: { name: "Table d'hôtes", time: '19:30', place: 'La Maison Verte, 8 chemin des Vignes', max: 10, desc: 'Menu complet préparé par Nat. Prévenez-moi de vos allergies.' },
+  cafes:  { name: 'Café Nat', time: '10:00', place: 'Chez nous, 5 place du Marché', max: 8, desc: 'Un café tranquille pour faire connaissance.' },
+  tables: { name: "Table d'hôtes", time: '19:30', place: 'La Maison Verte, 8 chemin des Vignes', max: 10, desc: 'Menu complet préparé par nos soins. Prévenez-moi de vos allergies.' },
   aperos: { name: 'ApéroNus', time: '20:00', place: 'Le Petit Salon, 12 rue des Tilleuls', max: 12, desc: 'Soirée détendue, dans le respect et la discrétion.' },
 };
 
@@ -54,9 +54,9 @@ export function icsFile(e, reg) {
   const f = d => `${d.getFullYear()}${pad(d.getMonth() + 1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
   const clean = t => String(t).replace(/([,;\\])/g, '\\$1').replace(/\r?\n/g, '\\n');
   const wait = reg?.status === 'wait', url = location.origin + '/';
-  const mine = !reg ? '' : wait ? 'Vous êtes sur liste d’attente : Nat vous prévient si une place se libère.'
+  const mine = !reg ? '' : wait ? 'Vous êtes sur liste d’attente : nous vous prévenons si une place se libère.'
     : `Place réservée pour ${reg.people} personne${reg.people > 1 ? `s (vous + ${reg.people - 1})` : ''}.`;
-  const desc = [richPlain(e.desc), mine, `Adresse : ${e.place}`, `Itinéraire : ${mapsLink(e)}`, `Pour annuler : ${url}#mes-inscriptions`, `Contact : Nat, WhatsApp +${NAT_PHONE}`].filter(Boolean).join('\n');
+  const desc = [richPlain(e.desc), mine, `Adresse : ${e.place}`, `Itinéraire : ${mapsLink(e)}`, `Pour annuler : ${url}#mes-inscriptions`, `Contact : WhatsApp +${NAT_PHONE}`].filter(Boolean).join('\n');
   const alarm = (trig, txt) => ['BEGIN:VALARM', 'ACTION:DISPLAY', `DESCRIPTION:${clean(txt)}`, `TRIGGER:${trig}`, 'END:VALARM'];
   const body = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Evenements Nat//FR', 'CALSCALE:GREGORIAN', 'METHOD:PUBLISH', 'BEGIN:VEVENT', `UID:${e.id}@evenements-nat`, `DTSTAMP:${new Date().toISOString().replace(/[-:]|\.\d+/g, '')}`,
     `DTSTART:${f(s)}`, `DTEND:${f(end)}`, `SUMMARY:${clean((wait ? '(Attente) ' : '') + e.name)}`, `LOCATION:${clean(e.place)}`, `DESCRIPTION:${clean(desc)}`,
@@ -65,4 +65,4 @@ export function icsFile(e, reg) {
   download(`${e.name.replace(/\W+/g, '-')}.ics`, body, 'text/calendar');
 }
 export const confirmText = (e, n, p) => `Bonjour, c’est ${n}. J'ai effectué ma réservation pour l'événement « ${e.name} » le ${fmtLong(e)} à ${fmtTime(e)}${p > 1 ? ` (${p} personnes, moi + ${p - 1})` : ''}. À bientôt !`;
-export const cancelText = (e, n, p) => `Bonjour Nat, c'est ${n}. Je dois annuler mon inscription à « ${e.name} » le ${fmtLong(e)}${p > 1 ? ` (${p} personnes)` : ''}. Désolé(e) et merci !`;
+export const cancelText = (e, n, p) => `Bonjour, c'est ${n}. Je dois annuler mon inscription à « ${e.name} » le ${fmtLong(e)}${p > 1 ? ` (${p} personnes)` : ''}. Désolé(e) et merci !`;
